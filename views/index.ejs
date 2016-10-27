@@ -1,0 +1,35 @@
+<!-- Home Page -->
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="expires" content="0">
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  </head>
+  <body>
+    <% include header.ejs %>
+    <div class="scoreboard-section">
+      <h2 class="scoreboard-header">Score Board</h2>
+      <div class="scoreboard">
+        <p> Scoreboard Data </p>
+      </div>
+    </div>
+    <div class="right-section">
+      <div>
+        <button id="view-games-btn" class="btn btn-primary">View Games</button>
+      </div>
+      <br />
+      <div class="chat-section">
+        <p>Chat Data<p>
+      </div>
+    </div>
+    <% include footer.ejs %>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  </body>
+</html>
