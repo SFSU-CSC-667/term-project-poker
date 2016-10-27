@@ -10,4 +10,8 @@ router.get('/lobby', function(req, res, next) {
   res.render('lobby', { title: 'Poker' });
 });
 
+router.get('/gameroom', function(req, res, next) {
+  res.render('gameroom', { title: 'Poker' });
+});
+
 module.exports = router;

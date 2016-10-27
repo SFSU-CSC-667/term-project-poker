@@ -4,8 +4,66 @@
      <img class='navbar-brand logo responsive' src="/images/icon/icon.png" />
    </div>
    <ul class='nav navbar-nav navbar-right'>
-     <li class='nav-item nav-item-right'><button class='btn btn-success'>Sign Up</button></li>
-     <li class='nav-item nav-item-right'><button class='btn btn-primary'>Sign In</button></li>
+     <li class='nav-item nav-item-right'><button class='register-btn btn btn-success'>Sign Up</button></li>
+     <li class='nav-item nav-item-right'><button class='signin-btn btn btn-primary'>Sign In</button></li>
    </ul>
  </div>
 </nav>
+
+<div class="modal" id="register-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title modal-header" id="myModalLabel">Register</h4>
+      </div>
+      <form id='register-form'>
+        <div class="modal-body">
+          <label for="email">Email / Username</label>
+          <input class='form-control' id='email' type="email" placeholder='ex. example@mail.com' required /> <br>
+          <label for="firstname">First Name</label>
+          <input class='form-control' id='first-name' type="text" placeholder='ex. John' required /> <br>
+          <label for="lastname">Last Name</label>
+          <input class='form-control' id='last-name' type="text" placeholder='ex. Smith' required /> <br>
+          <label for="password">Password</label>
+          <input class='form-control' id='password' type="password" placeholder='Password' required /> <br>
+          <label for="password">Confirm Password</label>
+          <input class='form-control' id='password' type="password" placeholder='Confirm Password' required /> <br>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="left btn btn-danger" data-dismiss="modal">Close</button>
+          <button type="button" class="left btn btn-primary signin-btn" data-dismiss="modal">Sign In</button>
+          <button id="register-submit" class="right btn btn-success">Register</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="signin-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title modal-header" id="myModalLabel">Sign In</h4>
+      </div>
+      <form id='register-form'>
+        <div class="modal-body">
+          <label for="email">Email / Username</label>
+          <input class='form-control' id='email' type="email" placeholder='ex. example@mail.com' required /> <br>
+          <label for="password">Password</label>
+          <input class='form-control' id='password' type="password" placeholder='Password' required /> <br>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="left btn btn-danger" data-dismiss="modal">Close</button>
+          <button type="button" class="left btn btn-success register-btn" data-dismiss="modal">Sign Up</button>
+          <button id="signin-submit" class="right btn btn-primary">Sign In</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

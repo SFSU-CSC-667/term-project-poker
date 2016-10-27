@@ -15,6 +15,7 @@ a {
 .right {
   float: right;
 }
+
 .left {
   float: left;
 }
@@ -54,4 +55,16 @@ a {
   /* Set the fixed height of the footer here */
   height: auto;
   background-color: #f5f5f5;
+}
+
+.modal-header {
+  color:#fff;
+  padding:9px 15px;
+  border-bottom:1px solid #eee;
+  background-color: #337ab7;
+  -webkit-border-top-left-radius: 5px;
+  -webkit-border-top-right-radius: 5px;
+   border-top-left-radius: 5px;
+   border-top-right-radius: 5px;
+  text-align: center;
 }
