@@ -7,6 +7,12 @@ a {
   color: #00B7FF;
 }
 
+.block-item {
+  text-align: center;
+  display: block;
+  margin: 0 auto;
+}
+
 .nav-item-right {
   float: right;
   padding: 10px;
