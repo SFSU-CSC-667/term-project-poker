@@ -30,7 +30,10 @@ a {
 .right-section {
   padding-right: 20px;
   text-align: center;
-  display: block;
+}
+.chat-section {
+  text-align: center;
+  padding-left: 150px;
 }
 #view-games-btn {
   font-size: 14pt;

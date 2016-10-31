@@ -23,7 +23,7 @@ module.exports = function(io) {
         seat: data.seat,
         html: "<p>Name: " + data.user + " " + connections.indexOf(socket) + "</p>"
       });
-      console.log("players " + players.length);
+      console.log("Players " + players.length);
       if (players.length > 1 && !gameStarted) {
         turn = 0;
         gameStarted = true;
