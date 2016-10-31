@@ -66,6 +66,7 @@ a {
   text-align: center;
 }
 .seat {
-  display: inline;
-  padding: 100px;
+  display: block;
+  position: 0;
+  padding: 20px;
 }

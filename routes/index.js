@@ -2,6 +2,7 @@ module.exports = function(io) {
   var express = require('express');
   var router = express.Router();
 
+  players = [];
   users = [];
   connections = [];
 
@@ -14,15 +15,26 @@ module.exports = function(io) {
     });
 
     socket.on('join request', function(data) {
-      io.emit('new player', { user: data.user,
-                              seat: data.seat,
-                              connection: connections.indexOf(socket) });
+      if (players.indexOf(socket) > -1)
+        return;
+      players.push(socket);
+      io.emit('new player', {
+        seat: data.seat,
+        html: "<p>Name: " + data.user + " " + connections.indexOf(socket) + "</p>"
+      });
+      console.log("players " + players.length);
+      if (players.length > 1)
+        io.emit('game start', { turn: 0 })
     })
     socket.on('disconnect', function() {
       connections.splice(connections.indexOf(socket), 1);
-      io.emit('game disconnect');
-      console.log("Disconnected");
+      players.splice(players.indexOf(socket), 1);
+      console.log("Connected: " + connections.length);
     });
+
+    socket.on('next button', function() {
+      io.emit('next turn', {});
+    })
   })
 
   router.get('/', function(req, res, next) {

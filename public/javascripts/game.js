@@ -1,19 +1,37 @@
 $(document).ready(function() {
-  players = [];
-
+  let seatsOccupied = [];
+  let turn = 0;
   $(".join").on('click', function(e) {
     e.preventDefault();
     socket.emit('join request', { user: 'guest', seat: $(this).parent().prop('id') });
   });
 
   socket.on('new player', data => {
-    if (players.indexOf(socket))
-      return;
-    players.push(socket);
-    $("#" + data.seat).html("<p>Name: " + data.user + " " + data.connection + "</p>");
-    socket.on('game disconnect', function() {
-      console.log("got here");
-      players.splice(players.indexOf(socket), 1);
-    })
+    $("#" + data.seat).html(data.html);
+    seatsOccupied.push(data.seat);
   })
+
+  socket.on('game start', data => {
+    gameLoop(turn);
+  })
+
+  socket.on('next turn', data => {
+    if (seatsOccupied[turn + 1]) {
+      $("#" + seatsOccupied[turn]).children('button').remove();
+      gameLoop(turn + 1);
+    } else {
+      $("#" + seatsOccupied[turn]).children('button').remove();
+      turn = 0;
+      gameLoop(turn);
+    }
+  });
+
+  function gameLoop(turn) {
+    $("#" + seatsOccupied[turn]).append("<button class='next-btn btn'>Next</button>");
+    $(".next-btn").on('click', e => {
+      e.preventDefault();
+      socket.emit('next button');
+    });
+  }
+
 });
