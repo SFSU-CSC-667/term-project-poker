@@ -5,7 +5,26 @@ module.exports = function(io) {
   users = [];
   connections = [];
 
-  /* GET home page. */
+  io.on('connection', function(socket) {
+    connections.push(socket);
+    console.log("Connected: " + connections.length);
+
+    socket.on('send message', function(data) {
+      io.emit('chat update', { message: data });
+    });
+
+    socket.on('join request', function(data) {
+      io.emit('new player', { user: data.user,
+                              seat: data.seat,
+                              connection: connections.indexOf(socket) });
+    })
+    socket.on('disconnect', function() {
+      connections.splice(connections.indexOf(socket), 1);
+      io.emit('game disconnect');
+      console.log("Disconnected");
+    });
+  })
+
   router.get('/', function(req, res, next) {
     res.render('index', { title: 'Poker' });
   });
@@ -17,20 +36,6 @@ module.exports = function(io) {
   router.get('/gameroom', function(req, res, next) {
     res.render('gameroom', { title: 'Poker' });
   });
-
-  io.on('connection', function(socket) {
-    connections.push(socket);
-    console.log("Connected: " + connections.length);
-
-    socket.on('send message', function(data) {
-        io.emit('chat update', { message: data });
-    });
-
-    socket.on('disconnect', function(data) {
-      connections.splice(connections.indexOf(socket), 1);
-      console.log("Disconnected");
-    });
-  })
 
   return router;
 }

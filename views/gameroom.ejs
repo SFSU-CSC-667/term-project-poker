@@ -1,5 +1,4 @@
 <!-- Game Room Page -->
-
 <!DOCTYPE html>
 <html>
   <head>
@@ -13,9 +12,11 @@
   </head>
   <body>
     <% include header.ejs %>
-    <h1><%= title %></h1>
+    <div class="seat" id="seatOne"><button class='join btn btn-lg btn-primary'>Join</button></div>
+    <div class="seat" id="seatTwo"><button class='join btn btn-lg btn-primary'>Join</button></div>
+    <div class="seat" id="seatThree"><button class='join btn btn-lg btn-primary'>Join</button></div>
+    <div class="seat" id="seatFour"><button class='join btn btn-lg btn-primary'>Join</button></div>
     <% include footer.ejs %>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <script src="/javascripts/game.js"></script>
   </body>
 </html>
