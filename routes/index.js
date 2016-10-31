@@ -1,7 +1,8 @@
 module.exports = function(io) {
   var express = require('express');
   var router = express.Router();
-
+  let turn;
+  let gameStarted = false;
   players = [];
   users = [];
   connections = [];
@@ -23,8 +24,11 @@ module.exports = function(io) {
         html: "<p>Name: " + data.user + " " + connections.indexOf(socket) + "</p>"
       });
       console.log("players " + players.length);
-      if (players.length > 1)
-        io.emit('game start', { turn: 0 })
+      if (players.length > 1 && !gameStarted) {
+        turn = 0;
+        gameStarted = true;
+        players[turn].emit('game start', { turn: turn })
+      }
     })
     socket.on('disconnect', function() {
       connections.splice(connections.indexOf(socket), 1);
@@ -33,7 +37,15 @@ module.exports = function(io) {
     });
 
     socket.on('next button', function() {
-      io.emit('next turn', {});
+      if (players[turn + 1]) {
+        turn++;
+        players[turn].emit('next turn', { turn: turn });
+      } else {
+        // Round over
+        console.log("Round over");
+        turn = 0;
+        players[turn].emit('next turn', { turn: turn });
+      }
     })
   })
 

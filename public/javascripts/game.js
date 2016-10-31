@@ -1,6 +1,6 @@
 $(document).ready(function() {
   let seatsOccupied = [];
-  let turn = 0;
+
   $(".join").on('click', function(e) {
     e.preventDefault();
     socket.emit('join request', { user: 'guest', seat: $(this).parent().prop('id') });
@@ -12,17 +12,12 @@ $(document).ready(function() {
   })
 
   socket.on('game start', data => {
-    gameLoop(turn);
+    gameLoop(data.turn);
   })
 
   socket.on('next turn', data => {
-    if (seatsOccupied[turn + 1]) {
-      $("#" + seatsOccupied[turn]).children('button').remove();
-      gameLoop(turn + 1);
-    } else {
-      $("#" + seatsOccupied[turn]).children('button').remove();
-      turn = 0;
-      gameLoop(turn);
+    if (seatsOccupied[data.turn]) {
+      gameLoop(data.turn);
     }
   });
 
@@ -30,6 +25,7 @@ $(document).ready(function() {
     $("#" + seatsOccupied[turn]).append("<button class='next-btn btn'>Next</button>");
     $(".next-btn").on('click', e => {
       e.preventDefault();
+      $("#" + seatsOccupied[turn]).children('button').remove();
       socket.emit('next button');
     });
   }
