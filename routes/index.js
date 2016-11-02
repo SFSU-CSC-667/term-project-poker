@@ -3,6 +3,7 @@ module.exports = function(io, db) {
   const router = express.Router();
   const ioConnect = require('../server/ioServer.js');
 
+  // Testing db, remove this later;
   db.query('SELECT FirstName FROM Users WHERE UserId=1').then(response => {
       console.log("Test DB query: ", response);
   })

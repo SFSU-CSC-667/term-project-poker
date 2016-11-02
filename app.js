@@ -49,7 +49,7 @@ if (app.get('env') === 'development') {
 // production error handler
 // no stacktraces leaked to user
 app.use((error, request, response, next) => {
-  response.status(err.status || 500);
+  response.status(error.status || 500);
   response.render('error', {
     message: error.message,
     error: {}
