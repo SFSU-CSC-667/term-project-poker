@@ -6,19 +6,15 @@ $(document).ready(function() {
     socket.emit('join request', { user: 'guest', seat: $(this).parent().prop('id') });
   });
 
+  socket.emit('game viewer');
+
   socket.on('new player', data => {
     $("#" + data.seat).html(data.html);
     seatsOccupied.push(data.seat);
-  })
+  });
 
-  socket.on('game start', data => {
+  socket.on('run game', data => {
     gameLoop(data.turn);
-  })
-
-  socket.on('next turn', data => {
-    if (seatsOccupied[data.turn]) {
-      gameLoop(data.turn);
-    }
   });
 
   function gameLoop(turn) {
