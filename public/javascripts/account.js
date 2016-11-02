@@ -11,8 +11,8 @@ $(document).ready(() => {
     $("#signin-modal").modal('show');
   });
 
-  $('#register-form').submit(function(e) {
-   e.preventDefault();
+  $('#register-form').submit(event => {
+   event.preventDefault();
    if ($("#password").val() === $('#password-confirm').val()) {
      requestAccount();
      $("#register-modal").modal('hide');
@@ -23,11 +23,32 @@ $(document).ready(() => {
    };
  });
 
+ $('#signin-form').submit(event => {
+  event.preventDefault();
+  socket.emit('account signin', {
+    email: $('#account-email').val(),
+    password: $('#account-password').val()
+  });
+  $('#signin-form').trigger('reset');
+  $("#signin-modal").modal('hide');
+ });
+
  socket.on('account creation response', data => {
    if (data.success) {
      alert("Account creation is successful.");
    } else {
      alert(data.detail);
+   }
+ });
+
+ socket.on('account signin response', data => {
+   if (data.success) {
+     socket.user = data.user;
+     alert("Signin is successful.");
+     $('#register-form').trigger('reset');
+     $('.signin-btn').html(socket.user);
+   } else {
+     alert("Invalid credentials");
    }
  });
 

@@ -9,7 +9,7 @@ Get all dependencies: <br />
 npm install
 ```
 Set up PosgreSQL: <br />
-<a href="https://www.postgresql.org/">https://www.postgresql.org/</a> <br /><br />
+<a href="https://www.postgresql.org/" target="_blank">https://www.postgresql.org/</a> <br /><br />
 <b>Navigate to db/initDB.js and edit your PosegreSQL connection settings.</b> <br /><br />
 
 Start Server:
