@@ -26,10 +26,10 @@ app.use('/', routes);
 app.use('/users', users);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  const err = new Error('Not Found');
-  err.status = 404;
-  next(err);
+app.use((request, response, next) => {
+  const error = new Error('Not Found');
+  error.status = 404;
+  next(error);
 });
 
 // error handlers
@@ -37,21 +37,21 @@ app.use(function(req, res, next) {
 // development error handler
 // will print stacktrace
 if (app.get('env') === 'development') {
-  app.use(function(err, req, res, next) {
-    res.status(err.status || 500);
-    res.render('error', {
-      message: err.message,
-      error: err
+  app.use((error, request, response, next) => {
+    response.status(err.status || 500);
+    response.render('error', {
+      message: error.message,
+      error: error
     });
   });
 }
 
 // production error handler
 // no stacktraces leaked to user
-app.use(function(err, req, res, next) {
-  res.status(err.status || 500);
-  res.render('error', {
-    message: err.message,
+app.use((error, request, response, next) => {
+  response.status(err.status || 500);
+  response.render('error', {
+    message: error.message,
     error: {}
   });
 });

@@ -9,16 +9,16 @@ module.exports = function(io, db) {
 
   io.on('connection', socket => ioConnect(io, socket, db));
 
-  router.get('/', function(req, res, next) {
-    res.render('index', { title: 'Poker' });
+  router.get('/', (request, response, next) => {
+    response.render('index', { title: 'Poker' });
   });
 
-  router.get('/lobby', function(req, res, next) {
-    res.render('lobby', { title: 'Poker' });
+  router.get('/lobby', (request, response, next) => {
+    response.render('lobby', { title: 'Poker' });
   });
 
-  router.get('/gameroom', function(req, res, next) {
-    res.render('gameroom', { title: 'Poker' });
+  router.get('/gameroom', (request, response, next) => {
+    response.render('gameroom', { title: 'Poker' });
   });
 
   return router;

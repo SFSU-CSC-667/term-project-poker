@@ -18,8 +18,8 @@ $(document).ready(() => {
 
   function gameLoop(turn) {
     $("#" + seatsOccupied[turn]).append("<button class='next-btn btn'>Next</button>");
-    $(".next-btn").on('click', e => {
-      e.preventDefault();
+    $(".next-btn").on('click', event => {
+      event.preventDefault();
       $("#" + seatsOccupied[turn]).children('button').remove();
       socket.emit('next button');
     });

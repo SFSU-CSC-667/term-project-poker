@@ -1,18 +1,18 @@
 const socket = io.connect();
 
 $(document).ready(() => {
-  $(".register-btn").on('click', e => {
-    e.preventDefault();
+  $(".register-btn").on('click', event => {
+    event.preventDefault();
     $("#register-modal").modal('show');
   })
 
-  $(".signin-btn").on('click', e => {
-    e.preventDefault();
+  $(".signin-btn").on('click', event => {
+    event.preventDefault();
     $("#signin-modal").modal('show');
   })
 
-  $("#chat-send").on('click', e => {
-    e.preventDefault();
+  $("#chat-send").on('click', event => {
+    event.preventDefault();
     socket.emit('send message', $('#chat-msg').val());
   })
 
