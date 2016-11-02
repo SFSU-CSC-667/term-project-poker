@@ -1,8 +1,9 @@
-const disconnectEvents = (socket, connections, players) => {
+const disconnectEvents = (socket, connections, users, players) => {
   socket.on('disconnect', function() {
     socket.leave('lobby');
     socket.leave('game room');
-    connections.splice(connections.indexOf(socket), 1);
+    delete connections[socket.id];
+    delete users[socket.id];
     players.splice(players.indexOf(socket), 1);
     console.log("Connected: " + connections.length);
   });

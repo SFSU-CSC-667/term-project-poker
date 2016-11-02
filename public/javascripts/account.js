@@ -1,6 +1,6 @@
 const socket = io.connect();
 
-$(document).ready(() => {
+(() => {
   $(".register-btn").on('click', event => {
     event.preventDefault();
     $("#register-modal").modal('show');
@@ -12,53 +12,61 @@ $(document).ready(() => {
   });
 
   $('#register-form').submit(event => {
-   event.preventDefault();
-   if ($("#password").val() === $('#password-confirm').val()) {
-     requestAccount();
-     $("#register-modal").modal('hide');
-   } else {
-     $(".passwords").data('tooltip', false).tooltip({
-       title: 'Passwords must match!'
-     }).tooltip('show');
-   };
- });
-
- $('#signin-form').submit(event => {
-  event.preventDefault();
-  socket.emit('account signin', {
-    email: $('#account-email').val(),
-    password: $('#account-password').val()
+    event.preventDefault();
+    if ($("#password").val() === $('#password-confirm').val()) {
+      requestAccount();
+    } else {
+      $(".passwords").data('tooltip', false).tooltip({
+        title: 'Passwords must match!'
+      }).tooltip('show');
+    };
   });
-  $('#signin-form').trigger('reset');
-  $("#signin-modal").modal('hide');
- });
 
- socket.on('account creation response', data => {
-   if (data.success) {
-     alert("Account creation is successful.");
-   } else {
-     alert(data.detail);
-   }
- });
+  $('#signin-form').submit(event => {
+    event.preventDefault();
+    socket.emit('account signin', {
+     email: $('#account-email').val(),
+     password: $('#account-password').val()
+    });
+    sessionStorage.setItem('email', $('#account-email').val());
+    sessionStorage.setItem('password', $('#account-password').val());
+    $('#signin-form').trigger('reset');
+    $("#signin-modal").modal('hide');
+  });
+  
+  if (sessionStorage.getItem('email') && sessionStorage.getItem('password')) {
+    let user = sessionStorage.getItem('email');
+    let password = sessionStorage.getItem('password');
+    socket.emit('account signin', {
+      email: user,
+      password: password
+    });
+  }
 
- socket.on('account signin response', data => {
-   if (data.success) {
-     socket.user = data.user;
-     alert("Signin is successful.");
-     $('#register-form').trigger('reset');
-     $('.signin-btn').html(socket.user);
-   } else {
-     alert("Invalid credentials");
-   }
- });
+  socket.on('account creation response', data => {
+    if (data.success) {
+      alert("Account creation is successful.");
+      $("#register-modal").modal('hide');
+    } else {
+      alert(data.detail);
+    }
+  });
 
- function requestAccount() {
-   socket.emit('account registration', {
-     email: $('#email').val(),
-     first: $('#first-name').val(),
-     last: $('#last-name').val(),
-     password: $('#password').val()
-   });
- }
+  socket.on('account signin response', data => {
+    if (data.success) {
+      $('#register-form').trigger('reset');
+      $('.signin-btn').html(data.user);
+    } else {
+      alert("Invalid credentials");
+    }
+  });
 
-});
+  function requestAccount() {
+    socket.emit('account registration', {
+      email: $('#email').val(),
+      first: $('#first-name').val(),
+      last: $('#last-name').val(),
+      password: $('#password').val()
+    });
+  }
+})();

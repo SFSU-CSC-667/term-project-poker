@@ -1,4 +1,4 @@
-$(document).ready(() => {
+(() => {
   let seatsOccupied = [];
 
   $(".join").on('click', function() {
@@ -24,5 +24,4 @@ $(document).ready(() => {
       socket.emit('next button');
     });
   }
-
-});
+})();
