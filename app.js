@@ -5,10 +5,11 @@ const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const users = require('./routes/users');
-const pgp = require('pg-promise')();
+const db = require('./db/initDB.js');
 const app = express();
 app.io = require('socket.io')();
-const routes = require('./routes/index')(app.io);
+app.db = require('./db/initDB.js');
+const routes = require('./routes/index')(app.io, app.db);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

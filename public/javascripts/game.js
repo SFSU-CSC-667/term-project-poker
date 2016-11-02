@@ -1,8 +1,7 @@
-$(document).ready(function() {
+$(document).ready(() => {
   let seatsOccupied = [];
 
-  $(".join").on('click', function(e) {
-    e.preventDefault();
+  $(".join").on('click', function() {
     socket.emit('join request', { user: 'guest', seat: $(this).parent().prop('id') });
   });
 

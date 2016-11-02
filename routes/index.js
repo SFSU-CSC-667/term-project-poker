@@ -1,7 +1,11 @@
-module.exports = function(io) {
+module.exports = function(io, db) {
   const express = require('express');
   const router = express.Router();
   const ioConnect = require('../server.js');
+
+  db.query('SELECT FirstName FROM Users WHERE UserId=1').then(response => {
+      console.log(response)
+  })
 
   io.on('connection', socket => ioConnect(io, socket));
 

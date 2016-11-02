@@ -1,4 +1,4 @@
-CREATE TABLE Users (
+CREATE TABLE IF NOT EXISTS Users (
   UserId SERIAL PRIMARY KEY,
   FirstName VARCHAR (255),
   LastName VARCHAR (255),
@@ -8,16 +8,16 @@ CREATE TABLE Users (
   Avatar INTEGER
 );
 
-CREATE TABLE Games (
-  GameId SERIAL PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS Games (
+  GameId INTEGER PRIMARY KEY,
   MaxPlayers INTEGER,
   MinChips INTEGER,
   SeatsTaken INTEGER,
   Turn INTEGER
 );
 
-CREATE TABLE Players (
-  GameId INTEGER REFERENCES GameList(GameId),
+CREATE TABLE IF NOT EXISTS Players (
+  GameId INTEGER REFERENCES Games(GameId),
   UserId INTEGER REFERENCES Users(UserId),
   Bid INTEGER,
   BuyIn INTEGER,
@@ -26,18 +26,28 @@ CREATE TABLE Players (
   SeatNumber INTEGER
 );
 
-CREATE TABLE Deck (
+CREATE TABLE IF NOT EXISTS Deck (
   CardId SERIAL PRIMARY KEY,
   Card VARCHAR(255),
   Image VARCHAR(255)
 );
 
-CREATE TABLE PlayersCards (
-  GameId INTEGER REFERENCES GameList(GameId),
+CREATE TABLE IF NOT EXISTS PlayersCards (
+  GameId INTEGER REFERENCES Games(GameId),
   UserId INTEGER REFERENCES Users(UserId),
-  FlopCard1 INTEGER REFERENCES Deck(CardId),
-  FlopCard2 INTEGER REFERENCES Deck(CardId),
-  FlopCard3 INTEGER REFERENCES Deck(CardId),
-  TurnCard INTEGER REFERENCES Deck(CardId),
-  RiverCard INTEGER REFERENCES Deck(CardId),
+  FlopCard1 INTEGER,
+  FlopCard2 INTEGER,
+  FlopCard3 INTEGER,
+  TurnCard INTEGER,
+  RiverCard INTEGER
 );
+
+CREATE TABLE IF NOT EXISTS PlayersActions (
+  GameId INTEGER REFERENCES Games(GameId),
+  UserId INTEGER REFERENCES Users(UserId),
+  IsAllIn BOOLEAN,
+  IsCall BOOLEAN,
+  IsCheck BOOLEAN,
+  IsFold BOOLEAN,
+  IsRaise BOOLEAN
+)

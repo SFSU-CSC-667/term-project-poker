@@ -1,5 +1,6 @@
 const socket = io.connect();
-$(document).ready(function() {
+
+$(document).ready(() => {
   $(".register-btn").on('click', e => {
     e.preventDefault();
     $("#register-modal").modal('show');
