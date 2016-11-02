@@ -11,8 +11,7 @@ let connection = {
 const db = pgp(connection);
 
 db.query(pgp.QueryFile('../db/Schema.sql', { minify: true })).then(response => {
-  if (!response.length)
-    console.log("Database initialized.");
+  console.log("Database Initializing. " + response);
 });
 
 module.exports = db;

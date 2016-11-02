@@ -1,13 +1,13 @@
 module.exports = function(io, db) {
   const express = require('express');
   const router = express.Router();
-  const ioConnect = require('../server.js');
+  const ioConnect = require('../server/ioServer.js');
 
   db.query('SELECT FirstName FROM Users WHERE UserId=1').then(response => {
-      console.log(response)
+      console.log("Test DB query: ", response);
   })
 
-  io.on('connection', socket => ioConnect(io, socket));
+  io.on('connection', socket => ioConnect(io, socket, db));
 
   router.get('/', function(req, res, next) {
     res.render('index', { title: 'Poker' });
