@@ -6,12 +6,12 @@ const socket = io.connect();
     $("#register-modal").modal('show');
   });
 
-  $(".signin-btn").on('click', event => {
+  $(".signin-btn, #signin-modal-btn").on('click', event => {
     event.preventDefault();
     $("#signin-modal").modal('show');
   });
 
-  $('#register-form').submit(event => {
+  $('#register-form').on('submit', event => {
     event.preventDefault();
     if ($("#password").val() === $('#password-confirm').val()) {
       requestAccount();
@@ -22,19 +22,19 @@ const socket = io.connect();
     };
   });
 
-  $('#signin-form').submit(event => {
+  $('#signin-form').on('submit', event => {
     event.preventDefault();
+    $('.signin-btn').replaceWith(loading());
     socket.emit('account signin', {
-     email: $('#account-email').val(),
-     password: $('#account-password').val()
+      email: $('#account-email').val(),
+      password: $('#account-password').val(),
+      form: 1
     });
-    sessionStorage.setItem('email', $('#account-email').val());
-    sessionStorage.setItem('password', $('#account-password').val());
-    $('#signin-form').trigger('reset');
     $("#signin-modal").modal('hide');
   });
-  
+
   if (sessionStorage.getItem('email') && sessionStorage.getItem('password')) {
+    $('.signin-btn').replaceWith(loading());
     let user = sessionStorage.getItem('email');
     let password = sessionStorage.getItem('password');
     socket.emit('account signin', {
@@ -54,9 +54,11 @@ const socket = io.connect();
 
   socket.on('account signin response', data => {
     if (data.success) {
-      $('#register-form').trigger('reset');
-      $('.signin-btn').html(data.user);
+      if (data.form) { storeSession() }
+      $('#signin-form').trigger('reset');
+      $('#loading').replaceWith(`<button class='account-btn btn btn-primary'>${ data.user }</button>`);
     } else {
+      $('#loading').replaceWith('<button class="signin-btn btn btn-primary">Sign In</button>');
       alert("Invalid credentials");
     }
   });
@@ -68,5 +70,21 @@ const socket = io.connect();
       last: $('#last-name').val(),
       password: $('#password').val()
     });
+  }
+
+  function storeSession() {
+    sessionStorage.setItem('email', $('#account-email').val());
+    sessionStorage.setItem('password', $('#account-password').val());
+  }
+
+  function loading() {
+    return (
+      '<div id="loading">' +
+        '<div id="dot-1" class="loading"></div>' +
+        '<div id="dot-2" class="loading"></div>' +
+        '<div id="dot-3" class="loading"></div>' +
+        '<div id="dot-4" class="loading"></div>' +
+      '</div>'
+    );
   }
 })();

@@ -39,7 +39,7 @@ const accountEvents = (io, socket, users, db) => {
     .then(response => {
       bcrypt.compare(data.password, response.password, (error, success) => {
         if (success) {
-          socket.emit("account signin response", { user: data.email, success: 1 });
+          socket.emit("account signin response", { user: data.email, success: 1, form: data.form });
           users[socket.id] = { firstName: response.firstname, email: data.email };
           console.log("Users: " + Object.keys(users).length);
         } else {
