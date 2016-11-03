@@ -18,10 +18,31 @@ const accountEvents = (io, socket, users, db) => {
     loginAccount(data);
   })
 
+  socket.on('request account information', data => {
+    accountInfo(data.email);
+  })
+
+  function accountInfo(email) {
+    db.one(`SELECT * FROM Users WHERE Email='${ email }'`)
+    .then(response => {
+      socket.emit('account information response', {
+        success: 1,
+        email: response.email,
+        first: response.firstname,
+        last: response.lastname,
+        chips: response.chips
+      });
+    })
+    .catch(response => {
+      socket.emit('account information response', { success: 0 });
+      console.log("Account info failure. " + email)
+    });
+  }
+
   function createAccount(data, hash) {
-    db.query("INSERT INTO Users (FirstName, LastName, Email, Password) "
+    db.query("INSERT INTO Users (FirstName, LastName, Email, Password, Chips) "
          + `VALUES ('${ data.first }', '${ data.last }', '${ data.email }', `
-         + `'${ hash }')`)
+         + `'${ hash }' + '5000')`)
     .then(response => {
       console.log("Account created. " + data.email)
       socket.emit("account creation response", { success: 1 });

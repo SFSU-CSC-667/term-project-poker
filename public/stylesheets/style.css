@@ -10,16 +10,40 @@ a {
   display: block;
   margin: 0 auto;
 }
+.modal-title {
+  color: white;
+  font-size: 18pt;
+  padding: 0px;
+}
+.account-detail {
+  padding: 20px;
+  list-style: none;
+  font-size: 110%;
+  padding-right: 100px;
+}
+
 .nav-item-right {
   float: right;
   padding: 10px;
 }
+
+.modal-header > .glyphicon {
+  padding-top: 10px;
+  font-size: 200%;
+}
+
+.glyphicon {
+  padding-top: 2px;
+}
+
 .right {
   float: right;
 }
+
 .left {
   float: left;
 }
+
 .scoreboard-section {
   float: left;
   padding-left: 100px;

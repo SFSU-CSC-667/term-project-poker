@@ -6,11 +6,6 @@ const socket = io.connect();
     $("#register-modal").modal('show');
   });
 
-  $(".signin-btn, #signin-modal-btn").on('click', event => {
-    event.preventDefault();
-    $("#signin-modal").modal('show');
-  });
-
   $('#register-form').on('submit', event => {
     event.preventDefault();
     if ($("#password").val() === $('#password-confirm').val()) {
@@ -33,6 +28,23 @@ const socket = io.connect();
     $("#signin-modal").modal('hide');
   });
 
+  $('body').on('click', '.signin-btn, #signin-modal-btn', event => {
+    event.preventDefault();
+    $("#signin-modal").modal('show');
+  });
+
+  $('body').on('click', '#signout-btn', event => {
+    event.preventDefault();
+    $("#account-modal").modal('hide');
+    sessionStorage.clear();
+    location.reload();
+  })
+
+  $('body').on('click', '.account-btn', function(event) {
+    event.preventDefault();
+    socket.emit('request account information', { email: $(this)[0].innerHTML });
+  });
+
   if (sessionStorage.getItem('email') && sessionStorage.getItem('password')) {
     $('.signin-btn').replaceWith(loading());
     let user = sessionStorage.getItem('email');
@@ -42,6 +54,15 @@ const socket = io.connect();
       password: password
     });
   }
+
+  socket.on('account information response', data => {
+    console.log(data);
+    $('.account-email').html(data.email);
+    $('#account-firstname').html(data.first);
+    $('#account-lastname').html(data.last);
+    $('#account-chips').html(data.chips);
+    $('#account-modal').modal('show');
+  })
 
   socket.on('account creation response', data => {
     if (data.success) {
