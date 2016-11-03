@@ -63,16 +63,13 @@ a {
   font-size: 14pt;
   width: 60%;
 }
-.navbar-brand {
-  padding: 0px; /* firefox bug fix */
-}
-.navbar-brand>img {
-  padding-left: 0px;
+
+.nav-brand {
   text-align: center;
-  height: 100%;
-  padding: 15px; /* firefox bug fix */
-  width: auto;
+  padding-top: 5px;
+  width: 45px;
 }
+
 #footer {
   position: absolute;
   bottom: 0;
