@@ -5,6 +5,9 @@ body {
 a {
   color: #00B7FF;
 }
+.dealer {
+
+}
 .block-item {
   text-align: center;
   display: block;
@@ -89,9 +92,9 @@ a {
    border-top-right-radius: 5px;
   text-align: center;
 }
+
 .seat {
-  display: block;
-  position: 0;
+  display: inline-block;
   padding: 20px;
 }
 

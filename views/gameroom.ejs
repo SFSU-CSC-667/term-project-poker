@@ -13,10 +13,23 @@
   </head>
   <body>
     <% include includes/header.ejs %>
-    <div class="seat" id="seatOne"><button class='join btn btn-lg btn-primary'>Join</button></div>
-    <div class="seat" id="seatTwo"><button class='join btn btn-lg btn-primary'>Join</button></div>
-    <div class="seat" id="seatThree"><button class='join btn btn-lg btn-primary'>Join</button></div>
-    <div class="seat" id="seatFour"><button class='join btn btn-lg btn-primary'>Join</button></div>
+    <div class="dealer" id="dealer-cards"><img class='card-image face-down'/></div>
+    <div class="seat">
+      <div id="seatOne"><button class='join btn btn-lg btn-primary'>Join</button></div>
+      <div id="seatOne-cards"></div>
+    </div>
+    <div class="seat">
+      <div id="seatTwo"><button class='join btn btn-lg btn-primary'>Join</button></div>
+      <div id="seatTwo-cards"></div>
+    </div>
+    <div class="seat">
+      <div id="seatThree"><button class='join btn btn-lg btn-primary'>Join</button></div>
+      <div id="seatThree-cards"></div>
+    </div>
+    <div class="seat">
+      <div id="seatFour"><button class='join btn btn-lg btn-primary'>Join</button></div>
+      <div id="seatFour-cards"></div>
+    </div>
     <% include includes/footer.ejs %>
     <script src="/javascripts/game.js"></script>
   </body>
