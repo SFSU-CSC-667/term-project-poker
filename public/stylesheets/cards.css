@@ -7,7 +7,7 @@
   transform: scale(0.90, 0.90);
 }
 
-.card-back {
+.face-down {
   background-position: 0 -392px;
 }
 /* Clubs */

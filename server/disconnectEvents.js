@@ -4,9 +4,14 @@ const disconnectEvents = (socket, connections, users, players) => {
     socket.leave('game room');
     delete connections[socket.id];
     delete users[socket.id];
-    players.splice(players.indexOf(socket), 1);
-    console.log("Connected: " + connections.length);
+    removeFromGames(socket)
+    console.log("Connected: " + Object.keys(connections).length);
   });
-}
 
+  function removeFromGames(socket) {
+    for (let gameId in players) {
+      players[gameId].splice(players[gameId].indexOf(socket), 1);
+    }
+  }
+}
 module.exports = disconnectEvents;

@@ -1,4 +1,4 @@
-let players = [],
+let players = {},
 users = {},
 connections = {};
 
