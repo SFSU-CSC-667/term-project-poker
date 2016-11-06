@@ -19,24 +19,30 @@
         <p>Scoreboard Data</p>
       </div>
     </div>
-
+    <div class="right-section">
+      <form id="create-game">
+        <input id="game-name" placeholder="Name Your Game!" required />
+        <button class='btn btn-primary'>Create Game</button><br /><br />
+      </form>
+    </div>
     <div class="right-section">
       <h2>Poker Game List</h2>
       <div class="game-list">
-        <p>Gameroom 1: <a href="/gameroom"><button class="btn btn-primary">View Game</button></a></p>
+        <p>Gameroom 1: <a href="/gameroom"><button id="game-room-1" class="btn btn-primary">View Game</button></a></p>
       </div>
     </div>
-      <div class="chat-section block-item">
-        <div id="chat-data"></div>
-        <div>
-          <div class="input-group">
-            <input id="chat-msg" type="text" class="form-control" placeholder="Message">
-            <span class="input-group-btn">
-              <button id="chat-send" class="btn btn-secondary" type="button">Send</button>
-            </span>
-          </div>
+    <div class="chat-section block-item">
+      <div id="chat-data"></div>
+      <div>
+        <div class="input-group">
+          <input id="chat-msg" type="text" class="form-control" placeholder="Message">
+          <span class="input-group-btn">
+            <button id="chat-send" class="btn btn-secondary" type="button">Send</button>
+          </span>
         </div>
       </div>
+    </div>
     <% include includes/footer.ejs %>
+    <script src="/javascripts/lobby.js"></script>
   </body>
 </html>

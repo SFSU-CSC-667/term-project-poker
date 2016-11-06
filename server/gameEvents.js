@@ -1,104 +1,143 @@
 let game = {};
 
-const gameEvents = (io, socket, players) => {
-  const Deck = require('../poker-game/deck.js');
-  socket.on('game viewer', function() {
-    socket.leave('lobby');
-    socket.join('game room');
+const gameEvents = (io, socket, players, db) => {
+  const Deck = require('../poker/deck.js');
+
+  socket.on('create game request', data => {
+    db.one('INSERT INTO Games (GameName, MaxPlayers, MinBid, MinChips) VALUES' +
+    `('${ data.gameName }', 4, 50, 500) RETURNING GameId`)
+    .then(response => {
+      socket.emit('create game response', {
+        success: 1,
+        gameId: response.gameid,
+        gameName: data.gameName
+      })
+     })
+     .catch(response => {
+       console.log(response);
+       socket.emit('create game response', { success: 0 });
+     })
   });
 
-  socket.on('next button', (data) => {
-    let Game = game[data.gameId];
-    if (players[Game.turn + 1]) {
-      Game.turn++;
-      players[data.gameId][Game.turn].emit('run game', { turn: Game.turn });
+  socket.on('game viewer', data => {
+    socket.leave('lobby');
+    if (data.gameId) {
+      socket.join(data.gameId);
+      socket.gameId = data.gameId;
     } else {
-      checkRound(Game.round, data);
-      console.log("Round over")
-      Game.round++;
-      Game.turn = 0;
-      players[data.gameId][Game.turn].emit('run game', { turn: Game.turn });
+      socket.join(1);
+      socket.gameId = 1;
     }
   });
 
-  socket.on('join request', (data) => {
-    if (!players[data.gameId])
-      players[data.gameId] = [];
-    if (players[data.gameId].indexOf(socket) > -1)
+  socket.on('next button', data => {
+    let Game = game[socket.gameId];
+    if (players[Game.turn + 1]) {
+      Game.turn++;
+      players[socket.gameId][Game.turn].emit('run game', { turn: Game.turn });
+    } else {
+      dealerCheck(Game.round, socket, data);
+      console.log("Round over")
+      Game.round++;
+      Game.turn = 0;
+      players[socket.gameId][Game.turn].emit('run game', { turn: Game.turn });
+    }
+  });
+
+  socket.on('join request', data => {
+    let gameId = socket.gameId;
+    if (!players[gameId])
+      players[gameId] = [];
+    if (players[gameId].indexOf(socket) > -1)
       return;
-    if (!game[data.gameId])
-      game[data.gameId] = { deck: new Deck(), turn: 0, round: 0, gameStarted: false }
+    if (!game[gameId])
+      game[gameId] = { deck: new Deck(), turn: 0, round: 0, gameStarted: false }
     acceptRequest(socket, data);
   });
 
   function acceptRequest(socket, data) {
-    players[data.gameId].push(socket);
-    socket['seat'] = data.seat;
-    io.to('game room').emit('new player', {
+    let gameId = socket.gameId;
+    let Game = game[gameId];
+    let Players = players[gameId];
+    Players.push(socket);
+    socket.isPlayer = 1;
+    socket.seat = data.seat;
+    io.to(gameId).emit('new player', {
       seat: data.seat,
-      html: "<p>Name: " + data.user + " " + players[data.gameId].indexOf(socket) + "</p>"
+      html: "<p>Name: " + data.user + " " + Players.indexOf(socket) + "</p>"
     });
-    console.log("Players " + players[data.gameId].length);
-    if (players[data.gameId].length > 1 && !game[data.gameId].gameStarted) {
-      startGame(data);
+    console.log("Players " + Players.length);
+    if (Players.length > 1 && !Game.gameStarted) {
+      startGame(socket, data);
     }
   }
 
-  function startGame(data) {
-    game[data.gameId].deck.shuffle();
-    drawUserCards(data);
-    drawFlopCards(data);
-    players[data.gameId][game[data.gameId].turn].emit('run game', { turn: game[data.gameId].turn });
+  function startGame(socket, data) {
+    let Game = game[socket.gameId];
+    let Players = players[socket.gameId];
+    Game.deck.shuffle();
+    drawPlayerCards(socket, data);
+    drawFlopCards(socket, data);
+    Players[Game.turn].emit('run game', { turn: Game.turn });
   }
 
-  function checkRound(round, data) {
-    let Game = game[data.gameId];
+  function dealerCheck(round, socket, data) {
+    let Game = game[socket.gameId];
+    let Players = players[socket.gameId];
     switch (round) {
       case 0:
-        if (!Game.turnCardDelt && data.turn === players[data.gameId].length - 1) {
-          drawTurnCard(data);
-          turnCardsDelt = 1;
+        if (!Game.turnCardDelt && data.turn === Players.length - 1) {
+          drawTurnCard(socket, data);
+          Game.turnCardDelt = 1;
         }
         break;
       case 1:
-        if (!Game.riverCardDelt && data.turn === players[data.gameId].length - 1) {
-          drawRiverCard(data);
-          riverCardDelt = 1;
+        if (!Game.riverCardDelt && data.turn === Players.length - 1) {
+          drawRiverCard(socket, data);
+          Game.riverCardDelt = 1;
         }
         break;
       case 2:
-        startGame(data);
+        showAllCards(socket, data)
+        startGame(socket, data);
         return 1;
     }
   }
-  function drawFlopCards(data) {
-    io.to('game room').emit('draw flop cards', {
-      first: game[data.gameId].deck.draw(),
-      second: game[data.gameId].deck.draw(),
-      third: game[data.gameId].deck.draw()
+
+  function drawFlopCards(socket, data) {
+    let Game = game[socket.gameId];
+    io.to(socket.gameId).emit('draw flop cards', {
+      first: Game.deck.draw(),
+      second: Game.deck.draw(),
+      third: Game.deck.draw()
     });
   }
 
-  function drawUserCards(data) {
-    players[data.gameId].forEach((player) => {
+  function drawPlayerCards(socket, data) {
+    let Game = game[socket.gameId];
+    players[socket.gameId].forEach((player) => {
       player.emit('player cards', {
         seat: player['seat'],
-        first: game[data.gameId].deck.draw(),
-        second: game[data.gameId].deck.draw()
+        first: Game.deck.draw(),
+        second: Game.deck.draw()
       });
     });
   }
 
-  function drawTurnCard(data) {
-    io.to('game room').emit('draw turn card', {
-      turnCard: game[data.gameId].deck.draw()
+  function drawTurnCard(socket, data) {
+    io.to(socket.gameId).emit('draw turn card', {
+      turnCard: game[socket.gameId].deck.draw()
     });
   }
 
-  function drawRiverCard(data) {
-    io.to('game room').emit('draw river card', {
-      riverCard: game[data.gameId].deck.draw()
+  function drawRiverCard(socket, data) {
+    io.to(socket.gameId).emit('draw river card', {
+      riverCard: game[socket.gameId].deck.draw()
     });
+  }
+
+  function showAllCards(socket, data) {
+    io.to(socket.gameId).emit('draw ')
   }
 
 };

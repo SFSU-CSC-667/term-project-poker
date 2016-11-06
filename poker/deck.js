@@ -6,7 +6,7 @@ class Deck {
   draw() {
     if (!this.deck.length) {
       this.createDeck();
-      this.deck.shuffle();
+      this.shuffle();
       return this.deck.pop();
     }
     return this.deck.pop();

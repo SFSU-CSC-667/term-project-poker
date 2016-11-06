@@ -46,7 +46,6 @@ a {
 .left {
   float: left;
 }
-
 .scoreboard-section {
   float: left;
   padding-left: 100px;
@@ -55,8 +54,7 @@ a {
   text-decoration: underline;
 }
 .right-section {
-  padding-right: 20px;
-  text-align: center;
+  padding-left: 500px;
 }
 .chat-section {
   text-align: center;

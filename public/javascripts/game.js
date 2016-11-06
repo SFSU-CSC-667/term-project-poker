@@ -3,12 +3,11 @@
 
   $(".join").on('click', function() {
     socket.emit('join request', {
-      gameId: 1,
       user: 'guest',
       seat: $(this).parent().prop('id') });
   });
 
-  socket.emit('game viewer');
+  socket.emit('game viewer', { gameId: sessionStorage.getItem('gameId') });
 
   socket.on('new player', data => {
     $(`#${ data.seat }`).html(data.html);
@@ -52,7 +51,7 @@
     $(".next-btn").on('click', event => {
       event.preventDefault();
       $(`#${ seatsOccupied[turn] }-cards`).children('button').remove();
-      socket.emit('next button', { gameId: 1, turn: turn });
+      socket.emit('next button', { turn: turn });
     });
   }
-})();
+})()
