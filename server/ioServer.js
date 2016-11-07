@@ -10,7 +10,7 @@ const ioConnect = (io, socket, db) => {
   require('./accountEvents.js')(io, socket, users, db);
   require('./gameEvents.js')(io, socket, players, db);
   require('./chatEvents.js')(io, socket);
-  require('./disconnectEvents.js')(socket, connections, users, players);
+  require('./disconnectEvents.js')(io, socket, connections, users, players);
 };
 
 module.exports = ioConnect;

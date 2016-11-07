@@ -17,22 +17,34 @@
     <div class="seat">
       <div id="seatOne"><button class='join btn btn-lg btn-primary'>Join</button></div>
       <div id="seatOne-cards"></div>
-      <button style='display:none' class='next-btn btn btn-success'>Next</button>
+      <div class='actions' id="seatOne-actions">
+        <button class='hidden ready-btn btn btn-success'>Ready</button>
+        <button class='hidden next-btn btn btn-success' disabled='disabled'>Next</button>
+      </div>
     </div>
     <div class="seat">
       <div id="seatTwo"><button class='join btn btn-lg btn-primary'>Join</button></div>
       <div id="seatTwo-cards"></div>
-      <button style='display:none' class='next-btn btn btn-success'>Next</button>
+      <div id="seatTwo-actions">
+        <button class='hidden ready-btn btn btn-success'>Ready</button>
+        <button class='hidden next-btn btn btn-success' disabled='disabled'>Next</button>
+      </div>
     </div>
     <div class="seat">
       <div id="seatThree"><button class='join btn btn-lg btn-primary'>Join</button></div>
       <div id="seatThree-cards"></div>
-      <button style='display:none' class='next-btn btn btn-success'>Next</button>
+      <div id="seatThree-actions">
+        <button class='hidden ready-btn btn btn-success'>Ready</button>
+        <button class='hidden next-btn btn btn-success' disabled='disabled'>Next</button>
+      </div>
     </div>
     <div class="seat">
       <div id="seatFour"><button class='join btn btn-lg btn-primary'>Join</button></div>
       <div id="seatFour-cards"></div>
-      <button style='display:none' class='next-btn btn btn-success'>Next</button>
+      <div id="seatFour-actions">
+        <button class='hidden ready-btn btn btn-success'>Ready</button>
+        <button class='hidden next-btn btn btn-success' disabled='disabled'>Next</button>
+      </div>
     </div>
     <% include includes/footer.ejs %>
     <script src="/javascripts/game.js"></script>

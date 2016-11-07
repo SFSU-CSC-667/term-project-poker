@@ -5,8 +5,8 @@ body {
 a {
   color: #00B7FF;
 }
-.dealer {
-
+.hidden {
+  display: none;
 }
 .block-item {
   text-align: center;
@@ -93,7 +93,7 @@ a {
 
 .seat {
   display: inline-block;
-  padding: 20px;
+  padding-left: 50px;
 }
 
 #loading {
