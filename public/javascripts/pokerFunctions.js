@@ -1,66 +1,38 @@
 
-var hands = ["0", "20"];
-var sharedCards = ["12", "13", "26", "39", "5"];
+var hands = [ 0 , 1 ];
+var sharedCards = [ 12 , 13 , 26 , 39 , 5 ];
 
 
+/* testing straight */
 var straightHand = findStraight(hands, sharedCards);
-var flushHand = findFlush(hands, sharedCards);
-var quadHand = findQuads(hands, sharedCards);
-
 console.log("checking for straight:" , straightHand);
+
+/* testing flush */
+var flushHand = findFlush(hands, sharedCards);
 console.log("checking for flush:" ,flushHand);
+
+/* testing quad */
+var quadHand = findQuads(hands, sharedCards);
 console.log("checking for quads:", quadHand);
 
-function countPairs(hand, sharedCards){
-  
-  var counter = 0;
+/* testing pair */
+var pairSharedCards = [ 2 , 3 , 4 , 5 , 13 ]
+var pairHand = getPairHand(hands, pairSharedCards);
+console.log("checking for getPairsHand", pairHand);
 
-  if(findPair(hand[0], sharedCards))
-    counter++;
+/* testing trips */
+var tripsSharedCards = [ 13 , 26 , 8 , 5 , 7 ]
+var tripHand = findTripple(hands, tripsSharedCards);
+console.log("checking for trips:", tripHand);
 
-  if(findPair(hand[1], sharedCards))
-    counter++;
-
-  if(findPair(hand[0], hand[1]))
-    counter++;
-
-  if(counter >= 2)
-    return 2;
-
-  if(counter == 1)
-    return 1;
-
-  return 0;
-
-}
-
-function findPair(card, sharedCards){
-  
-  card %= 13;
-  
-  for( var index in sharedCards)
-    sharedCards[index] = sharedCards[index] % 13;
-
-  for(var index in sharedCards)  
-    if(card == sharedCards[index]);
-      return true;
-  
-  return false;
-
-}
-
-function findTripple(card, sharedCards){
-
-  
-
-
-
-}
+/* test for full house */
+var fullHouseSharedCards = [ 13 , 26 , 14 , 5 , 7 ]
+var fullHouseHand = findFullHouse(hands, fullHouseSharedCards);
+console.log("checking for full house:", fullHouseHand);
 
 /********************************************************************/
 /********************* prepare hand  ********************************/
 /********************************************************************/
-
 function combineHand(hand, sharedCards){
 
   hand = hand.concat(sharedCards);
@@ -89,10 +61,119 @@ function prepareFlush(hand){
 
 }
 
+function filter(card, hand){
+  
+  var newHand = [];
+
+  for(var index in hand)
+    if(card != hand[index])
+      newHand.push(hand[index]);
+
+  return newHand;
+
+}
+
+function getKickers(hand, num){
+  
+  var kickers = []
+
+  for(var index = 0; index < num; index++)
+    kickers.push(hand[index]);
+      
+  return kickers;
+}
+
+/********************************************************************/
+/************************ find pair  ********************************/
+/********************************************************************/
+function containsPair(hand, sharedCards){
+
+  hand = combineHand(hand, sharedCards);
+  hand = prepareHand(hand);
+  hand.reverse();
+
+  for( var index = 0; index < hand.length - 1; index++ )
+    if( hand[index] == hand[index+1])
+      return true;
+
+  return false;
+
+
+}
+
+function getPair(hand, sharedCards){
+  
+  hand = combineHand(hand, sharedCards);
+  hand = prepareHand(hand);
+  hand.reverse();
+
+  for( var index = 0; index < hand.length - 1; index++ )
+    if( hand[index] == hand[index+1])
+      return hand[index];
+
+  return -1;
+
+}
+
+function getPairHand(hand, sharedCards){
+  
+  /* get pairs */
+  var pair = getPair(hand, sharedCards);
+  
+  hand = combineHand(hand, sharedCards);
+  hand = prepareHand(hand);
+  hand.reverse();
+  
+  /* add pairs to new hand */
+  var newHand = [];
+  newHand.push(pair);
+  newHand.push(pair);
+  
+  /* add kickers to new hand */
+  hand = filter(pair, hand);
+  kickers = getKickers(hand, 3);
+  newHand = newHand.concat(kickers);
+
+  return newHand;
+
+}
+/********************************************************************/
+/********************** find trpple  ********************************/
+/********************************************************************/
+function containsTrips(hand, sharedCards){
+
+  hand = combineHand(hand, sharedCards);
+  hand = prepareHand(hand);
+  hand.reverse();
+  
+  for( var index = 0; index < hand.length - 2; index++)
+    if(hand[index] == hand[index+1])
+      if(hand[index] == hand[index +2])
+        return hand[index];
+
+  return -1;
+
+}
+
+
+function getTripple(hand, sharedCards){
+
+  hand = combineHand(hand, sharedCards);
+  hand = prepareHand(hand);
+  hand.reverse();
+  
+  for( var index = 0; index < hand.length - 2; index++)
+    if(hand[index] == hand[index+1])
+      if(hand[index] == hand[index +2])
+        return hand[index];
+
+  return -1;
+
+}
+
 /********************************************************************/
 /********************* find straight ********************************/
 /********************************************************************/
-
 function findStraight(hand, sharedCards){
   
   hand = combineHand(hand, sharedCards);
@@ -174,14 +255,16 @@ function findQuads(hand, sharedCards){
   hand = combineHand(hand, sharedCards);
   hand = prepareHand(hand);
   
-  for( var i = 0; i < 4; i++ ){
+  for( let i = 0; i < 4; i++ ){
   
-    var counter = 1;
+    let counter = 1;
     
-    for( var j = i; j < 7; j++ )
+    for( let j = i; j < 7; j++ )
       if(hand[j] == hand[j+1])
         counter++;
-    
+      else
+	break;
+       
     if(counter >= 4)
       return true;
       
@@ -190,3 +273,48 @@ function findQuads(hand, sharedCards){
   return false;
   
 }
+/********************************************************************/
+/********************* find full house  *****************************/
+/********************************************************************/
+
+function findFullHouse(hand, sharedCards){
+  
+  hand = combineHand(hand, sharedCards);
+  hand = prepareHand(hand);
+  
+  var tripple;
+  var pair;
+  var newHand = [];
+  
+  
+  if((tripple = findTripple(hand)) != -1 ){
+  
+    hand = filter(tripple, hand);
+    newHand.push(tripple);
+    newHand.push(tripple);
+    newHand.push(tripple);
+  
+  }
+  else
+    return -1;
+
+  if( containsPair(hand) ){
+
+    pair = getPair(hand);
+    newHand.push(pair);
+    newHand.push(pair);
+  
+  }
+  else
+    return -1;
+
+  return newHand;
+
+}
+
+
+/********************************************************************/
+/********************* prepare hand  ********************************/
+/********************************************************************/
+
+
