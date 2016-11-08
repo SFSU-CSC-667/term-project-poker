@@ -1,6 +1,4 @@
-let game = {};
-
-const gameEvents = (io, socket, players, db) => {
+const gameEvents = (io, socket, game, players, db) => {
   const Deck = require('../poker/deck.js');
 
   socket.on('create game request', data => {
@@ -29,10 +27,9 @@ const gameEvents = (io, socket, players, db) => {
       socket.gameId = 1;
     }
     getUpdate(socket, data);
-    socket.status = 'Online';
   });
 
-  socket.on('next button', data => {
+  socket.on('next button', () => {
     let Game = game[socket.gameId];
     let Players = players[socket.gameId];
     if (Players[Game.turn + 1]) {
@@ -52,12 +49,17 @@ const gameEvents = (io, socket, players, db) => {
     if (players[socket.gameId].indexOf(socket) > -1)
       return;
     if (!game[socket.gameId]) {
-      game[socket.gameId] = { deck: new Deck(), ready: 0, turn: 0, round: 0, gameStarted: false };
+      game[socket.gameId] = {
+        deck: new Deck(), ready: 0,
+        seatsOccupied: [],
+        turn: 0, round: 0,
+        gameStarted: false
+      };
     }
     acceptRequest(socket, data);
   });
 
-  socket.on('ready button', () => {
+  socket.on('player ready', data => {
     let Game = game[socket.gameId];
     let Players = players[socket.gameId];
     Game.ready++;
@@ -75,20 +77,14 @@ const gameEvents = (io, socket, players, db) => {
   });
 
   function getUpdate(socket, data) {
-    console.log("UPDATE");
     if (!game[socket.gameId] || !players[socket.gameId]) {
       return;
     }
     let Game = game[socket.gameId];
     let Players = players[socket.gameId];
-    let seatsTaken = [];
-    let users;
-    Players.forEach(socket => {
-      seatsTaken.push(socket.seat);
-    });
     socket.emit('game update', {
       cards: Game.cards,
-      seatsTaken: seatsTaken,
+      seatsOccupied: Game.seatsOccupied,
       gameStarted: Game.gameStarted
     });
 
@@ -98,13 +94,16 @@ const gameEvents = (io, socket, players, db) => {
     let gameId = socket.gameId;
     let Game = game[gameId];
     let Players = players[gameId];
+    if (socket.userName) { userName = socket.userName }
+    else { socket.userName = 'Guest' }
     Players.push(socket);
     socket.isPlayer = 1;
-    socket.user = data.user;
     socket.seat = data.seat;
+    Game.seatsOccupied.push(data.seat);
     io.to(gameId).emit('new player', {
       seat: data.seat,
-      html: "<p>Name: " + data.user + " " + Players.indexOf(socket) + "</p>"
+      seatsOccupied: Game.seatsOccupied,
+      html: "<p>Name: " + socket.userName + "</p>"
     });
     socket.emit('enable ready button', {
       seat: socket.seat

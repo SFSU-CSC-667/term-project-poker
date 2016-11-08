@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS Users CASCADE;
+-- DROP TABLE IF EXISTS Users CASCADE;
 CREATE TABLE IF NOT EXISTS Users
 (
     UserId SERIAL PRIMARY KEY,
@@ -9,8 +9,8 @@ CREATE TABLE IF NOT EXISTS Users
     Chips INTEGER,
     Avatar VARCHAR (255)
 );
-INSERT INTO Users (FirstName, LastName, Email, Password, Chips)
-VALUES ('Poker', 'Dealer', 'team9@mail.sfsu.edu', '987654', '0');
+-- INSERT INTO Users (FirstName, LastName, Email, Password, Chips)
+-- VALUES ('Poker', 'Dealer', 'team9@mail.sfsu.edu', '987654', '0');
 
 DROP TABLE IF EXISTS Games CASCADE;
 CREATE TABLE IF NOT EXISTS Games

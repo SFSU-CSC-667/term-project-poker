@@ -4,7 +4,6 @@
   $(".join").on('click', function() {
     let seat = $(this).parent().prop('id');
     socket.emit('join request', {
-      user: 'guest',
       seat: seat
     });
     $(`#${ seat }`).children('.ready-btn').removeClass('hidden');
@@ -21,7 +20,7 @@
     event.preventDefault();
     let seat = $(this).parent().attr('id');
     $(`#${ seat }`).children('.ready-btn').attr('disabled', true);
-    socket.emit('ready button');
+    socket.emit('player ready');
   });
 
   socket.on('player offline', data => {
@@ -33,7 +32,7 @@
 
   socket.on('new player', data => {
     $(`#${ data.seat }`).html(data.html);
-    seatsOccupied.push(data.seat);
+    seatsOccupied = data.seatsOccupied;
   });
 
   socket.on('player turn', data => {
@@ -72,13 +71,20 @@
   });
 
   socket.on('game update', data => {
+    seatsOccupied = data.seatsOccupied;
+    console.log(seatsOccupied);
     if (data.gameStarted) {
       $("#dealer-cards").append(cardImages(data.cards));
-      data.seatsTaken.forEach(seat => {
+      seatsOccupied.forEach(seat => {
         $(`#${ seat }`).html("<p>Name: Guest </p>");
         $(`#${ seat }-cards`).html(cardImages('face-down', 'face-down'));
       });
     } else {
+      seatsOccupied.forEach(seat => {
+        $(`#${ seat }-actions`).children('.ready-btn').remove();
+        $(`#${ seat }`).html('<p>Name: Guest </p>');
+        $(`#${ seat }-actions`).html('<button class="online btn btn-success" disabled="disabled">Online</button>');
+      })
     }
   });
 
@@ -104,7 +110,4 @@
     return cards;
   }
 
-  function updateView(turn) {
-
-  }
 })();
