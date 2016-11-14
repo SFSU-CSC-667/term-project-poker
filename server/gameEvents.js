@@ -29,20 +29,6 @@ const gameEvents = (io, socket, game, players, db) => {
     getUpdate(socket, data);
   });
 
-  socket.on('next button', () => {
-    let Game = game[socket.gameId];
-    let Players = players[socket.gameId];
-    if (Players[Game.turn + 1]) {
-      Game.turn++;
-      Players[Game.turn].emit('player turn', { turn: Game.turn });
-    } else {
-      if (dealerCheck(Game.round, socket)) { return; }
-      console.log("Round over");
-      Game.turn = 0;
-      Players[Game.turn].emit('player turn', { turn: Game.turn });
-    }
-  });
-
   socket.on('join request', data => {
     if (!players[socket.gameId])
       players[socket.gameId] = [];
@@ -51,7 +37,7 @@ const gameEvents = (io, socket, game, players, db) => {
     if (!game[socket.gameId]) {
       game[socket.gameId] = {
         deck: new Deck(), ready: 0,
-        seatsOccupied: [],
+        seatsOccupied: [], currentPot: 0,
         turn: 0, round: 0,
         gameStarted: false
       };
@@ -76,6 +62,60 @@ const gameEvents = (io, socket, game, players, db) => {
     });
   });
 
+  socket.on('action button', data => {
+    switch(data.action) {
+      case 'check':
+        nextTurn();
+        break;
+      case 'call':
+        playerCall();
+        break;
+      case 'raise':
+        playerRaise();
+        break;
+      case 'fold':
+        playerFold();
+        break;
+      case 'all in':
+        playerAllIn();
+        break;
+    }
+  });
+
+  function nextTurn() {
+    let Game = game[socket.gameId];
+    let Players = players[socket.gameId];
+    if (Players[Game.turn + 1]) {
+      Game.turn++;
+      Players[Game.turn].emit('player turn', { turn: Game.turn });
+    } else {
+      if (dealerCheck(Game.round, socket)) { return; }
+      console.log("Round over");
+      Game.turn = 0;
+      Players[Game.turn].emit('player turn', { turn: Game.turn });
+    }
+  }
+
+  function playerCall() {
+
+    nextTurn();
+  }
+
+  function playerRaise() {
+
+    nextTurn();
+  }
+
+  function playerFold() {
+
+    nextTurn();
+  }
+
+  function playerAllIn() {
+
+    nextTurn();
+  }
+
   function getUpdate(socket, data) {
     if (!game[socket.gameId] || !players[socket.gameId]) {
       return;
@@ -87,19 +127,17 @@ const gameEvents = (io, socket, game, players, db) => {
       seatsOccupied: Game.seatsOccupied,
       gameStarted: Game.gameStarted
     });
-
   }
 
   function acceptRequest(socket, data) {
     let gameId = socket.gameId;
     let Game = game[gameId];
     let Players = players[gameId];
-    if (socket.userName) { userName = socket.userName }
-    else { socket.userName = 'Guest' }
-    Players.push(socket);
+    if (!socket.userName) { socket.userName = 'Guest'; }
+    if (!Game.gameStarted) { Players.push(socket); }
+    Game.seatsOccupied.push(data.seat);
     socket.isPlayer = 1;
     socket.seat = data.seat;
-    Game.seatsOccupied.push(data.seat);
     io.to(gameId).emit('new player', {
       seat: data.seat,
       seatsOccupied: Game.seatsOccupied,

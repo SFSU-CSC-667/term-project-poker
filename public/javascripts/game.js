@@ -9,11 +9,11 @@
     $(`#${ seat }`).children('.ready-btn').removeClass('hidden');
   });
 
-  $(".next-btn").on('click', function(event) {
+  $(".action-btn").on('click', function(event) {
     event.preventDefault();
     let seat = $(this).parent().attr('id');
     $(`#${ seat }`).children().prop('disabled', true);
-    socket.emit('next button');
+    socket.emit('action button', { action: $(this).data('action') });
   });
 
   $(".ready-btn").on('click', function(event) {
@@ -84,7 +84,7 @@
         $(`#${ seat }-actions`).children('.ready-btn').remove();
         $(`#${ seat }`).html('<p>Name: Guest </p>');
         $(`#${ seat }-actions`).html('<button class="online btn btn-success" disabled="disabled">Online</button>');
-      })
+      });
     }
   });
 
