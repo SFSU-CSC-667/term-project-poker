@@ -1,46 +1,81 @@
-var hands = [ 0 , 1 ];
-var sharedCards = [ 12 , 13 , 26 , 39 , 5 ];
-
-/* testing straight */
-var straightSharedCards = [ 2, 3, 4, 5, 6 ];
-var straightHand = getStraight(hands, straightSharedCards);
-console.log("checking for straight:" , straightHand);
-
-/* testing flush */
-
-/* testing quad */
-/*
-let quadSharedCards = [ 13, 26, 39, 40, 41]
-let quadHand = getQuadHand(hands, quadSharedCards);
-console.log("checking for quads:", quadHand);
-*/
-/* testing pair */
-var pairSharedCards = [ 2 , 3 , 4 , 5 , 13 ]
-var pairHand = getPairHand(hands, pairSharedCards);
-console.log("checking for getPairsHand", pairHand);
-
-/* testing trips */
-
-var tripsSharedCards = [ 13 , 26 , 8 , 22 , 7 ]
-var tripHand = getTripsHand(hands, tripsSharedCards);
-console.log("checking for trips:", tripHand);
+/* DONE WITH trips, straight, pair */
 
 
-/* test for full house */
+/********************************************************************/
+/********************* testing **************************************/
+/********************************************************************/
 
-/*
-var fullHouseSharedCards = [ 13 , 20 , 14 , 5 , 7 ]
-var fullHouseFound = containsFullHouse(hands, fullHouseSharedCards);
-console.log("contains full house:", fullHouseFound);
-var fullHouseHand = getFullHouseHand(hands, fullHouseSharedCards);
-console.log("checking for full house:", fullHouseHand);
-*/
-/* test for two pair */
-/*
-var twoPairSharedCards = [ 2 , 3 , 4 , 13 , 14 ]
-var twoPairHand = getTwoPairHand(hands, twoPairSharedCards);
-console.log("checking for two pair", twoPairHand);
-*/
+/* test kickers */
+function testKickers(){
+  
+  /* ace, 2, 9, 7, jack, queen, king */
+  let hand = [0, 1];
+  let sharedCards = [8, 20, 22, 23, 24];
+  hand = combineHand(hand, sharedCards);
+  
+  let numOfKickers = 5; 
+  let kickers = getKickers(hand, numOfKickers);
+  
+  /* should be 0, 24, 23, 22, 8 */ 
+  console.log("\nTesting kickers hand with 5 cards:", kickers);
+}
+
+/* test pair */
+function testPair(){
+  
+  let hand = [0, 1];
+  let sharedCards = [2, 3, 4, 5, 13];
+  
+  let pairFound = containsPair(hand, sharedCards);
+  console.log("\nTesting containsTrips():", pairFound, ": true" );
+  
+  let pairHand = getPairHand(hand, sharedCards);
+  console.log("Testing getTripsHand():", pairHand, ": [ 0, 13, 5, 4, 3]" );
+  
+  sharedCards = [2, 3, 4, 5, 6];
+
+  pairFound = containsPair(hand, sharedCards);
+  console.log("Testing containsTrips():", pairFound, ": false" );
+}
+
+/* test trips*/
+function testTrips(){
+
+  let hand = [0, 1];
+  let sharedCards = [2, 3, 4, 13, 26];
+  
+  let tripsFound = containsTrips(hand, sharedCards);
+  console.log("\nTesting containsTrips():", tripsFound, ": true" );
+  
+  let tripsHand = getTripsHand(hand, sharedCards);
+  console.log("Testing getTripsHand():", tripsHand, ": [ 0, 13, 26, 4, 3]" );
+  
+  sharedCards = [2, 3, 4, 5, 26];
+
+  tripsFound = containsTrips(hand, sharedCards);
+  console.log("Testing containsTrips():", tripsFound, ": false" );
+  
+}
+
+/* test straight */
+function testStraight(){
+
+  let hand = [0, 1];
+  let sharedCards = [2, 3, 4, 13, 26];
+  
+  let straightFound = containsStraight(hand, sharedCards);
+  console.log("\nTesting straightFound():", straightFound);
+  
+  let straightHand = getStraightHand(hand, sharedCards);
+  console.log("Testing straighHand(): ", straightHand);
+  
+}
+
+
+testKickers();
+testPair();
+testTrips();
+testStraight();
 /********************************************************************/
 /********************* prepare hand  ********************************/
 /********************************************************************/
@@ -86,36 +121,28 @@ function filter(card, hand){
 
 function getKickers(hand, numOfCards){
   
-  var kickers = []
-  let tempHand = hand;
+  let kickers = [];
 
-  /*   */
-  for(let i = 0; i < numOfCards; i++){
+  while(true){
     
-    let largestCard = hand[i];
-    let indexToRemove = i;
-
-    for( let j = i+1 ; j < hand.length ; j++ )
-      
-      if( largestCard%13 < hand[j]%13 ){
-        
-	console.log(largestCard, hand[j]);
-	largestCard = hand[j];
-	indexToRemove = j;
-      
-      }
+    let largestCard = hand[0];
+    let indexToRemove = 0;
     
-    console.log(hand);
-    tempHand.push(largestCard);
+    if(hand[0] != 0) 
+      for( let j = 1 ; j < hand.length ; j++ )         
+	if( largestCard%13 < hand[j]%13 ){
+	  largestCard = hand[j];
+	  indexToRemove = j;
+	}
+    
+    kickers.push(largestCard);
     hand.splice(indexToRemove, 1);
-
+    
+    if(kickers.length == numOfCards)
+      return kickers;
+  
   }
-
-  for(var index = 0; index < numOfCards; index++)
-    kickers.push(hand[index]);
       
-  return kickers;
-
 }
 
 /********************************************************************/
@@ -234,9 +261,9 @@ function containsTrips(hand, sharedCards){
   hand = prepareHand(hand);
   hand.reverse();
   
-  for( var index = 0; index < hand.length - 2; index++)
-    if(hand[index] == hand[index+1])
-      if(hand[index] == hand[index +2])
+  for( let i = 0; i < hand.length - 2; i++)
+    if(hand[i] == hand[i + 1])
+      if(hand[i] == hand[i + 2])
         return true;
 
   return false;
@@ -249,10 +276,10 @@ function getTripsCard(hand, sharedCards){
   hand = prepareHand(hand);
   hand.reverse();
   
-  for( var index = 0; index < hand.length - 2; index++)
-    if(hand[index] == hand[index+1])
-      if(hand[index] == hand[index +2])
-        return hand[index];
+  for( let i = 0; i < hand.length - 2; i++)
+    if(hand[i] == hand[i + 1])
+      if(hand[i] == hand[i +2])
+        return hand[i];
 
 }
 
@@ -289,11 +316,11 @@ function containsStraight(hand, sharedCards){
   hand = prepareHand(hand);
   
   /* find 5 consecutive numbers */
-  for( let i = 6; i > 3; i-- ){
+  for( let i = 0; i < 3; i++ ){
     
     let tempHand = [];
 
-    for( let j = i; j > i - 5; j-- )
+    for( let j = i; j < i + 4; j++ )
       tempHand.push(hand[j]);
 
     if(checkStraight(tempHand))
@@ -305,23 +332,24 @@ function containsStraight(hand, sharedCards){
 
 }
 
-function checkStraight(cards){
+function checkStraight(hand){
+ 
+  hand.reverse();
   
-  cards.reverse();
+  if( hand.includes(0) )
+    hand.push(13);
   
-  /* Note need to check for Ace at the end */
-  if( cards.includes(0) )
-    cards.push(13);
+  console.log(hand);
 
-  for( let i = 0; i < hands.length - 1 ; i++ )
-    if(cards[i] != (cards[i + 1] - 1) )
+  for( let i = 0; i < hand.length - 1 ; i++ )
+    if(hand[i] != (hand[i + 1] - 1) )
        return false;
 
   return true;
   
 }
 
-function getStraight(hand, sharedCards){
+function getStraightHand(hand, sharedCards){
   
   hand = combineHand(hand, sharedCards);
   hand = prepareHand(hand);
@@ -486,8 +514,6 @@ function getFullHouseHand(hand, sharedCards){
   return newHand;
 
 }
-
-
 /********************************************************************/
 /********************* find royal flush  ****************************/
 /********************************************************************/
