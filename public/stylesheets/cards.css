@@ -1,0 +1,175 @@
+/* CSS Poker Card Spriting */
+.card-image {
+  background-image: url('../images/sprites/cards.png');
+  background-repeat: no-repeat;
+  height: 98px;
+  width: 73px;
+  transform: scale(0.90, 0.90);
+}
+
+.face-down {
+  background-position: 0 -392px;
+}
+/* Clubs */
+.ace-clubs {
+  background-position: 0 0;
+}
+.two-clubs {
+  background-position: -73px 0;
+}
+.three-clubs {
+  background-position: -146px 0;
+}
+.four-clubs {
+  background-position: -219px 0;
+}
+.five-clubs {
+  background-position: -292px 0;
+}
+.six-clubs {
+  background-position: -365px 0;
+}
+.seven-clubs {
+  background-position: -438px 0;
+}
+.eight-clubs {
+  background-position: -511px 0;
+}
+.nine-clubs {
+  background-position: -584px 0;
+}
+.ten-clubs {
+  background-position: -657px 0;
+}
+.jack-clubs {
+  background-position: -730px 0;
+}
+.queen-clubs {
+  background-position: -803px 0;
+}
+.king-clubs {
+  background-position: -876px 0;
+}
+
+/* Spades */
+.ace-spades {
+  background-position: 0 -98px;
+}
+.two-spades {
+  background-position: -73px -98px;
+}
+.three-spades {
+  background-position: -146px -98px;
+}
+.four-spades {
+  background-position: -219px -98px;
+}
+.five-spades {
+  background-position: -292px -98px;
+}
+.six-spades {
+  background-position: -365px -98px;
+}
+.seven-spades {
+  background-position: -438px -98px;
+}
+.eight-spades {
+  background-position: -511px -98px;
+}
+.nine-spades {
+  background-position: -584px -98px;
+}
+.ten-spades {
+  background-position: -657px -98px;
+}
+.jack-spades {
+  background-position: -730px -98px;
+}
+.queen-spades {
+  background-position: -803px -98px;
+}
+.king-spades {
+  background-position: -876px -98px;
+}
+
+/* Hearts */
+.ace-hearts {
+  background-position: 0 -196px;
+}
+.two-hearts {
+  background-position: -73px -196px;
+}
+.three-hearts {
+  background-position: -146px -196px;
+}
+.four-hearts {
+  background-position: -219px -196px;
+}
+.five-hearts {
+  background-position: -292px -196px;
+}
+.six-hearts {
+  background-position: -365px -196px;
+}
+.seven-hearts {
+  background-position: -438px -196px;
+}
+.eight-hearts {
+  background-position: -511px -196px;
+}
+.nine-hearts {
+  background-position: -584px -196px;
+}
+.ten-hearts {
+  background-position: -657px -196px;
+}
+.jack-hearts {
+  background-position: -730px -196px;
+}
+.queen-hearts {
+  background-position: -803px -196px;
+}
+.king-hearts {
+  background-position: -876px -196px;
+}
+
+/* Diamonds */
+.ace-diamonds {
+  background-position: 0 -294px;
+}
+.two-diamonds {
+  background-position: -73px -294px;
+}
+.three-diamonds {
+  background-position: -146px -294px;
+}
+.four-diamonds {
+  background-position: -219px -294px;
+}
+.five-diamonds {
+  background-position: -292px -294px;
+}
+.six-diamonds {
+  background-position: -365px -294px;
+}
+.seven-diamonds {
+  background-position: -438px -294px;
+}
+.eight-diamonds {
+  background-position: -511px -294px;
+}
+.nine-diamonds {
+  background-position: -584px -294px;
+}
+.ten-diamonds {
+  background-position: -657px -294px;
+}
+.jack-diamonds {
+  background-position: -730px -294px;
+}
+.queen-diamonds {
+  background-position: -803px -294px;
+}
+.king-diamonds {
+  background-position: -876px -294px;
+}

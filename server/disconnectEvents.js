@@ -1,12 +1,24 @@
-const disconnectEvents = (socket, connections, users, players) => {
+const disconnectEvents = (io, socket, connections, users, game, players) => {
   socket.on('disconnect', function() {
+    if (socket.isPlayer) { removeFromGames(socket); }
     socket.leave('lobby');
-    socket.leave('game room');
     delete connections[socket.id];
     delete users[socket.id];
-    players.splice(players.indexOf(socket), 1);
-    console.log("Connected: " + connections.length);
+    console.log("Connected: " + Object.keys(connections).length);
   });
-}
 
+  function removeFromGames(socket) {
+    Players = players[socket.gameId];
+    io.to(socket.gameId).emit('player offline', {
+      seat: socket.seat
+    });
+    Players.splice(Players.indexOf(socket), 1);
+    if (Players.length < 2) {
+      delete game[socket.gameId];
+      io.to(socket.gameId).emit('reset game');
+    }
+    socket.leave(socket.gameId);
+    socket.status = 'Offline';
+  }
+};
 module.exports = disconnectEvents;
