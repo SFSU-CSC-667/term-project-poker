@@ -1,4 +1,15 @@
-/* DONE WITH trips, straight, pair */
+/* DONE WITH 
+[X]Kickers
+[X]Pair
+[ ]Two Pair
+[X]Trips 
+[X]Straight
+[ ]Flush
+[ ]Full House
+[ ]Quads
+[ ]Straight Flush
+[ ]Royal Flush
+*/
 
 
 /********************************************************************/
@@ -36,6 +47,19 @@ function testPair(){
 
   pairFound = containsPair(hand, sharedCards);
   console.log("Testing containsTrips():", pairFound, ": false" );
+}
+
+/* test pair */
+function testTwoPair(){
+  
+  let hand = [0, 1];
+  let sharedCards = [14, 3, 4, 5, 13];
+  
+  let twoPairFound = containsTwoPair(hand, sharedCards);
+  console.log("\nTesting containsTwoPair():", twoPairFound);
+  
+  let twoPairHand = getTwoPairHand(hand, sharedCards);
+  console.log("\nTesting getTwoPairHand():", twoPairHand);
 }
 
 /* test trips*/
@@ -77,6 +101,7 @@ function testStraight(){
 
 testKickers();
 testPair();
+testTwoPair();
 testTrips();
 testStraight();
 /********************************************************************/
@@ -219,7 +244,7 @@ function containsTwoPair(hand, sharedCards){
   sharedCards = filter(pairCard, sharedCards);
   
   pairFound = containsPair(hand, sharedCards);
-  console.log(hand, sharedCards);
+
   if(pairFound)
     return true;
   else
@@ -227,30 +252,54 @@ function containsTwoPair(hand, sharedCards){
 
 }
 
+function getIndex(hand, pairCard){
+  
+  for(let i = 0; i < hand.length; i++)
+    if(hand[i]%13 == pairCard)
+      return hand[i];
+
+}
+
+function getPairIndex(hand, sharedCards, pairCard){
+
+  let newHand = []; 
+  let combinedHand = hand.concat(sharedCards);
+  
+  let firstCardIndex = getIndex(combinedHand, pairCard);
+  combinedHand.splice(firstCardIndex, 1);
+  
+  let secondCardIndex = getIndex(combinedHand, pairCard);
+
+  newHand.push(firstCardIndex);
+  newHand.push(secondCardIndex);
+
+  return newHand;
+
+}
+
 function getTwoPairHand(hand, sharedCards){
   
   let newHand = [];
-  let pairCard = getPairCard(hand, sharedCards);
-  
-  newHand.push(pairCard);
-  newHand.push(pairCard);
-  
-  hand = filter(pairCard, hand);
-  sharedCards = filter(pairCard, sharedCards);
-  pairCard = getPairCard(hand, sharedCards);
-
-  newHand.push(pairCard);
-  newHand.push(pairCard);
-
-  hand = combineHand(hand, sharedCards);
-  hand = prepareHand(hand);
-  hand.reverse();
-  
+  let pairCards = []; 
   let numOfKickers = 1;
-  let kickers = getKickers(hand, numOfKickers);
 
-  newHand = newHand.concat(kickers);
+  for(let i = 0; i < 2; i++){
+    
+    pairCard = getPairCard(hand, sharedCards);
+    pairCardIndexs = getPairIndex(hand, sharedCards, pairCard);
+    
+    newHand = newHand.concat(pairCardIndexs);
+    
+    hand = filter(pairCard, hand);
+    sharedCards = filter(pairCard, sharedCards);
   
+  }
+  
+  hand = combineHand(hand, sharedCards);
+  let kickers = getKickers(hand, numOfKickers);
+  
+  newHand = newHand.concat(kickers);
+
   return newHand;
 
 }
@@ -398,8 +447,6 @@ function getStraightHand(hand, sharedCards){
 
   hand = combineHand(hand, sharedCards);
   
-
-
   for(let i = 0; i < straightCards.length; i++)
     for(let j = 0; j <hand.length; j++)
       if(hand[j]%13 == straightCards[i]){
