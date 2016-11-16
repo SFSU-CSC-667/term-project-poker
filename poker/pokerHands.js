@@ -6,7 +6,7 @@
 [X]Straight
 [X]Flush
 [X]Full House
-[ ]Quads
+[X]Quads
 [ ]Straight Flush
 [ ]Royal Flush
 */
@@ -115,7 +115,7 @@ function testFlush(){
 
 }
 
-/* test flush */
+/* test full house */
 function testFullHouse(){
 
   let hand = [0, 13];
@@ -128,6 +128,19 @@ function testFullHouse(){
   console.log("Testing getFullHouseHand():", fullHouseHand);
 }
 
+/* test Quads */
+function testQuads(){
+
+  let hand = [0, 13];
+  let sharedCards = [26, 39, 1, 2, 3];
+  
+  let quadFound = containsQuads(hand, sharedCards);
+  console.log("\nTesting containsQuads:", quadFound);
+  
+  let quadHand = getQuadHand(hand, sharedCards);
+  console.log("Testing getQuadHand():", quadHand);
+
+}
 testKickers();
 testPair();
 testTwoPair();
@@ -135,6 +148,8 @@ testTrips();
 testStraight();
 testFlush();
 testFullHouse();
+testQuads();
+
 /********************************************************************/
 /********************* prepare hand  ********************************/
 /********************************************************************/
@@ -584,7 +599,7 @@ function containsQuads(hand, sharedCards){
   hand = prepareHand(hand);
   
   for( let i = 0; i < 4; i++ )
-    if(hand[i] == hand[i=1] == hand[i+2] == hand[i+3])
+    if(hand[i] == hand[i+1] == hand[i+2] == hand[i+3])
       return true;
    
   return false;
@@ -617,7 +632,7 @@ function getQuadHand(hand, sharedCards){
   hand = filter(quadCard, hand);
   let kickers = getKickers(hand, numOfKickers);
 
-  newHand.push(kickers);
+  newHand = newHand.concat(kickers);
   
   return newHand;
      
@@ -651,12 +666,10 @@ function containsFullHouse(hand, sharedCards){
 
 function getFullHouseHand(hand, sharedCards){
   
-  /* Get trips card */ 
+  let newHand = []; 
+
   let tripsCard = getTripsCard(hand, sharedCards);
-  let newHand = [];
-  
   let tripIndex = getTripsIndexs(hand, sharedCards, tripsCard);
-  newHand = newHand.concat(tripIndex);
 
   hand = filter(tripsCard, hand);
   sharedCards = filter(tripsCard, sharedCards);
@@ -664,6 +677,7 @@ function getFullHouseHand(hand, sharedCards){
   let pairCard = getPairCard(hand, sharedCards); 
   let pairIndex = getPairIndex(hand, sharedCards, pairCard);
 
+  newHand = newHand.concat(tripIndex);
   newHand = newHand.concat(pairIndex);
 
   return newHand;
