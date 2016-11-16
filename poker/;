@@ -38,15 +38,15 @@ function testPair(){
   let sharedCards = [2, 3, 4, 5, 13];
   
   let pairFound = containsPair(hand, sharedCards);
-  console.log("\nTesting containsPair():", pairFound, ": true" );
+  console.log("\nTesting containsTrips():", pairFound, ": true" );
   
   let pairHand = getPairHand(hand, sharedCards);
-  console.log("Testing getPairHand():", pairHand, ": [ 0, 13, 5, 4, 3]" );
+  console.log("Testing getTripsHand():", pairHand, ": [ 0, 13, 5, 4, 3]" );
   
   sharedCards = [2, 3, 4, 5, 6];
 
   pairFound = containsPair(hand, sharedCards);
-  console.log("Testing containsPair():", pairFound, ": false" );
+  console.log("Testing containsTrips():", pairFound, ": false" );
 }
 
 /* test pair */
@@ -98,29 +98,11 @@ function testStraight(){
 
 }
 
-/* test flush */
-function testFlush(){
-
-  let hand = [26, 27];
-  let sharedCards = [28, 29, 32, 0, 1];
-  
-  let flushFound = containsFlush(hand, sharedCards);
-  console.log("\nTesting containsFlush():", flushFound);
-  
-  let flushSuit = getFlushSuit(hand, sharedCards);
-  console.log("Testing getFlushSuit():", flushSuit);
-  
-  let flushHand = getFlushHand(hand, sharedCards);
-  console.log("Testing getSuitHand():", flushHand);
-
-}
-
 testKickers();
 testPair();
 testTwoPair();
 testTrips();
 testStraight();
-testFlush();
 /********************************************************************/
 /********************* prepare hand  ********************************/
 /********************************************************************/
@@ -269,7 +251,7 @@ function containsTwoPair(hand, sharedCards){
 
 }
 
-function getValueIndex(hand, pairCard){
+function getIndex(hand, pairCard){
   
   for(let i = 0; i < hand.length; i++)
     if(hand[i]%13 == pairCard)
@@ -282,10 +264,10 @@ function getPairIndex(hand, sharedCards, pairCard){
   let newHand = []; 
   let combinedHand = hand.concat(sharedCards);
   
-  let firstCardIndex = getValueIndex(combinedHand, pairCard);
+  let firstCardIndex = getIndex(combinedHand, pairCard);
   combinedHand.splice(firstCardIndex, 1);
   
-  let secondCardIndex = getValueIndex(combinedHand, pairCard);
+  let secondCardIndex = getIndex(combinedHand, pairCard);
 
   newHand.push(firstCardIndex);
   newHand.push(secondCardIndex);
@@ -480,12 +462,12 @@ function getStraightHand(hand, sharedCards){
 
 function containsFlush(hand, sharedCards){
   
-  hand = combineHand(hand, sharedCards);
+  hand = combinehand(hand, sharedCards);
   hand = prepareFlush(hand);
     
   /* need to check for grouping */
   for( let suit = 0; suit < 4; suit++ )
-    if( checkFlush(suit, hand) )
+    if( checkflush(suit, hand) )
       return true;
   
   return false;
@@ -508,46 +490,19 @@ function checkFlush(suit, cards){
 
 }
 
+function getFlushHand(hand, sharedCards){
+
+  hand = combinehand(hand, sharedcards);
+  hand = prepareflush(hand);
+
+
+}
+
 function getFlushSuit(hand, sharedCards){
 
   hand = combineHand(hand, sharedCards);
   hand = prepareFlush(hand);
-  hand.sort();
-  
-  let counter = 1;
 
-  for(let i = 0; i < hand.length; i++){
-    
-    if(hand[i] == hand[i+1])
-      counter++;
-    else
-      counter = 1;
-
-    if(counter >= 5)
-      return hand[i];
-  
-  }
-  
-}
-
-function getFlushHand(hand, sharedCards){
-  
-  let flushSuit = getFlushSuit(hand, sharedCards);
-  let newHand = [];
-  let cardSuit; 
-  hand = combineHand(hand, sharedCards);
-
-  for(let i = 0; i < hand.length; i++){
-    
-    cardSuit = Math.floor( hand[i] / 13 );
-    
-    if(cardSuit == flushSuit)
-      newHand.push(hand[i]);
-
-  }
-
-  return newHand;
-  
 }
 /********************************************************************/
 /********************* find quads ***********************************/
@@ -572,7 +527,7 @@ function getQuadCard(hand, sharedCards){
   hand = prepareHand(hand);
   
   for( let i = 0; i < 4; i++ )
-    if(hand[i] == hand[i+1] == hand[i+2] == hand[i+3])
+    if(hand[i] == hand[i=1] == hand[i+2] == hand[i+3])
       return hand[i];
    
 }
