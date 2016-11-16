@@ -1,6 +1,6 @@
 const chatEvents = (io, socket) => {
-  socket.on('send message', function(data) {
-    io.emit('chat update', { message: data });
+  socket.on('chatMessage', function(from, msg){
+    io.emit('chatMessage', from, msg);
   });
 }
 

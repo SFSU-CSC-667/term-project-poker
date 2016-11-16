@@ -11,7 +11,7 @@
     "cookie-parser": "~1.4.3",
     "debug": "~2.2.0",
     "ejs": "~2.4.1",
-    "express": "~4.13.4",
+    "express": "^4.10.2",
     "morgan": "~1.7.0",
     "pg-promise": "^5.3.5",
     "serve-favicon": "~2.3.0",
