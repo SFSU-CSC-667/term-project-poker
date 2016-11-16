@@ -61,15 +61,14 @@ function testTrips(){
 function testStraight(){
 
   let hand = [0, 1];
-  let sharedCards = [2, 3, 4, 5, 6];
+  let sharedCards = [15, 14, 29, 17, 5];
   
   let straightFound = containsStraight(hand, sharedCards);
   console.log("\nTesting straightFound():", straightFound);
   
-  /*
-  let straightHand = getStraightHand(hand, sharedCards);
-  console.log("Testing straighHand(): ", straightHand);
-  */
+  let straightCards = getStraightCards(hand, sharedCards);
+  console.log("Testing straighHand(): ", straightCards);
+  
 }
 
 
@@ -327,7 +326,9 @@ function containsStraight(hand, sharedCards){
     
     for( let j = i; j < i + 5; j++ )
       tempHand.push(hand[j]);
-     
+    
+    console.log(tempHand);
+    console.log(hand.length);
     if(checkStraight(tempHand))
       return true;
   
@@ -365,7 +366,7 @@ function removeDuplicates(hand){
 
 }
 
-function getStraightHand(hand, sharedCards){
+function getStraightCards(hand, sharedCards){
   
   hand = combineHand(hand, sharedCards);
   hand = prepareHand(hand);
@@ -377,8 +378,8 @@ function getStraightHand(hand, sharedCards){
 
     for( let j = i; j > i - 5; j-- )
       newHand.push(hand[j]);
-
-    if(checkStraight(newHand))
+    
+    if(checkStraight(newHand.reverse()))
       return newHand;
   
   }
@@ -475,7 +476,6 @@ function getQuadHand(hand, sharedCards){
       newHand.push(hand[i]);
   
   hand = filter(quadCard, hand);
-
   let kickers = getKickers(hand, numOfKickers);
 
   newHand.push(kickers);
