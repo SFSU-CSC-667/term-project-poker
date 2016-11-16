@@ -9,7 +9,7 @@
 [X]Full House
 [X]Quads
 [X]Straight Flush
-[ ]Royal Flush
+[X]Royal Flush
 
 */
 
@@ -158,6 +158,21 @@ function testStraightFlush(){
   
 }
 
+/* test royal flush */
+function testRoyalFlush(){
+
+  let hand = [26, 51];
+  let sharedCards = [50, 49, 48, 44, 5];
+  
+  let royalFlushFound = containsRoyalFlush(hand, sharedCards);
+  console.log("\nTesting containsRoyalFlush:", royalFlushFound);
+  
+  
+  let royalFlushHand = getRoyalFlushHand(hand, sharedCards);
+  console.log("Testing getRoyalFlushHand():", royalFlushHand);
+  
+}
+
 testKickers();
 testPair();
 testTwoPair();
@@ -167,6 +182,7 @@ testFlush();
 testFullHouse();
 testQuads();
 testStraightFlush();
+testRoyalFlush();
 
 /********************************************************************/
 /********************* prepare hand  ********************************/
@@ -522,6 +538,8 @@ function getStraightHand(hand, sharedCards){
 
   hand = combineHand(hand, sharedCards);
   
+  /* push ace first */
+
   for(let i = 0; i < straightCards.length; i++)
     for(let j = 0; j <hand.length; j++)
       if(hand[j]%13 == straightCards[i]){
@@ -588,6 +606,7 @@ function getFlushSuit(hand, sharedCards){
   
 }
 
+/* check for aces */
 function getFlushCards(hand, sharedCards){
   
   let flushSuit = getFlushSuit(hand, sharedCards);
@@ -595,8 +614,6 @@ function getFlushCards(hand, sharedCards){
   let cardSuit; 
   hand = combineHand(hand, sharedCards);
   
-  //TODO: Max cards out at 5. Return highest cards
-
   for(let i = 0; i < hand.length; i++){
     
     cardSuit = Math.floor( hand[i] / 13 );
@@ -616,14 +633,24 @@ function getFlushCards(hand, sharedCards){
 function getFlushHand(hand, sharedCards){
   
   let flushCards = getFlushCards(hand, sharedCards);
-   
-   
+    
   if(flushCards.length == 5)
     return flushCards;
 
-  while(flushCards.length != 5)
-    flushCards.pop();
+  if( (flushCards[flushCards.length-1] )%13 == 0){
+    
+    let ace = flushCards.pop();
 
+    while(flushCards.length != 4)
+      flushCards.pop();
+
+    flushCards.push(ace);
+
+  }
+  else
+    while(flushCards.length != 5)
+      flushCards.pop();
+  
   return flushCards;
 
 
@@ -742,7 +769,6 @@ function containsStraightFlush(hand, sharedCards){
 
 }
 
-
 function getStraightFlushHand(hand, sharedCards){
   
   let newHand = [];
@@ -768,3 +794,32 @@ function getStraightFlushHand(hand, sharedCards){
 /********************************************************************/
 /********************* find royal flush  ****************************/
 /********************************************************************/
+
+function containsRoyalFlush(hand, sharedCards){
+  
+  let flushFound = containsFlush(hand, sharedCards); 
+  let ace = 0, king = 12, queen = 11, jack = 10, ten = 9;
+  
+  if(!flushFound)
+    return false;
+
+  let flushHand = getFlushHand(hand, sharedCards);
+  
+  if(flushHand[0]%13 == king &&
+     flushHand[1]%13 == queen &&
+     flushHand[2]%13 == jack &&
+     flushHand[3]%13 == ten &&
+     flushHand[4]%13 == ace)
+     return true;
+
+  return false;
+ 
+}
+
+function getRoyalFlushHand(hand, sharedCards){
+  
+  let flushHand = getFlushHand(hand, sharedCards);
+
+  return flushHand;
+
+}
