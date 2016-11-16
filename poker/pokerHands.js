@@ -11,6 +11,18 @@
 [X]Straight Flush
 [X]Royal Flush
 
+Check to see if hands account for Ace
+[X]Kickers
+[X]Pair
+[X]Two Pair
+[X]Trips 
+[ ]Straight
+[X]Flush
+[ ]Full House
+[X]Quads
+[ ]Straight Flush
+[X]Royal Flush
+
 */
 
 
@@ -55,7 +67,7 @@ function testPair(){
 function testTwoPair(){
   
   let hand = [0, 1];
-  let sharedCards = [14, 3, 4, 5, 13];
+  let sharedCards = [2, 3, 13, 14, 15];
   
   let twoPairFound = containsTwoPair(hand, sharedCards);
   console.log("\nTesting containsTwoPair():", twoPairFound);
@@ -68,18 +80,18 @@ function testTwoPair(){
 function testTrips(){
 
   let hand = [0, 1];
-  let sharedCards = [2, 3, 4, 13, 26];
+  let sharedCards = [14, 27, 4, 13, 26];
   
   let tripsFound = containsTrips(hand, sharedCards);
-  console.log("\nTesting containsTrips():", tripsFound, ": true" );
+  console.log("\nTesting containsTrips():", tripsFound );
   
   let tripsHand = getTripsHand(hand, sharedCards);
-  console.log("Testing getTripsHand():", tripsHand, ": [ 0, 13, 26, 4, 3]" );
+  console.log("Testing getTripsHand():", tripsHand);
   
   sharedCards = [2, 3, 4, 5, 26];
 
   tripsFound = containsTrips(hand, sharedCards);
-  console.log("Testing containsTrips():", tripsFound, ": false" );
+  console.log("Testing containsTrips():", tripsFound );
   
 }
 
@@ -235,6 +247,10 @@ function getIndex(hand, pairCard){
 
 }
 
+/********************************************************************/
+/********************** get kickers  ********************************/
+/********************************************************************/
+
 function getKickers(hand, numOfCards){
   
   let kickers = [];
@@ -284,6 +300,10 @@ function getPairCard(hand, sharedCards){
   hand = combineHand(hand, sharedCards);
   hand = prepareHand(hand);
   hand.reverse();
+  
+  /* return ace */
+  if(hand[hand.length-1] == 0 && hand[hand.length-2] == 0)
+    return 0;
 
   for( let index = 0; index < hand.length - 1; index++ )
     if( hand[index] == hand[index+1])
@@ -410,6 +430,13 @@ function getTripsCard(hand, sharedCards){
   hand = prepareHand(hand);
   hand.reverse();
   
+  let ace = 0;
+
+  /* look for ace */
+  if(hand[hand.length-1]%13 == ace && hand[hand.length-2]%13 == ace &&
+     hand[hand.length-3]%13 == ace)
+     return ace;
+
   for( let i = 0; i < hand.length - 2; i++)
     if(hand[i] == hand[i + 1])
       if(hand[i] == hand[i +2])
