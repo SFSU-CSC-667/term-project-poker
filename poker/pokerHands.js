@@ -1,4 +1,5 @@
 /* DONE WITH 
+
 [X]Kickers
 [X]Pair
 [X]Two Pair
@@ -7,8 +8,9 @@
 [X]Flush
 [X]Full House
 [X]Quads
-[ ]Straight Flush
+[X]Straight Flush
 [ ]Royal Flush
+
 */
 
 
@@ -102,7 +104,7 @@ function testStraight(){
 function testFlush(){
 
   let hand = [26, 27];
-  let sharedCards = [28, 29, 32, 0, 1];
+  let sharedCards = [28, 29, 32, 34, 1];
   
   let flushFound = containsFlush(hand, sharedCards);
   console.log("\nTesting containsFlush():", flushFound);
@@ -141,6 +143,21 @@ function testQuads(){
   console.log("Testing getQuadHand():", quadHand);
 
 }
+
+/* test straight flush */
+function testStraightFlush(){
+
+  let hand = [39, 40];
+  let sharedCards = [41, 42, 43, 44, 5];
+  
+  let straightFlushFound = containsStraightFlush(hand, sharedCards);
+  console.log("\nTesting containsStraightFlush:", straightFlushFound);
+  
+  let straightFlushHand = getStraightFlushHand(hand, sharedCards);
+  console.log("Testing getQuadHand():", straightFlushHand);
+  
+}
+
 testKickers();
 testPair();
 testTwoPair();
@@ -149,6 +166,7 @@ testStraight();
 testFlush();
 testFullHouse();
 testQuads();
+testStraightFlush();
 
 /********************************************************************/
 /********************* prepare hand  ********************************/
@@ -570,12 +588,14 @@ function getFlushSuit(hand, sharedCards){
   
 }
 
-function getFlushHand(hand, sharedCards){
+function getFlushCards(hand, sharedCards){
   
   let flushSuit = getFlushSuit(hand, sharedCards);
   let newHand = [];
   let cardSuit; 
   hand = combineHand(hand, sharedCards);
+  
+  //TODO: Max cards out at 5. Return highest cards
 
   for(let i = 0; i < hand.length; i++){
     
@@ -586,9 +606,30 @@ function getFlushHand(hand, sharedCards){
 
   }
 
+  newHand.sort();
+  newHand.reverse();
+  
   return newHand;
   
 }
+
+function getFlushHand(hand, sharedCards){
+  
+  let flushCards = getFlushCards(hand, sharedCards);
+   
+   
+  if(flushCards.length == 5)
+    return flushCards;
+
+  while(flushCards.length != 5)
+    flushCards.pop();
+
+  return flushCards;
+
+
+ 
+}
+
 /********************************************************************/
 /********************* find quads ***********************************/
 /********************************************************************/
@@ -679,6 +720,47 @@ function getFullHouseHand(hand, sharedCards){
 
   newHand = newHand.concat(tripIndex);
   newHand = newHand.concat(pairIndex);
+
+  return newHand;
+
+}
+/********************************************************************/
+/****************** find straight flush  ****************************/
+/********************************************************************/
+
+function containsStraightFlush(hand, sharedCards){
+  
+  hand = combineHand(hand, sharedCards);
+  hand.sort();
+
+  for(let i = 0; i < hand.length - 4; i++)    
+    if( (hand[i] == hand[i+1]-1 ) && (hand[i] == hand[i+2]-2 ) &&
+        (hand[i] == hand[i+3]-3 ) && (hand[i] == hand[i+4]-4))
+      return true;
+
+  return false;
+
+}
+
+
+function getStraightFlushHand(hand, sharedCards){
+  
+  let newHand = [];
+  hand = combineHand(hand, sharedCards);
+  hand.sort();
+  hand.reverse();
+  
+  for(let i = 0; i < hand.length - 4; i++)    
+    if( (hand[i] == hand[i+1]+1 ) && (hand[i] == hand[i+2]+2 ) &&
+        (hand[i] == hand[i+3]+3 ) && (hand[i] == hand[i+4]+4 )){
+        
+	newHand.push(hand[i]);
+	newHand.push(hand[i+1]);
+	newHand.push(hand[i+2]);
+	newHand.push(hand[i+3]);
+	newHand.push(hand[i+4]);
+        break; 
+     }
 
   return newHand;
 
