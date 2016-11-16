@@ -61,14 +61,15 @@ function testTrips(){
 function testStraight(){
 
   let hand = [0, 1];
-  let sharedCards = [2, 3, 4, 13, 26];
+  let sharedCards = [2, 3, 4, 5, 6];
   
   let straightFound = containsStraight(hand, sharedCards);
   console.log("\nTesting straightFound():", straightFound);
   
+  /*
   let straightHand = getStraightHand(hand, sharedCards);
   console.log("Testing straighHand(): ", straightHand);
-  
+  */
 }
 
 
@@ -313,16 +314,20 @@ function getTripsHand(hand, sharedCards){
 function containsStraight(hand, sharedCards){
   
   hand = combineHand(hand, sharedCards);
-  hand = prepareHand(hand);
+  hand = prepareHand(hand); 
+  hand = removeDuplicates(hand);
+   
+  if(hand.includes(0))
+    hand.push(13);
   
   /* find 5 consecutive numbers */
-  for( let i = 0; i < 3; i++ ){
+  for( let i = 0; i < hand.length - 4; i++ ){
     
     let tempHand = [];
-
-    for( let j = i; j < i + 4; j++ )
+    
+    for( let j = i; j < i + 5; j++ )
       tempHand.push(hand[j]);
-
+     
     if(checkStraight(tempHand))
       return true;
   
@@ -333,13 +338,6 @@ function containsStraight(hand, sharedCards){
 }
 
 function checkStraight(hand){
- 
-  hand.reverse();
-  
-  if( hand.includes(0) )
-    hand.push(13);
-  
-  console.log(hand);
 
   for( let i = 0; i < hand.length - 1 ; i++ )
     if(hand[i] != (hand[i + 1] - 1) )
@@ -347,6 +345,24 @@ function checkStraight(hand){
 
   return true;
   
+}
+
+function removeDuplicates(hand){
+  
+  let counter = 0; 
+
+  while(true){
+    
+    if(hand[counter] == hand[counter+1])
+      hand.splice(counter, 1);
+    else
+      counter++;
+
+    if(counter >= hand.length)
+      return hand;
+
+  }
+
 }
 
 function getStraightHand(hand, sharedCards){
