@@ -64,11 +64,14 @@ function testStraight(){
   let sharedCards = [15, 14, 29, 17, 5];
   
   let straightFound = containsStraight(hand, sharedCards);
-  console.log("\nTesting straightFound():", straightFound);
+  console.log("\nTesting containsStraight():", straightFound);
   
   let straightCards = getStraightCards(hand, sharedCards);
-  console.log("Testing straighHand(): ", straightCards);
-  
+  console.log("Testing getStraighCards():", straightCards);
+ 
+  let straightHand = getStraightHand(hand, sharedCards);
+  console.log("Testing getStraightHand():", straightHand);
+
 }
 
 
@@ -327,8 +330,7 @@ function containsStraight(hand, sharedCards){
     for( let j = i; j < i + 5; j++ )
       tempHand.push(hand[j]);
     
-    console.log(tempHand);
-    console.log(hand.length);
+
     if(checkStraight(tempHand))
       return true;
   
@@ -381,10 +383,31 @@ function getStraightCards(hand, sharedCards){
     
     if(checkStraight(newHand.reverse()))
       return newHand;
+    
   
   }
 
   return -1;
+
+}
+
+function getStraightHand(hand, sharedCards){
+  
+  let straightCards = getStraightCards(hand, sharedCards);
+  let straightHand = [];
+
+  hand = combineHand(hand, sharedCards);
+  
+
+
+  for(let i = 0; i < straightCards.length; i++)
+    for(let j = 0; j <hand.length; j++)
+      if(hand[j]%13 == straightCards[i]){
+        straightHand.push(hand[j]);
+	break;
+      }
+  
+  return straightHand;
 
 }
 /********************************************************************/
