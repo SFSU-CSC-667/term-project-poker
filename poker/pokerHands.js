@@ -23,7 +23,6 @@ Check to see if hands account for Ace
 [X]Straight Flush
 [X]Royal Flush
 
-
 Check to see if working with getHand()
 [X]Kickers
 [X]Pair
@@ -36,33 +35,22 @@ Check to see if working with getHand()
 [X]Straight Flush
 [X]Royal Flush
 
+Check to see if working with compareHand()
+[ ]Kickers
+[ ]Pair
+[ ]Two Pair
+[ ]Trips 
+[ ]Straight
+[ ]Flush
+[ ]Full House
+[ ]Quads
+[ ]Straight Flush
+[ ]Royal Flush
+
 */
 
-function practiceTable(){
-  
-  playerOne = [];
-  playerOneID = 123;
-  playerOneHand = 
-  playerTwo = [];
-  playerTwoID = 456;
-
-  playerOne.push(playerOneID);
-  playerTwo.push(playerTwoID);
-
-  console.log(playerOne);
-  console.log(playerTwo);
-
-}
 
 
-function determineWinner(playerOne, playerTwo){
-
-
-  
-
-}
-
-testGetHand();
 function testGetHand(){
   
   let hand = [ 0, 1];
@@ -121,9 +109,6 @@ function getHand(hand, sharedCards){
 
 }
 
-
-
-
 /********************************************************************/
 /********************* testing **************************************/
 /********************************************************************/
@@ -133,7 +118,7 @@ function testKickers(){
   
   let hand = [0, 1];
   let sharedCards = [3, 20, 22, 23, 24]; 
-  console.log("\nTesting no-hand getHand(): ", getHand(hand, sharedCards));
+  console.log("\nTesting high-hand getHand(): ", getHand(hand, sharedCards));
 }
 
 /* test pair */
@@ -898,6 +883,7 @@ function getStraightFlushHand(hand, sharedCards){
   return newHand;
 
 }
+
 /********************************************************************/
 /********************* find royal flush  ****************************/
 /********************************************************************/
@@ -911,8 +897,6 @@ function containsRoyalFlush(hand, sharedCards){
     return false;
 
   let flushHand = getFlushHand(hand, sharedCards);
-
-  
 
   if(flushHand[0]%13 == king &&
      flushHand[1]%13 == queen &&
@@ -932,3 +916,103 @@ function getRoyalFlushHand(hand, sharedCards){
   return flushHand;
 
 }
+
+
+/********************************************************************/
+/********************* compare hands testing  ***********************/
+/********************************************************************/
+
+/* Testing no hand */
+TestCompareHandHighHand();
+function TestCompareHandHighHand(){
+  
+  playerOne = [];
+  playerOneID = "Player1";
+  playerTwo = [];
+  playerTwoID = "Player2";
+
+  playerOne.push(playerOneID);
+  playerTwo.push(playerTwoID);
+
+  let playerOneHand = [36, 37]; 
+  let playerTwoHand = [23, 24];
+  let sharedCards = [0, 1, 2, 3 ,25 ];
+  
+  playerOneHand = getHand(playerOneHand, sharedCards);
+  playerTwoHand = getHand(playerTwoHand, sharedCards)
+  
+  playerOne.push(playerOneHand);
+  playerTwo.push(playerTwoHand);
+
+  console.log(playerOne);
+  console.log(playerTwo);
+  
+
+  let winner = compareHand(playerOne, playerTwo);
+  console.log("Testing High Hand: ", winner);
+
+}
+
+
+/********************************************************************/
+/********************* compare winners ******************************/
+/********************************************************************/
+
+//what do I want to return?
+function compareHand(playerOne, playerTwo ){
+  
+  let playerOneID = playerOne[0];
+  let playerOneCards = playerOne[1];
+  let playerOneHand = playerOneCards.pop();
+
+  let playerTwoID = playerTwo[0];
+  let playerTwoCards = playerTwo[1];
+  let playerTwoHand = playerTwoCards.pop();
+  
+  if( playerOneHand > playerTwoHand )
+    return playerOneID;
+  else if( playerOneHand < playerTwoHand )
+    return playerTwoID;
+  else{
+    
+    
+    if(playerOneHand == 1)
+      return compareValue(playerOneID, playerOneCards,
+                          playerTwoID, playerTwoCards);
+    else if(playerOneHand == 5)
+      return compareValue(playerOneID, playerOneCards,
+                          playerTwoID, playerTwoCards);
+    else if(playerOneHand == 6)
+      return compareValue(playerOneID, playerOneCards,
+                          playerTwoID, playerTwoCards); 
+    else if(playerOneHand == 9)
+      return compareValue(playerOneID, playerOneCards,
+                          playerTwoID, playerTwoCards); 
+    else if(playerOneHand == 10)
+      return compareValue(playerOneID, playerOneCards,
+                          playerTwoID, playerTwoCards);
+  }
+   
+}
+
+
+
+function compareValue(playerOneID, playerOneCards, playerTwoID, playerTwoCards){
+    
+  playerOneCards = prepareHand(playerOneCards);
+  playerTwoCards = prepareHand(playerTwoCards);
+  
+  for(let i = 0; i < 5; i++){
+    
+    if(playerOneCards[i] > playerTwoCards[i])
+      return playerOneID;
+    else if(playerOneCards[i] < playerTwoCards[i])
+      return playerTwoID;
+
+  }
+
+  return "tie";
+
+}
+
+
