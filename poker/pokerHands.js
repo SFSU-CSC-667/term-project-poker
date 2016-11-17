@@ -16,11 +16,11 @@ Check to see if hands account for Ace
 [X]Pair
 [X]Two Pair
 [X]Trips 
-[ ]Straight
+[X]Straight
 [X]Flush
-[ ]Full House
+[X]Full House
 [X]Quads
-[ ]Straight Flush
+[X]Straight Flush
 [X]Royal Flush
 
 */
@@ -98,8 +98,8 @@ function testTrips(){
 /* test straight */
 function testStraight(){
 
-  let hand = [0, 1];
-  let sharedCards = [15, 14, 29, 17, 5];
+  let hand = [13, 8];
+  let sharedCards = [9, 10, 11, 12, 5];
   
   let straightFound = containsStraight(hand, sharedCards);
   console.log("\nTesting containsStraight():", straightFound);
@@ -133,7 +133,7 @@ function testFlush(){
 function testFullHouse(){
 
   let hand = [0, 13];
-  let sharedCards = [26, 1, 14, 2, 3];
+  let sharedCards = [29, 1, 14, 27, 3];
   
   let fullHouseFound = containsFullHouse(hand, sharedCards);
   console.log("\nTesting containsFullHouse():", fullHouseFound);
@@ -166,14 +166,14 @@ function testStraightFlush(){
   console.log("\nTesting containsStraightFlush:", straightFlushFound);
   
   let straightFlushHand = getStraightFlushHand(hand, sharedCards);
-  console.log("Testing getQuadHand():", straightFlushHand);
+  console.log("Testing getStraightFlushHand():", straightFlushHand);
   
 }
 
 /* test royal flush */
 function testRoyalFlush(){
 
-  let hand = [26, 51];
+  let hand = [39, 51];
   let sharedCards = [50, 49, 48, 44, 5];
   
   let royalFlushFound = containsRoyalFlush(hand, sharedCards);
@@ -486,23 +486,27 @@ function containsStraight(hand, sharedCards){
   hand = prepareHand(hand); 
   hand = removeDuplicates(hand);
    
-  if(hand.includes(0))
-    hand.push(13);
-  
+  let ace = 0, king = 12, queen = 11, jack = 10, ten = 9; 
+   
+  if(hand.includes(ace)   && hand.includes(king) && hand.includes(queen) &&
+     hand.includes(jack)  && hand.includes(ten))
+     return true;
+
   /* find 5 consecutive numbers */
   for( let i = 0; i < hand.length - 4; i++ ){
     
     let tempHand = [];
-    
+
     for( let j = i; j < i + 5; j++ )
       tempHand.push(hand[j]);
     
+    console.log(tempHand);
 
     if(checkStraight(tempHand))
       return true;
   
   }
-
+  
   return false;
 
 }
@@ -537,13 +541,32 @@ function removeDuplicates(hand){
 
 function getStraightCards(hand, sharedCards){
   
+  let newHand = [];
+
   hand = combineHand(hand, sharedCards);
   hand = prepareHand(hand);
+ 
+  /* check for aces */
+  let ace = 0, king = 12, queen = 11, jack = 10, ten = 9; 
+   
+  if(hand.includes(ace)   && hand.includes(king) && hand.includes(queen) &&
+     hand.includes(jack)  && hand.includes(ten)){
+       
+       newHand.push(ace);
+       newHand.push(king);
+       newHand.push(queen);
+       newHand.push(jack);
+       newHand.push(ten);
+       
+       return newHand;
+
+     }
   
+
   /* find 5 consecutive numbers */
   for( let i = 6; i > 3; i-- ){
     
-    let newHand = [];
+    newHand = [];
 
     for( let j = i; j > i - 5; j-- )
       newHand.push(hand[j]);
