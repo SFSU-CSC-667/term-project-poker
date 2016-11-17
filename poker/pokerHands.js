@@ -23,7 +23,105 @@ Check to see if hands account for Ace
 [X]Straight Flush
 [X]Royal Flush
 
+
+Check to see if working with getHand()
+[X]Kickers
+[X]Pair
+[X]Two Pair
+[X]Trips 
+[X]Straight
+[X]Flush
+[X]Full House
+[X]Quads
+[X]Straight Flush
+[X]Royal Flush
+
 */
+
+function practiceTable(){
+  
+  playerOne = [];
+  playerOneID = 123;
+  playerOneHand = 
+  playerTwo = [];
+  playerTwoID = 456;
+
+  playerOne.push(playerOneID);
+  playerTwo.push(playerTwoID);
+
+  console.log(playerOne);
+  console.log(playerTwo);
+
+}
+
+
+function determineWinner(playerOne, playerTwo){
+
+
+  
+
+}
+
+testGetHand();
+function testGetHand(){
+  
+  let hand = [ 0, 1];
+  let sharedCards = [ 8, 9, 10, 11, 12 ];
+
+  let playerHand = getHand(hand, sharedCards);
+  console.log(playerHand);
+}
+
+function getHand(hand, sharedCards){
+  
+  let playerHand = [];
+
+  if(containsRoyalFlush(hand, sharedCards)){
+    playerHand = getRoyalFlushHand(hand, sharedCards);
+    playerHand.push(10);
+  }
+  else if(containsStraightFlush(hand, sharedCards)){
+    playerHand = getStraightFlushHand(hand, sharedCards);
+    playerHand.push(9);
+  }
+  else if(containsQuads(hand, sharedCards)){
+    playerHand = getQuadHand(hand, sharedCards);
+    playerHand.push(8);
+  }
+  else if(containsFullHouse(hand, sharedCards)){
+    playerHand = getFullHouseHand(hand, sharedCards);
+    playerHand.push(7);
+  }
+  else if(containsFlush(hand, sharedCards)){
+    playerHand = getFlushHand(hand, sharedCards);
+    playerHand.push(6);
+  }
+  else if(containsStraight(hand, sharedCards)){
+    playerHand = getStraightHand(hand, sharedCards);
+    playerHand.push(5);
+  }
+  else if(containsTrips(hand, sharedCards)){
+    playerHand = getTripsHand(hand, sharedCards);
+    playerHand.push(4);
+  }
+  else if(containsTwoPair(hand, sharedCards)){
+    playerHand = getTwoPairHand(hand, sharedCards);
+    playerHand.push(3);
+  }
+  else if(containsPair(hand, sharedCards)){
+    playerHand = getPairHand(hand, sharedCards);
+    playerHand.push(2);
+  }
+  else{
+    playerHand = getHighHand(hand, sharedCards);
+    playerHand.push(1);
+  }
+  
+  return playerHand;
+
+}
+
+
 
 
 /********************************************************************/
@@ -33,34 +131,19 @@ Check to see if hands account for Ace
 /* test kickers */
 function testKickers(){
   
-  /* ace, 2, 9, 7, jack, queen, king */
   let hand = [0, 1];
-  let sharedCards = [8, 20, 22, 23, 24];
-  hand = combineHand(hand, sharedCards);
-  
-  let numOfKickers = 5; 
-  let kickers = getKickers(hand, numOfKickers);
-  
-  /* should be 0, 24, 23, 22, 8 */ 
-  console.log("\nTesting kickers hand with 5 cards:", kickers);
+  let sharedCards = [3, 20, 22, 23, 24]; 
+  console.log("\nTesting no-hand getHand(): ", getHand(hand, sharedCards));
 }
 
 /* test pair */
 function testPair(){
   
   let hand = [0, 1];
-  let sharedCards = [2, 3, 4, 5, 13];
+  let sharedCards = [2, 49, 16, 5, 13];
   
-  let pairFound = containsPair(hand, sharedCards);
-  console.log("\nTesting containsPair():", pairFound, ": true" );
-  
-  let pairHand = getPairHand(hand, sharedCards);
-  console.log("Testing getPairHand():", pairHand, ": [ 0, 13, 5, 4, 3]" );
-  
-  sharedCards = [2, 3, 4, 5, 6];
+  console.log("\nTesting pair getHand(): ", getHand(hand, sharedCards));
 
-  pairFound = containsPair(hand, sharedCards);
-  console.log("Testing containsPair():", pairFound, ": false" );
 }
 
 /* test pair */
@@ -69,29 +152,16 @@ function testTwoPair(){
   let hand = [0, 1];
   let sharedCards = [2, 3, 13, 14, 15];
   
-  let twoPairFound = containsTwoPair(hand, sharedCards);
-  console.log("\nTesting containsTwoPair():", twoPairFound);
-  
-  let twoPairHand = getTwoPairHand(hand, sharedCards);
-  console.log("Testing getTwoPairHand():", twoPairHand);
+  console.log("\nTesting two-pair getHand(): ", getHand(hand, sharedCards));
 }
 
 /* test trips*/
 function testTrips(){
 
   let hand = [0, 1];
-  let sharedCards = [14, 27, 4, 13, 26];
+  let sharedCards = [15, 9, 4, 13, 26];
   
-  let tripsFound = containsTrips(hand, sharedCards);
-  console.log("\nTesting containsTrips():", tripsFound );
-  
-  let tripsHand = getTripsHand(hand, sharedCards);
-  console.log("Testing getTripsHand():", tripsHand);
-  
-  sharedCards = [2, 3, 4, 5, 26];
-
-  tripsFound = containsTrips(hand, sharedCards);
-  console.log("Testing containsTrips():", tripsFound );
+  console.log("\nTesting trips getHand(): ", getHand(hand, sharedCards));
   
 }
 
@@ -99,17 +169,9 @@ function testTrips(){
 function testStraight(){
 
   let hand = [13, 8];
-  let sharedCards = [9, 10, 11, 12, 5];
+  let sharedCards = [9, 10, 11, 25, 26];
   
-  let straightFound = containsStraight(hand, sharedCards);
-  console.log("\nTesting containsStraight():", straightFound);
-  
-  let straightCards = getStraightCards(hand, sharedCards);
-  console.log("Testing getStraighCards():", straightCards);
- 
-  let straightHand = getStraightHand(hand, sharedCards);
-  console.log("Testing getStraightHand():", straightHand);
-
+  console.log("\nTesting straight getHand(): ", getHand(hand, sharedCards));
 }
 
 /* test flush */
@@ -118,14 +180,7 @@ function testFlush(){
   let hand = [26, 27];
   let sharedCards = [28, 29, 32, 34, 1];
   
-  let flushFound = containsFlush(hand, sharedCards);
-  console.log("\nTesting containsFlush():", flushFound);
-  
-  let flushSuit = getFlushSuit(hand, sharedCards);
-  console.log("Testing getFlushSuit():", flushSuit);
-  
-  let flushHand = getFlushHand(hand, sharedCards);
-  console.log("Testing getSuitHand():", flushHand);
+  console.log("\nTesting flush getHand(): ", getHand(hand, sharedCards));
 
 }
 
@@ -135,11 +190,7 @@ function testFullHouse(){
   let hand = [0, 13];
   let sharedCards = [29, 1, 14, 27, 3];
   
-  let fullHouseFound = containsFullHouse(hand, sharedCards);
-  console.log("\nTesting containsFullHouse():", fullHouseFound);
-  
-  let fullHouseHand = getFullHouseHand(hand, sharedCards);
-  console.log("Testing getFullHouseHand():", fullHouseHand);
+  console.log("\nTesting full house getHand(): ", getHand(hand, sharedCards));
 }
 
 /* test Quads */
@@ -148,11 +199,7 @@ function testQuads(){
   let hand = [0, 13];
   let sharedCards = [26, 39, 1, 2, 3];
   
-  let quadFound = containsQuads(hand, sharedCards);
-  console.log("\nTesting containsQuads:", quadFound);
-  
-  let quadHand = getQuadHand(hand, sharedCards);
-  console.log("Testing getQuadHand():", quadHand);
+  console.log("\nTesting quads getHand(): ", getHand(hand, sharedCards));
 
 }
 
@@ -162,11 +209,7 @@ function testStraightFlush(){
   let hand = [39, 40];
   let sharedCards = [41, 42, 43, 44, 5];
   
-  let straightFlushFound = containsStraightFlush(hand, sharedCards);
-  console.log("\nTesting containsStraightFlush:", straightFlushFound);
-  
-  let straightFlushHand = getStraightFlushHand(hand, sharedCards);
-  console.log("Testing getStraightFlushHand():", straightFlushHand);
+  console.log("\nTesting straight flush getHand(): ", getHand(hand, sharedCards));
   
 }
 
@@ -176,12 +219,7 @@ function testRoyalFlush(){
   let hand = [39, 51];
   let sharedCards = [50, 49, 48, 44, 5];
   
-  let royalFlushFound = containsRoyalFlush(hand, sharedCards);
-  console.log("\nTesting containsRoyalFlush:", royalFlushFound);
-  
-  
-  let royalFlushHand = getRoyalFlushHand(hand, sharedCards);
-  console.log("Testing getRoyalFlushHand():", royalFlushHand);
+  console.log("\nTesting royal flush getHand(): ", getHand(hand, sharedCards));
   
 }
 
@@ -212,7 +250,7 @@ function prepareHand(hand){
   for( var index in hand )
     hand[index] = hand[index] % 13;
 
-  hand.sort();
+  hand.sort(function(a,b){return a-b;});
   
   return hand;
 
@@ -275,6 +313,23 @@ function getKickers(hand, numOfCards){
   
   }
       
+}
+
+/********************************************************************/
+/************************ find pair  ********************************/
+/********************************************************************/
+
+function getHighHand(hand, sharedCards){
+  
+  let numOfKickers = 5;
+  let newHand = [];
+
+  hand = combineHand(hand, sharedCards);
+
+  newHand = getKickers(hand, numOfKickers);
+  
+  return newHand;
+
 }
 
 /********************************************************************/
@@ -384,7 +439,7 @@ function getTwoPairHand(hand, sharedCards){
   let newHand = [];
   let pairCards = []; 
   let numOfKickers = 1;
-
+  
   for(let i = 0; i < 2; i++){
     
     pairCard = getPairCard(hand, sharedCards);
@@ -500,8 +555,6 @@ function containsStraight(hand, sharedCards){
     for( let j = i; j < i + 5; j++ )
       tempHand.push(hand[j]);
     
-    console.log(tempHand);
-
     if(checkStraight(tempHand))
       return true;
   
@@ -638,7 +691,7 @@ function getFlushSuit(hand, sharedCards){
 
   hand = combineHand(hand, sharedCards);
   hand = prepareFlush(hand);
-  hand.sort();
+  hand.sort(function(a,b){ return a - b});
   
   let counter = 1;
 
@@ -673,7 +726,7 @@ function getFlushCards(hand, sharedCards){
 
   }
 
-  newHand.sort();
+  newHand.sort(function(a,b){ return a-b});
   newHand.reverse();
   
   return newHand;
@@ -717,7 +770,7 @@ function containsQuads(hand, sharedCards){
   hand = prepareHand(hand);
   
   for( let i = 0; i < 4; i++ )
-    if(hand[i] == hand[i+1] == hand[i+2] == hand[i+3])
+    if(hand[i] == hand[i+1] && hand[i] == hand[i+2] && hand[i] == hand[i+3])
       return true;
    
   return false;
@@ -808,7 +861,7 @@ function getFullHouseHand(hand, sharedCards){
 function containsStraightFlush(hand, sharedCards){
   
   hand = combineHand(hand, sharedCards);
-  hand.sort();
+  hand.sort(function(a,b){ return a - b});
 
   for(let i = 0; i < hand.length - 4; i++)    
     if( (hand[i] == hand[i+1]-1 ) && (hand[i] == hand[i+2]-2 ) &&
@@ -821,9 +874,13 @@ function containsStraightFlush(hand, sharedCards){
 
 function getStraightFlushHand(hand, sharedCards){
   
+  let flushFound = containsFlush(hand, sharedCards);
+
+  if(flushFound)
+    hand = getFlushCards(hand, sharedCards);
+
   let newHand = [];
-  hand = combineHand(hand, sharedCards);
-  hand.sort();
+  hand.sort(function(a,b){ return a-b});
   hand.reverse();
   
   for(let i = 0; i < hand.length - 4; i++)    
@@ -854,7 +911,9 @@ function containsRoyalFlush(hand, sharedCards){
     return false;
 
   let flushHand = getFlushHand(hand, sharedCards);
+
   
+
   if(flushHand[0]%13 == king &&
      flushHand[1]%13 == queen &&
      flushHand[2]%13 == jack &&
