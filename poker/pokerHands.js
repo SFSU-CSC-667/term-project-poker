@@ -232,7 +232,7 @@ function combineHand(hand, sharedCards){
 
 function prepareHand(hand){
 
-  for( var index in hand )
+  for( let index in hand )
     hand[index] = hand[index] % 13;
 
   hand.sort(function(a,b){return a-b;});
@@ -243,7 +243,7 @@ function prepareHand(hand){
 
 function prepareFlush(hand){
 
-  for( var index in hand )
+  for( let index in hand )
     hand[index] = Math.floor( hand[index] / 13 );
   
   return hand;
@@ -252,7 +252,7 @@ function prepareFlush(hand){
 
 function filter(card, hand){
   
-  var newHand = [];
+  let newHand = [];
   
   for(let i in hand)
     if( hand[i]%13 != card )
@@ -770,27 +770,38 @@ function getQuadCard(hand, sharedCards){
   hand = prepareHand(hand);
   
   for( let i = 0; i < 4; i++ )
-    if(hand[i] == hand[i+1] == hand[i+2] == hand[i+3])
+    if(hand[i] == hand[i+1] && hand[i] == hand[i+2] && hand[i] == hand[i+3])
       return hand[i];
    
 }
 
+function getQuadIndexs(hand, quadCard){
+  
+  let newHand = [];
+
+  for( let i = 0; i < hand.length; i++ )
+    if(hand[i]%13 == quadCard)
+      newHand.push(hand[i]);
+
+  return newHand;
+
+}
 function getQuadHand(hand, sharedCards){
   
   let quadCard = getQuadCard(hand, sharedCards);
   let newHand = [];
   let numOfKickers = 1;
   
-  hand = hand.concat(sharedCards);
 
-  for( let i = 0; i < 4; i++ )
-    if(hand[i]%13 == quadCard)
-      newHand.push(hand[i]);
+  hand = hand.concat(sharedCards);
   
+  let quadIndexs = getQuadIndexs(hand, quadCard);
+ 
   hand = filter(quadCard, hand);
   let kickers = getKickers(hand, numOfKickers);
-
-  newHand = newHand.concat(kickers);
+  
+  newHand.push(quadIndexs);
+  newHand.push(kickers);
   
   return newHand;
      
@@ -1064,6 +1075,36 @@ function TestCompareHandFullHouseHand(){
   
   playerOneHand = getHand(playerOneHand, sharedCards);
   playerTwoHand = getHand(playerTwoHand, sharedCards);
+   
+  playerOne.push(playerOneHand);
+  playerTwo.push(playerTwoHand);
+
+  console.log(playerOne);
+  console.log(playerTwo);
+  
+
+  let winner = compareHand(playerOne, playerTwo);
+  console.log("Testing Trips Hand: ", winner);
+
+}
+
+TestCompareHandQuadsHand();
+function TestCompareHandQuadsHand(){
+  
+  playerOne = [];
+  playerOneID = "Player1";
+  playerTwo = [];
+  playerTwoID = "Player2";
+
+  playerOne.push(playerOneID);
+  playerTwo.push(playerTwoID);
+
+  let playerOneHand = [39, 17]; 
+  let playerTwoHand = [27, 40];
+  let sharedCards = [0, 13, 26, 1, 14];
+  
+  playerOneHand = getHand(playerOneHand, sharedCards);
+  playerTwoHand = getHand(playerTwoHand, sharedCards);
   
   playerOne.push(playerOneHand);
   playerTwo.push(playerTwoHand);
@@ -1112,6 +1153,8 @@ function compareHand(playerOne, playerTwo ){
       return compareValue(playerOneID, playerOneCards, playerTwoID, playerTwoCards); 
     else if(playerOneHand == 7)
       return compareFullHouse(playerOneID, playerOneCards, playerTwoID, playerTwoCards);
+    else if(playerOneHand == 8)
+      return compareQuads(playerOneID, playerOneCards, playerTwoID, playerTwoCards);
     else if(playerOneHand == 9)
       return compareValue(playerOneID, playerOneCards, playerTwoID, playerTwoCards); 
     else if(playerOneHand == 10)
@@ -1203,7 +1246,7 @@ function compareTwoPair(playerOneID, playerOneCards, playerTwoID, playerTwoCards
 function compareTrips(playerOneID, playerOneCards, playerTwoID, playerTwoCards){
   
   console.log("Trips");
-
+  
   playerOneTrips = getValue(playerOneCards[0][1]);
   playerOneKickers = playerOneCards[1];
 
@@ -1241,5 +1284,26 @@ function compareFullHouse(playerOneID, playerOneCards, playerTwoID, playerTwoCar
     else
       return "tie";
   }
+
+}
+
+function compareQuads(playerOneID, playerOneCards, playerTwoID, playerTwoCards){
+  
+  console.log("quads");
+
+  playerOneQuads = getValue(playerOneCards[0][1]);
+  playerOneKicker = getValue(playerOneCards[1]);
+  
+  playerTwoQuads = getValue(playerTwoCards[0][1]);
+  playerTwoKicker = getValue(playerTwoCards[1]);
+  
+  if(playerOneQuads > playerTwoQuads)
+    return playerOneID;
+  else if(playerOneQuads < playerTwoQuads)
+    return playerTwoID;
+  else{
+    
+  }
+
 
 }
