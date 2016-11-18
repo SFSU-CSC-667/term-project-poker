@@ -39,11 +39,11 @@ Check to see if working with compareHand()
 [X]Kickers
 [X]Pair
 [X]Two Pair
-[ ]Trips 
+[X]Trips 
 [X]Straight
 [X]Flush
-[ ]Full House
-[ ]]Quads
+[X]Full House
+[X]]Quads
 [X]Straight Flush
 [X]Royal Flush
 
