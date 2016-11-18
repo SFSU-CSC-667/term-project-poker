@@ -835,8 +835,8 @@ function getFullHouseHand(hand, sharedCards){
   let pairCard = getPairCard(hand, sharedCards); 
   let pairIndex = getPairIndex(hand, sharedCards, pairCard);
 
-  newHand = newHand.concat(tripIndex);
-  newHand = newHand.concat(pairIndex);
+  newHand.push(tripIndex);
+  newHand.push(pairIndex);
 
   return newHand;
 
@@ -1032,8 +1032,6 @@ function TestCompareHandTripsHand(){
   let playerTwoHand = [5, 6];
   let sharedCards = [0, 13, 26, 51 , 7];
   
-  console.log(playerOneHand, sharedCards);
-
   playerOneHand = getHand(playerOneHand, sharedCards);
   playerTwoHand = getHand(playerTwoHand, sharedCards);
   
@@ -1049,6 +1047,35 @@ function TestCompareHandTripsHand(){
 
 }
 
+TestCompareHandFullHouseHand();
+function TestCompareHandFullHouseHand(){
+  
+  playerOne = [];
+  playerOneID = "Player1";
+  playerTwo = [];
+  playerTwoID = "Player2";
+
+  playerOne.push(playerOneID);
+  playerTwo.push(playerTwoID);
+
+  let playerOneHand = [15, 17]; 
+  let playerTwoHand = [16, 8];
+  let sharedCards = [0, 13, 26, 2 , 3];
+  
+  playerOneHand = getHand(playerOneHand, sharedCards);
+  playerTwoHand = getHand(playerTwoHand, sharedCards);
+  
+  playerOne.push(playerOneHand);
+  playerTwo.push(playerTwoHand);
+
+  console.log(playerOne);
+  console.log(playerTwo);
+  
+
+  let winner = compareHand(playerOne, playerTwo);
+  console.log("Testing Trips Hand: ", winner);
+
+}
 /********************************************************************/
 /********************* compare winners ******************************/
 /********************************************************************/
@@ -1083,6 +1110,8 @@ function compareHand(playerOne, playerTwo ){
       return compareValue(playerOneID, playerOneCards, playerTwoID, playerTwoCards);
     else if(playerOneHand == 6)
       return compareValue(playerOneID, playerOneCards, playerTwoID, playerTwoCards); 
+    else if(playerOneHand == 7)
+      return compareFullHouse(playerOneID, playerOneCards, playerTwoID, playerTwoCards);
     else if(playerOneHand == 9)
       return compareValue(playerOneID, playerOneCards, playerTwoID, playerTwoCards); 
     else if(playerOneHand == 10)
@@ -1188,4 +1217,29 @@ function compareTrips(playerOneID, playerOneCards, playerTwoID, playerTwoCards){
   else
     return compareValue(playerOneID, playerOneKickers, playerTwoID, playerTwoKickers);
    
+}
+
+function compareFullHouse(playerOneID, playerOneCards, playerTwoID, playerTwoCards){
+  
+  console.log("Full House");
+
+  playerOneTrips = getValue(playerOneCards[0][1]);
+  playerOnePair = getValue(playerOneCards[1][1]);
+
+  playerTwoTrips = getValue(playerTwoCards[0][1]);
+  playerTwoPair = getValue(playerTwoCards[1][1]);
+  
+  if(playerOneTrips > playerTwoTrips)
+    return playerOneID;
+  else if(playerOneTrips < playerTwoTrips)
+    return playerTwoID;
+  else{
+    if(playerOnePair > playerTwoPair)
+      return playerOneID;
+    else if(playerOnePair < playerTwoPair)
+      return playerTwoID;
+    else
+      return "tie";
+  }
+
 }
