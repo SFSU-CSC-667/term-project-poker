@@ -38,7 +38,7 @@ Check to see if working with getHand()
 Check to see if working with compareHand()
 [X]Kickers
 [X]Pair
-[ ]Two Pair
+[X]Two Pair
 [ ]Trips 
 [X]Straight
 [X]Flush
@@ -57,13 +57,13 @@ function testGetHand(){
   let sharedCards = [ 8, 9, 10, 11, 12 ];
 
   let playerHand = getHand(hand, sharedCards);
-  console.log(playerHand);
+
 }
 
 function getHand(hand, sharedCards){
   
   let playerHand = [];
-
+  
   if(containsRoyalFlush(hand, sharedCards)){
     playerHand = getRoyalFlushHand(hand, sharedCards);
     playerHand.push(10);
@@ -143,8 +143,8 @@ function testTwoPair(){
 /* test trips*/
 function testTrips(){
 
-  let hand = [0, 1];
-  let sharedCards = [15, 9, 4, 13, 26];
+  let hand = [2, 4];
+  let sharedCards = [18, 9, 0, 13, 26];
   
   console.log("\nTesting trips getHand(): ", getHand(hand, sharedCards));
   
@@ -432,7 +432,7 @@ function getTwoPairHand(hand, sharedCards){
     pairCard = getPairCard(hand, sharedCards);
     pairCardIndexs = getPairIndex(hand, sharedCards, pairCard);
     
-    newHand = newHand.concat(pairCardIndexs);
+    newHand.push(pairCardIndexs);
     
     hand = filter(pairCard, hand);
     sharedCards = filter(pairCard, sharedCards);
@@ -442,7 +442,7 @@ function getTwoPairHand(hand, sharedCards){
   hand = combineHand(hand, sharedCards);
   let kickers = getKickers(hand, numOfKickers);
   
-  newHand = newHand.concat(kickers);
+  newHand.push(kickers);
 
   return newHand;
 
@@ -456,7 +456,7 @@ function containsTrips(hand, sharedCards){
   hand = combineHand(hand, sharedCards);
   hand = prepareHand(hand);
   hand.reverse();
-  
+
   for( let i = 0; i < hand.length - 2; i++)
     if(hand[i] == hand[i + 1])
       if(hand[i] == hand[i + 2])
@@ -505,15 +505,15 @@ function getTripsHand(hand, sharedCards){
   let tripsCard = getTripsCard(hand, sharedCards);
   let newHand = [];
   let numOfKickers = 2;
-  
-  newHand = getTripsIndexs(hand, sharedCards, tripsCard);
-
+  let tripsIndexs = getTripsIndexs(hand, sharedCards, tripsCard);
+ 
   hand = combineHand(hand, sharedCards);
   hand = filter(tripsCard, hand);
   
   let kickers = getKickers(hand, numOfKickers);
   
-  newHand = newHand.concat(kickers);
+  newHand.push(tripsIndexs);
+  newHand.push(kickers);
   
   return newHand;
 
@@ -981,10 +981,73 @@ function TestCompareHandPairHand(){
   
 
   let winner = compareHand(playerOne, playerTwo);
-  console.log("Testing High Hand: ", winner);
+  console.log("Testing Pair Hand: ", winner);
 
 }
 
+/* test two pair */
+TestCompareHandTwoPairHand();
+function TestCompareHandTwoPairHand(){
+  
+  playerOne = [];
+  playerOneID = "Player1";
+  playerTwo = [];
+  playerTwoID = "Player2";
+
+  playerOne.push(playerOneID);
+  playerTwo.push(playerTwoID);
+
+  let playerOneHand = [13, 15]; 
+  let playerTwoHand = [14, 28];
+  let sharedCards = [0, 1, 2, 3 ,25 ];
+  
+  playerOneHand = getHand(playerOneHand, sharedCards);
+  playerTwoHand = getHand(playerTwoHand, sharedCards)
+  
+  playerOne.push(playerOneHand);
+  playerTwo.push(playerTwoHand);
+
+  console.log(playerOne);
+  console.log(playerTwo);
+  
+
+  let winner = compareHand(playerOne, playerTwo);
+  console.log("Testing High Two Pair: ", winner);
+
+}
+
+
+TestCompareHandTripsHand();
+function TestCompareHandTripsHand(){
+  
+  playerOne = [];
+  playerOneID = "Player1";
+  playerTwo = [];
+  playerTwoID = "Player2";
+
+  playerOne.push(playerOneID);
+  playerTwo.push(playerTwoID);
+
+  let playerOneHand = [2, 4]; 
+  let playerTwoHand = [5, 6];
+  let sharedCards = [0, 13, 26, 51 , 7];
+  
+  console.log(playerOneHand, sharedCards);
+
+  playerOneHand = getHand(playerOneHand, sharedCards);
+  playerTwoHand = getHand(playerTwoHand, sharedCards);
+  
+  playerOne.push(playerOneHand);
+  playerTwo.push(playerTwoHand);
+
+  console.log(playerOne);
+  console.log(playerTwo);
+  
+
+  let winner = compareHand(playerOne, playerTwo);
+  console.log("Testing Trips Hand: ", winner);
+
+}
 
 /********************************************************************/
 /********************* compare winners ******************************/
@@ -1012,6 +1075,10 @@ function compareHand(playerOne, playerTwo ){
       return compareValue(playerOneID, playerOneCards, playerTwoID, playerTwoCards);
     else if(playerOneHand == 2)
       return comparePair(playerOneID, playerOneCards, playerTwoID, playerTwoCards);
+    else if(playerOneHand == 3)
+      return compareTwoPair(playerOneID, playerOneCards, playerTwoID, playerTwoCards);
+    else if(playerOneHand == 4)
+      return compareTrips(playerOneID, playerOneCards, playerTwoID, playerTwoCards);
     else if(playerOneHand == 5)
       return compareValue(playerOneID, playerOneCards, playerTwoID, playerTwoCards);
     else if(playerOneHand == 6)
@@ -1029,7 +1096,7 @@ function compareValue(playerOneID, playerOneCards, playerTwoID, playerTwoCards){
   playerOneCards = prepareHand(playerOneCards);
   playerTwoCards = prepareHand(playerTwoCards);
   
-  for(let i = 0; i < 5; i++){
+  for(let i = 0; i < playerOneCards.length; i++){
     
     if(playerOneCards[i] > playerTwoCards[i])
       return playerOneID;
@@ -1044,6 +1111,8 @@ function compareValue(playerOneID, playerOneCards, playerTwoID, playerTwoCards){
 
 function comparePair(playerOneID, playerOneCards, playerTwoID, playerTwoCards){
   
+  console.log("pair");
+
   playerOnePair = getValue(playerOneCards[0][0]);
   playerTwoPair = getValue(playerTwoCards[0][0]);
   
@@ -1070,13 +1139,53 @@ function getValue(card){
 }
 
 function compareTwoPair(playerOneID, playerOneCards, playerTwoID, playerTwoCards){
-
+  
+  console.log("Two Pair");
   playerOneFirstPair = getValue(playerOneCards[0][0]);
+  playerOneSecondPair = getValue(playerOneCards[1][1]);
+  playerOneKicker = getValue(playerOneCards[2]);
+
+  playerTwoFirstPair = getValue(playerTwoCards[0][0]);
+  playerTwoSecondPair = getValue(playerTwoCards[1][1]);
+  playerTwoKicker = getValue(playerTwoCards[2]);
+
+  if(playerOneFirstPair > playerTwoFirstPair)
+    return playerOneID;
+  else if(playerOneFirstPair < playerTwoFirstPair)
+    return playerTwoID;
+  else{
+    if(playerOneSecondPair > playerTwoSecondPair)
+      return playerOneID;
+    else if(playerOneSecondPair < playerTwoSecondPair)
+      return playerTwoID;
+    else{
+      if(playerOneKicker > playerTwoKicker)
+        return playerOneID;
+      else if(playerOneKicker < playerTwoKicker)
+        return playerTwoID;
+      else
+        return "tie";
+    }
+     
+  }
 
 }
 
 function compareTrips(playerOneID, playerOneCards, playerTwoID, playerTwoCards){
+  
+  console.log("Trips");
 
+  playerOneTrips = getValue(playerOneCards[0][1]);
+  playerOneKickers = playerOneCards[1];
 
-
+  playerTwoTrips = getValue(playerTwoCards[0][1]);
+  playerTwoKickers = playerTwoCards[1];
+  
+  if(playerOneTrips > playerTwoTrips)
+    return playerOneID;
+  else if(playerOneTrips < playerTwoTrips)
+    return playerTwoID;
+  else
+    return compareValue(playerOneID, playerOneKickers, playerTwoID, playerTwoKickers);
+   
 }
