@@ -934,10 +934,16 @@ function getRoyalFlushHand(hand, sharedCards){
 /********************************************************************/
 /********************* compare hands testing  ***********************/
 /********************************************************************/
-
-/* Testing no hand */
+TestCompareHand();
 TestCompareHandHighHand();
-function TestCompareHandHighHand(){
+TestCompareHandPairHand();
+TestCompareHandTwoPairHand();
+TestCompareHandTripsHand();
+TestCompareHandFullHouseHand();
+TestCompareHandQuadsHand();
+
+
+function TestCompareHand(){
   
   playerOne = [];
   playerOneID = "Player1";
@@ -947,8 +953,8 @@ function TestCompareHandHighHand(){
   playerOne.push(playerOneID);
   playerTwo.push(playerTwoID);
 
-  let playerOneHand = [36, 37]; 
-  let playerTwoHand = [23, 24];
+  let playerOneHand = [13, 26]; 
+  let playerTwoHand = [4, 5];
   let sharedCards = [0, 1, 2, 3 ,25 ];
   
   playerOneHand = getHand(playerOneHand, sharedCards);
@@ -966,7 +972,36 @@ function TestCompareHandHighHand(){
 
 }
 
-TestCompareHandPairHand();
+/* Testing no hand */
+function TestCompareHandHighHand(){
+  
+  playerOne = [];
+  playerOneID = "Player1";
+  playerTwo = [];
+  playerTwoID = "Player2";
+
+  playerOne.push(playerOneID);
+  playerTwo.push(playerTwoID);
+
+  let playerOneHand = [36, 37]; 
+  let playerTwoHand = [23, 24];
+  let sharedCards = [0, 1, 2, 3 ,25 ];
+  
+  playerOneHand = getHand(playerOneHand, sharedCards);
+  playerTwoHand = getHand(playerTwoHand, sharedCards);
+  
+  playerOne.push(playerOneHand);
+  playerTwo.push(playerTwoHand);
+
+  console.log(playerOne);
+  console.log(playerTwo);
+  
+
+  let winner = compareHand(playerOne, playerTwo);
+  console.log("Testing High Hand: ", winner);
+
+}
+
 function TestCompareHandPairHand(){
   
   playerOne = [];
@@ -997,7 +1032,6 @@ function TestCompareHandPairHand(){
 }
 
 /* test two pair */
-TestCompareHandTwoPairHand();
 function TestCompareHandTwoPairHand(){
   
   playerOne = [];
@@ -1027,8 +1061,6 @@ function TestCompareHandTwoPairHand(){
 
 }
 
-
-TestCompareHandTripsHand();
 function TestCompareHandTripsHand(){
   
   playerOne = [];
@@ -1058,7 +1090,7 @@ function TestCompareHandTripsHand(){
 
 }
 
-TestCompareHandFullHouseHand();
+
 function TestCompareHandFullHouseHand(){
   
   playerOne = [];
@@ -1088,7 +1120,7 @@ function TestCompareHandFullHouseHand(){
 
 }
 
-TestCompareHandQuadsHand();
+
 function TestCompareHandQuadsHand(){
   
   playerOne = [];
@@ -1126,11 +1158,11 @@ function compareHand(playerOne, playerTwo ){
   
   let playerOneID = playerOne[0];
   let playerOneCards = playerOne[1];
-  let playerOneHand = playerOneCards.pop();
+  let playerOneHand = playerOneCards[playerOneCards.length-1];
 
   let playerTwoID = playerTwo[0];
   let playerTwoCards = playerTwo[1];
-  let playerTwoHand = playerTwoCards.pop();
+  let playerTwoHand = playerTwoCards[playerOneCards.length-1];
   
   if( playerOneHand > playerTwoHand )
     return playerOneID;
@@ -1164,12 +1196,20 @@ function compareHand(playerOne, playerTwo ){
 }
 
 function compareValue(playerOneID, playerOneCards, playerTwoID, playerTwoCards){
-    
+  
+  let ace = 0;
+
   playerOneCards = prepareHand(playerOneCards);
   playerTwoCards = prepareHand(playerTwoCards);
   
   for(let i = 0; i < playerOneCards.length; i++){
     
+    /* check for ace */
+    if(playerOneCards[i] == ace && playerTwoCards[i] != ace)
+      return playerOneID;
+    else if(playerOneCards[i] != ace && playerTwoCards[i] == ace)
+      return playerTwoID;
+
     if(playerOneCards[i] > playerTwoCards[i])
       return playerOneID;
     else if(playerOneCards[i] < playerTwoCards[i])
@@ -1301,9 +1341,75 @@ function compareQuads(playerOneID, playerOneCards, playerTwoID, playerTwoCards){
     return playerOneID;
   else if(playerOneQuads < playerTwoQuads)
     return playerTwoID;
-  else{
-    
-  }
+  else
+    return compareValue(playerOneID, playerOneCards, playerTwoID, playerTwoCards);    
+  
+}
 
+/********************************************************************/
+/********************* determine  winners ***************************/
+/********************************************************************/
+TestDetermineWinner();
+function TestDetermineWinner(){
+  
+  players = [];
+
+  playerOne = [];
+  playerOneID = "Player1";
+  playerTwo = [];
+  playerTwoID = "Player2";
+  playerThree = [];
+  playerThreeID = "Player3";
+
+  playerOne.push(playerOneID);
+  playerTwo.push(playerTwoID);
+  playerThree.push(playerThreeID);
+
+  let playerOneHand = [15, 17]; 
+  let playerTwoHand = [16, 8];
+  let playerThreeHand = [39, 4];
+  let sharedCards = [0, 13, 26, 2 , 3];
+  
+  playerOneHand = getHand(playerOneHand, sharedCards);
+  playerTwoHand = getHand(playerTwoHand, sharedCards);
+  playerThreeHand = getHand(playerThreeHand, sharedCards);
+
+  playerOne.push(playerOneHand);
+  playerTwo.push(playerTwoHand);
+  playerThree.push(playerThreeHand);
+
+  players.push(playerOne);
+  players.push(playerTwo);
+  players.push(playerThree);
+
+  winnerID = determineWinner(players);
+  
+  console.log(winnerID);
 
 }
+
+function determineWinner(players){
+  
+  let currentWinner = players[0];
+  let ID = 0;
+  let tiePool = [];
+  for(let i = 1; i < players.length; i++){
+    
+    let currentWinnerID = currentWinner[1];
+    let newPlayer = players[i];
+    let newPlayerID = players[i][ID];
+    let winnerID = compareHand(currentWinner, newPlayer);
+
+    if(winnerID == currentWinnerID)
+      continue;
+    else if(winnerID == newPlayerID)
+      currentWinner = newPlayer;
+    else
+      console.log("tie");
+     
+  }
+
+  return currentWinner;
+
+}
+
