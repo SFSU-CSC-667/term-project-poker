@@ -21,8 +21,9 @@ CREATE TABLE IF NOT EXISTS Games
     MinBid INTEGER,
     MinChips INTEGER
 );
-INSERT INTO Games (GameName, MaxPlayers, MinBid, MinChips)
-VALUES ('Original', 4, 50, 1000);
+INSERT INTO Games (GameName, MaxPlayers, MinBid, MinChips) VALUES
+('Original', 4, 50, 1000),
+('New', 4, 50, 1000);
 
 DROP TABLE IF EXISTS Players CASCADE;
 CREATE TABLE IF NOT EXISTS Players
