@@ -6,7 +6,7 @@ module.exports = function(io, db) {
   // Testing db, remove this later;
   db.query('SELECT FirstName FROM Users WHERE UserId=1').then(response => {
       console.log("Test DB query: ", response);
-  })
+  });
 
   io.on('connection', socket => ioConnect(io, socket, db));
 
@@ -23,4 +23,4 @@ module.exports = function(io, db) {
   });
 
   return router;
-}
+};

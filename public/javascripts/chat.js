@@ -1,6 +1,4 @@
 (() => {
-  var socket = io();
-
   socket.on('chatMessage', function(from, msg) {
     var me = $('#user').val();
     var color = (from == me) ? 'green' : '#009afd';
