@@ -208,6 +208,7 @@ function testRoyalFlush(){
   
 }
 
+function testHands(){
 testKickers();
 testPair();
 testTwoPair();
@@ -218,7 +219,7 @@ testFullHouse();
 testQuads();
 testStraightFlush();
 testRoyalFlush();
-
+}
 /********************************************************************/
 /********************* prepare hand  ********************************/
 /********************************************************************/
@@ -231,13 +232,15 @@ function combineHand(hand, sharedCards){
 }
 
 function prepareHand(hand){
+  
+  let newHand = [];
 
   for( let index in hand )
-    hand[index] = hand[index] % 13;
+    newHand.push(hand[index] % 13) ;
 
-  hand.sort(function(a,b){return a-b;});
+  newHand.sort(function(a,b){return a-b;});
   
-  return hand;
+  return newHand;
 
 }
 
@@ -934,6 +937,9 @@ function getRoyalFlushHand(hand, sharedCards){
 /********************************************************************/
 /********************* compare hands testing  ***********************/
 /********************************************************************/
+
+testCompare();
+function testCompare(){
 TestCompareHand();
 TestCompareHandHighHand();
 TestCompareHandPairHand();
@@ -941,7 +947,7 @@ TestCompareHandTwoPairHand();
 TestCompareHandTripsHand();
 TestCompareHandFullHouseHand();
 TestCompareHandQuadsHand();
-
+}
 
 function TestCompareHand(){
   
@@ -1153,7 +1159,6 @@ function TestCompareHandQuadsHand(){
 /********************* compare winners ******************************/
 /********************************************************************/
 
-//what do I want to return?
 function compareHand(playerOne, playerTwo ){
   
   let playerOneID = playerOne[0];
@@ -1172,35 +1177,38 @@ function compareHand(playerOne, playerTwo ){
 
     /* in case of same type of hand e.g. both players have full houses */    
     if(playerOneHand == 1)
-      return compareValue(playerOneID, playerOneCards, playerTwoID, playerTwoCards);
+      return compareValue(playerOne, playerTwo);
     else if(playerOneHand == 2)
-      return comparePair(playerOneID, playerOneCards, playerTwoID, playerTwoCards);
+      return comparePair(playerOne, playerTwo);
     else if(playerOneHand == 3)
-      return compareTwoPair(playerOneID, playerOneCards, playerTwoID, playerTwoCards);
+      return compareTwoPair(playerOne, playerTwo);
     else if(playerOneHand == 4)
-      return compareTrips(playerOneID, playerOneCards, playerTwoID, playerTwoCards);
+      return compareTrips(playerOne, playerTwo);
     else if(playerOneHand == 5)
-      return compareValue(playerOneID, playerOneCards, playerTwoID, playerTwoCards);
+      return compareValue(playerOne, playerTwo);
     else if(playerOneHand == 6)
-      return compareValue(playerOneID, playerOneCards, playerTwoID, playerTwoCards); 
+      return compareValue(playerOne, playerTwo); 
     else if(playerOneHand == 7)
-      return compareFullHouse(playerOneID, playerOneCards, playerTwoID, playerTwoCards);
+      return compareFullHouse(playerOne, playerTwo);
     else if(playerOneHand == 8)
-      return compareQuads(playerOneID, playerOneCards, playerTwoID, playerTwoCards);
+      return compareQuads(playerOne, playerTwo);
     else if(playerOneHand == 9)
-      return compareValue(playerOneID, playerOneCards, playerTwoID, playerTwoCards); 
+      return compareValue(playerOne, playerTwo); 
     else if(playerOneHand == 10)
-      return compareValue(playerOneID, playerOneCards, playerTwoID, playerTwoCards);
+      return compareValue(playerOne, playerTwo);
   }
    
 }
 
-function compareValue(playerOneID, playerOneCards, playerTwoID, playerTwoCards){
+function compareValue(playerOne, playerTwo){
   
   let ace = 0;
+  
+  let playerOneID = playerOne[0];
+  let playerTwoID = playerTwo[0];
 
-  playerOneCards = prepareHand(playerOneCards);
-  playerTwoCards = prepareHand(playerTwoCards);
+  let playerOneCards = prepareHand(playerOne[1]);
+  let playerTwoCards = prepareHand(playerTwo[1]);
   
   for(let i = 0; i < playerOneCards.length; i++){
     
@@ -1221,22 +1229,26 @@ function compareValue(playerOneID, playerOneCards, playerTwoID, playerTwoCards){
 
 }
 
-function comparePair(playerOneID, playerOneCards, playerTwoID, playerTwoCards){
+function comparePair(playerOne, playerTwo){
   
-  console.log("pair");
+  let playerOneID = playerOne[0];
+  let playerOneCards = playerOne[1];
 
-  playerOnePair = getValue(playerOneCards[0][0]);
-  playerTwoPair = getValue(playerTwoCards[0][0]);
+  let playerTwoID = playerTwo[0];
+  let playerTwoCards = playerTwo[1];
+
+  let playerOnePair = getValue(playerOneCards[0][0]);
+  let playerTwoPair = getValue(playerTwoCards[0][0]);
   
-  playerOneKickers = playerOneCards[1];
-  playerTwoKickers = playerTwoCards[1];
+  let playerOneKickers = playerOneCards[1];
+  let playerTwoKickers = playerTwoCards[1];
   
   if(playerOnePair > playerTwoPair)
     return playerOneID;
   else if(playerOnePair < playerTwoPair)
     return playerTwoID;
   else
-    return compareValue(playerOneID, playerOneCards, playerTwoID, playerTwoCards);
+    return compareValue(playerOne, playerTwo);
 }
 
 function getValue(card){
@@ -1250,16 +1262,21 @@ function getValue(card){
 
 }
 
-function compareTwoPair(playerOneID, playerOneCards, playerTwoID, playerTwoCards){
+function compareTwoPair(playerOne, playerTwo){
   
-  console.log("Two Pair");
-  playerOneFirstPair = getValue(playerOneCards[0][0]);
-  playerOneSecondPair = getValue(playerOneCards[1][1]);
-  playerOneKicker = getValue(playerOneCards[2]);
+  let playerOneID = playerOne[0];
+  let playerOneCards = playerOne[1];
 
-  playerTwoFirstPair = getValue(playerTwoCards[0][0]);
-  playerTwoSecondPair = getValue(playerTwoCards[1][1]);
-  playerTwoKicker = getValue(playerTwoCards[2]);
+  let playerTwoID = playerTwo[0];
+  let playerTwoCards = playerTwo[1];
+  
+  let playerOneFirstPair = getValue(playerOneCards[0][0]);
+  let playerOneSecondPair = getValue(playerOneCards[1][1]);
+  let playerOneKicker = getValue(playerOneCards[2]);
+
+  let playerTwoFirstPair = getValue(playerTwoCards[0][0]);
+  let playerTwoSecondPair = getValue(playerTwoCards[1][1]);
+  let playerTwoKicker = getValue(playerTwoCards[2]);
 
   if(playerOneFirstPair > playerTwoFirstPair)
     return playerOneID;
@@ -1283,29 +1300,37 @@ function compareTwoPair(playerOneID, playerOneCards, playerTwoID, playerTwoCards
 
 }
 
-function compareTrips(playerOneID, playerOneCards, playerTwoID, playerTwoCards){
+function compareTrips(playerOne, playerTwo){
   
-  console.log("Trips");
-  
-  playerOneTrips = getValue(playerOneCards[0][1]);
-  playerOneKickers = playerOneCards[1];
+  let playerOneID = playerOne[0];
+  let playerOneCards = playerOne[1];
 
-  playerTwoTrips = getValue(playerTwoCards[0][1]);
-  playerTwoKickers = playerTwoCards[1];
+  let playerTwoID = playerTwo[0];
+  let playerTwoCards = playerTwo[1];
+  
+  let playerOneTrips = getValue(playerOneCards[0][1]);
+  let playerOneKickers = playerOneCards[1];
+
+  let playerTwoTrips = getValue(playerTwoCards[0][1]);
+  let playerTwoKickers = playerTwoCards[1];
   
   if(playerOneTrips > playerTwoTrips)
     return playerOneID;
   else if(playerOneTrips < playerTwoTrips)
     return playerTwoID;
   else
-    return compareValue(playerOneID, playerOneKickers, playerTwoID, playerTwoKickers);
+    return compareValue(playerOne, playerTwo);
    
 }
 
-function compareFullHouse(playerOneID, playerOneCards, playerTwoID, playerTwoCards){
+function compareFullHouse(playerOne, playerTwo){
   
-  console.log("Full House");
+  let playerOneID = playerOne[0];
+  let playerOneCards = playerOne[1];
 
+  let playerTwoID = playerTwo[0];
+  let playerTwoCards = playerTwo[1];
+  
   playerOneTrips = getValue(playerOneCards[0][1]);
   playerOnePair = getValue(playerOneCards[1][1]);
 
@@ -1327,10 +1352,14 @@ function compareFullHouse(playerOneID, playerOneCards, playerTwoID, playerTwoCar
 
 }
 
-function compareQuads(playerOneID, playerOneCards, playerTwoID, playerTwoCards){
+function compareQuads(playerOne, playerTwo){
   
-  console.log("quads");
-
+  let playerOneID = playerOne[0];
+  let playerOneCards = playerOne[1];
+  
+  let playerTwoID = playerTwo[0];
+  let playerTwoCards = playerTwo[1];
+  
   playerOneQuads = getValue(playerOneCards[0][1]);
   playerOneKicker = getValue(playerOneCards[1]);
   
@@ -1342,10 +1371,21 @@ function compareQuads(playerOneID, playerOneCards, playerTwoID, playerTwoCards){
   else if(playerOneQuads < playerTwoQuads)
     return playerTwoID;
   else
-    return compareValue(playerOneID, playerOneCards, playerTwoID, playerTwoCards);    
+    return compareValue(playerOne, playerTwo);    
   
 }
 
+function getWinningIndexs(hand){
+  
+  let newHand = [];
+
+  for(let i = 0; i < hand.length - 1; i++)  
+    newHand = newHand.concat(hand[i]);
+  
+  return newHand;
+
+
+}
 /********************************************************************/
 /********************* determine  winners ***************************/
 /********************************************************************/
@@ -1365,10 +1405,10 @@ function TestDetermineWinner(){
   playerTwo.push(playerTwoID);
   playerThree.push(playerThreeID);
 
-  let playerOneHand = [15, 17]; 
-  let playerTwoHand = [16, 8];
-  let playerThreeHand = [39, 4];
-  let sharedCards = [0, 13, 26, 2 , 3];
+  let playerOneHand = [2, 3]; 
+  let playerTwoHand = [4, 23];
+  let playerThreeHand = [6, 10];
+  let sharedCards = [0, 13, 26, 39 , 9];
   
   playerOneHand = getHand(playerOneHand, sharedCards);
   playerTwoHand = getHand(playerTwoHand, sharedCards);
@@ -1382,34 +1422,74 @@ function TestDetermineWinner(){
   players.push(playerTwo);
   players.push(playerThree);
 
-  winnerID = determineWinner(players);
+  winner = determineWinner(players);
   
-  console.log(winnerID);
+  console.log(winner);
 
 }
 
+/* if there is a tie, push winners to tie pool */
+/* if there is a tie, return tie instead of return currentWinner */
+/* if a new player wins vs a tied pool, erase tie pool and set tie flag to 0 */
 function determineWinner(players){
   
-  let currentWinner = players[0];
+  let currentWinner = players[0]; 
+  let currentWinnerID;
+  let winningHand = currentWinner[1];
+  let winningInfo = [];
+
   let ID = 0;
   let tiePool = [];
+  let tieFlag = false;
+
+
   for(let i = 1; i < players.length; i++){
     
-    let currentWinnerID = currentWinner[1];
+    currentWinnerID = currentWinner[0];
+
     let newPlayer = players[i];
-    let newPlayerID = players[i][ID];
+    let newPlayerID = players[i][ID]; 
     let winnerID = compareHand(currentWinner, newPlayer);
 
     if(winnerID == currentWinnerID)
       continue;
-    else if(winnerID == newPlayerID)
+    else if(winnerID == newPlayerID){
+      
       currentWinner = newPlayer;
-    else
-      console.log("tie");
-     
-  }
+      winnerHand = currentWinner[1];
+      currentWinnerID = currentWinner[0];
 
-  return currentWinner;
+      tiePool = [];
+      tieFlag = false;
+    
+    }
+    else{
+      
+      winningHand = currentWinner[1];
+
+      if( !tiePool.includes(currentWinnerID) )
+        tiePool.push(currentWinnerID);
+      
+      tiePool.push(newPlayerID);
+      tieFlag = true;
+    
+    }
+  
+  }
+  
+  if(tieFlag){
+    
+    tiePool.push( getWinningIndexs(winningHand) );
+    return tiePool;
+  
+  }
+  else{
+    
+    winningInfo.push(currentWinnerID);
+    winningInfo.push( getWinningIndexs(winningHand) );
+    return winningInfo;
+  
+  }
 
 }
 
