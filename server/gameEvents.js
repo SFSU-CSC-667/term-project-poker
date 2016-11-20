@@ -135,7 +135,7 @@ const gameEvents = (io, socket, game, players, db) => {
     let Players = players[gameId];
     if (!socket.userName) { socket.userName = 'Guest'; }
     if (!Game.gameStarted) { Players.push(socket); }
-    Game.seatsOccupied.push(data.seat);
+    makeSeatOccupied(socket, data.seat);
     socket.isPlayer = 1;
     socket.seat = data.seat;
     io.to(gameId).emit('new player', {
@@ -147,6 +147,19 @@ const gameEvents = (io, socket, game, players, db) => {
       seat: socket.seat
     });
     console.log("Players " + Players.length);
+  }
+
+  function makeSeatOccupied(socket, seat) {
+    let gameId = socket.gameId;
+    let Game = game[gameId];
+    let Players = players[gameId];
+    Game.seatsOccupied.push(seat);
+    for (let i = 0; i < Game.seatsOccupied.length - 1; i++) {
+      if (Game.seatsOccupied[i] > Game.seatsOccupied[i + 1]) {
+        [Game.seatsOccupied[i], Game.seatsOccupied[i + 1]] = [Game.seatsOccupied[i + 1], Game.seatsOccupied[i]];
+        [Players[i], Players[i + 1]] = [Players[i + 1], Players[i]];
+      }
+    }
   }
 
   function startGame(socket) {

@@ -13,7 +13,7 @@
     event.preventDefault();
     let seat = $(this).parent().attr('id');
     $(`#${ seat }`).children().prop('disabled', true);
-    socket.emit('action button', { action: $(this).data('action') });
+    socket.emit('action button', { action: $(this).data('action'), seat: seat });
   });
 
   $(".ready-btn").on('click', function(event) {
