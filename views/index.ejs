@@ -25,15 +25,12 @@
       </div>
       <br />
       <div class="chat-section block-item">
-        <div id="chat-data"></div>
-        <div>
-          <div class="input-group">
-            <input id="chat-msg" type="text" class="form-control" placeholder="Message">
-            <span class="input-group-btn">
-              <button id="chat-send" class="btn btn-secondary" type="button">Send</button>
-            </span>
-          </div>
-        </div>
+        <ul id="message-list"></ul>
+        <form id="form" action="" onsubmit="return submitfunction();" >
+          <input type="hidden" id="user" value="" />
+          <input id="message" autocomplete="off" placeholder="Type yor message here.." />
+          <input type="submit" id="button" value="Send"/>
+        </form>
       </div>
     </div>
     <% include includes/footer.ejs %>
