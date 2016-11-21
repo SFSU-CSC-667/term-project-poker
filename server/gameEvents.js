@@ -65,55 +65,87 @@ const gameEvents = (io, socket, game, players, db) => {
   socket.on('action button', data => {
     switch(data.action) {
       case 'check':
-        nextTurn();
+        nextTurn(socket);
         break;
       case 'call':
-        playerCall();
+        playerCall(socket);
         break;
       case 'raise':
-        playerRaise();
+        playerRaise(socket);
         break;
       case 'fold':
-        playerFold();
+        playerFold(socket);
         break;
       case 'all in':
-        playerAllIn();
+        playerAllIn(socket);
         break;
     }
   });
 
-  function nextTurn() {
+  function nextTurn(socket) {
     let Game = game[socket.gameId];
     let Players = players[socket.gameId];
-    if (Players[Game.turn + 1]) {
+    if (Players[Game.turn + 1] && Players[Game.turn + 1].fold) {
+      Game.turn++;
+      nextTurn(socket);
+    } else if (Players[Game.turn + 1]) {
       Game.turn++;
       Players[Game.turn].emit('player turn', { turn: Game.turn });
     } else {
       if (dealerCheck(Game.round, socket)) { return; }
       console.log("Round over");
       Game.turn = 0;
+      if (Players[Game.turn].fold) { nextTurn(socket); return; }
       Players[Game.turn].emit('player turn', { turn: Game.turn });
     }
   }
 
-  function playerCall() {
+  function playerCall(socket) {
 
-    nextTurn();
+    nextTurn(socket);
   }
 
-  function playerRaise() {
+  function playerRaise(socket) {
 
-    nextTurn();
+    nextTurn(socket);
   }
 
-  function playerFold() {
-
-    nextTurn();
+  function playerFold(socket) {
+    let gameId = socket.gameId;
+    let Game = game[gameId];
+    socket.fold = 1;
+    io.to(socket.gameId).emit('a player folds', { seat: socket.seat });
+    if (!checkIfAllFold(socket)) {
+      nextTurn(socket);
+      return;
+    }
+    console.log("We got a winner! ", Game.winner);
+    // Emit Winner Logic
+    startGame(socket);
   }
 
-  function playerAllIn() {
+  function playerAllIn(socket) {
 
-    nextTurn();
+    nextTurn(socket);
+  }
+
+  function checkIfAllFold(socket) {
+    let gameId = socket.gameId;
+    let Game = game[gameId];
+    let Players = players[gameId];
+    let possibleWinner;
+    let count = 0;
+    Players.forEach(player => {
+      if (!player.fold) {
+        possibleWinner = player.seat;
+        count++;
+      }
+    });
+    if (count === 1) {
+      Game.winner = possibleWinner;
+      return true;
+    }
+    return false;
   }
 
   function getUpdate(socket, data) {
@@ -134,7 +166,7 @@ const gameEvents = (io, socket, game, players, db) => {
     let Game = game[gameId];
     let Players = players[gameId];
     if (!socket.userName) { socket.userName = 'Guest'; }
-    if (!Game.gameStarted) { Players.push(socket); }
+    if (!Game.gameStarted) { socket.fold = 1; }
     makeSeatOccupied(socket, data.seat);
     socket.isPlayer = 1;
     socket.seat = data.seat;
@@ -154,6 +186,7 @@ const gameEvents = (io, socket, game, players, db) => {
     let Game = game[gameId];
     let Players = players[gameId];
     Game.seatsOccupied.push(seat);
+    Players.push(socket);
     for (let i = 0; i < Game.seatsOccupied.length - 1; i++) {
       if (Game.seatsOccupied[i] > Game.seatsOccupied[i + 1]) {
         [Game.seatsOccupied[i], Game.seatsOccupied[i + 1]] = [Game.seatsOccupied[i + 1], Game.seatsOccupied[i]];
@@ -166,6 +199,7 @@ const gameEvents = (io, socket, game, players, db) => {
     console.log("new game");
     let Game = game[socket.gameId];
     let Players = players[socket.gameId];
+    Players.forEach(player => { player.fold = 0; });
     Game.gameStarted = 1;
     Game.turn = 0;
     Game.round = 0;

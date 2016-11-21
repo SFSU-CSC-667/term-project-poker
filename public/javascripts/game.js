@@ -9,14 +9,14 @@
     $(`#${ seat }`).children('.ready-btn').removeClass('hidden');
   });
 
-  $(".action-btn").on('click', function(event) {
+  $('body').on('click', ".action-btn", function(event) {
     event.preventDefault();
     let seat = $(this).parent().attr('id');
     $(`#${ seat }`).children().prop('disabled', true);
     socket.emit('action button', { action: $(this).data('action'), seat: seat });
   });
 
-  $(".ready-btn").on('click', function(event) {
+  $('body').on('click', ".ready-btn", function(event) {
     event.preventDefault();
     let seat = $(this).parent().attr('id');
     $(`#${ seat }`).children('.ready-btn').attr('disabled', true);
@@ -25,13 +25,14 @@
 
   socket.on('player offline', data => {
     seatsOccupied.splice(seatsOccupied.indexOf(data.seat), 1);
-    $(`#${ data.seat }-actions`).html('<button class="btn btn-danger" disabled="disabled">Offline</button>');
+    $(`#${ data.seat }-actions`).html('<button id="status" class="btn btn-danger" disabled="disabled">Offline</button>');
   });
 
   socket.emit('game viewer', { gameId: sessionStorage.getItem('gameId') });
 
   socket.on('new player', data => {
     $(`#${ data.seat }`).html(data.html);
+    $(`#${ data.seat }-actions`).html(createActionButtons());
     seatsOccupied = data.seatsOccupied;
   });
 
@@ -49,12 +50,13 @@
     seatsOccupied = [];
     window.location.reload();
   });
+
   socket.on('player cards', data => {
     $(`#${ data.seat }-cards`).replaceWith(cardImages(data.first, data.second));
-    seatsOccupied.forEach((seat) => {
+    seatsOccupied.forEach(seat => {
       if (seat !== data.seat) {
         $(`#${ seat }-cards`).replaceWith(cardImages('face-down', 'face-down'));
-        $(`#${ seat }-actions`).html('<button class="online btn btn-success" disabled="disabled">Online</button>');
+        $(`#${ seat }-actions`).html('<button id="status" class="btn btn-success" disabled="disabled">Playing</button>');
       }
     });
   });
@@ -83,9 +85,13 @@
       seatsOccupied.forEach(seat => {
         $(`#${ seat }-actions`).children('.ready-btn').remove();
         $(`#${ seat }`).html('<p>Name: Guest </p>');
-        $(`#${ seat }-actions`).html('<button class="online btn btn-success" disabled="disabled">Online</button>');
+        $(`#${ seat }-actions`).html('<button id="status" class="btn btn-success" disabled="disabled">Playing</button>');
       });
     }
+  });
+
+  socket.on('a player folds', data => {
+    $(`#${ data.seat }-actions`).children('#status').html('Fold');
   });
 
   socket.on('draw flop cards', data => {
@@ -108,6 +114,17 @@
       cards += `<img class='card-image ${ card }' />`;
     });
     return cards;
+  }
+
+  function createActionButtons() {
+    return (
+      "<button class='hidden ready-btn btn btn-success'>Ready</button>" +
+      "<button class='hidden action-btn btn btn-success' data-action='check' disabled='disabled'>Check</button>" +
+      "<button class='hidden action-btn btn btn-success' data-action='call' disabled='disabled'>Call</button>"   +
+      "<button class='hidden action-btn btn btn-success' data-action='raise' disabled='disabled'>Raise</button>" +
+      "<button class='hidden action-btn btn btn-success' data-action='fold' disabled='disabled'>Fold</button>"   +
+      "<button class='hidden action-btn btn btn-success' data-action='all in' disabled='disabled'>All In</button>"
+    );
   }
 
 })();
