@@ -40,21 +40,27 @@
   });
 
   socket.on('player turn', data => {
+    let playerBid = parseInt($(`#${ seatsOccupied[data.turn] }-bid`).html().match(/\d+/g).join([]));
+    let playerPot = parseInt($(`#${ seatsOccupied[data.turn] }-pot`).html().match(/\d+/g).join([]));
     callMinimum = data.callMinimum;
     $(`#${ seatsOccupied[data.turn] }-actions`).children('.ready-btn').remove();
     $(`#${ seatsOccupied[data.turn] }-actions`).children().removeClass('hidden');
     $(`#${ seatsOccupied[data.turn] }-actions`).children().prop('disabled', false);
 
-    if (parseInt($(`#${ seatsOccupied[data.turn] }-bid`).html().match(/\d+/g).join([])) !== callMinimum) {
+    if (playerBid !== callMinimum) {
       $(`#${ seatsOccupied[data.turn] }-actions`).children('[data-action="check"]').prop('disabled', true);
     }
-    if (parseInt($(`#${ seatsOccupied[data.turn] }-bid`).html().match(/\d+/g).join([])) >= callMinimum) {
+    if (playerBid >= callMinimum) {
       $(`#${ seatsOccupied[data.turn] }-actions`).children('[data-action="call"]').prop('disabled', true);
     }
-    if (parseInt($(`#${ seatsOccupied[data.turn] }-pot`).html().match(/\d+/g).join([])) < callMinimum) {
+    if ((playerBid + playerPot)  < callMinimum) {
       $(`#${ seatsOccupied[data.turn] }-actions`).children('[data-action="call"]').prop('disabled', true);
       $(`#${ seatsOccupied[data.turn] }-actions`).children('[data-action="check"]').prop('disabled', true);
       $(`#${ seatsOccupied[data.turn] }-actions`).children('[data-action="raise"]').prop('disabled', true);
+    }
+    if (playerPot === 0) {
+      $(`#${ seatsOccupied[data.turn] }-actions`).children('[data-action="raise"]').prop('disabled', true);
+      $(`#${ seatsOccupied[data.turn] }-actions`).children('[data-action="all in"]').prop('disabled', true);
     }
   });
 
