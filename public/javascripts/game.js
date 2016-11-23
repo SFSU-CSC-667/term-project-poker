@@ -12,9 +12,9 @@
 
   $('body').on('click', ".action-btn", function(event) {
     event.preventDefault();
-    let seat = $(this).parent().attr('id');
-    $(`#${ seat }`).children().prop('disabled', true);
-    socket.emit('action button', { action: $(this).data('action'), seat: seat });
+    let seatAction = $(this).parent().attr('id');
+    $(`#${ seatAction }`).children().prop('disabled', true);
+    socket.emit('action button', { action: $(this).data('action') });
   });
 
   $('body').on('click', ".ready-btn", function(event) {
@@ -25,8 +25,10 @@
   });
 
   socket.on('player offline', data => {
+    socket.emit('skip turn', { seat: data.seat });
     seatsOccupied.splice(seatsOccupied.indexOf(data.seat), 1);
-    $(`#${ data.seat }-actions`).html('<button id="status" class="btn btn-danger" disabled="disabled">Offline</button>');
+    socket.emit('update server seatsOccupied', { seatsOccupied: seatsOccupied });
+    $(`#${ data.seat }-actions`).html('<button data-status="status" class="btn btn-danger" disabled="disabled">Offline</button>');
   });
 
   socket.emit('game viewer', { gameId: sessionStorage.getItem('gameId') });
@@ -75,7 +77,6 @@
 
   socket.on('game update', data => {
     seatsOccupied = data.seatsOccupied;
-    console.log(seatsOccupied);
     if (data.gameStarted) {
       $("#dealer-cards").append(cardImages(data.cards));
       seatsOccupied.forEach(seat => {
@@ -86,7 +87,7 @@
       seatsOccupied.forEach(seat => {
         $(`#${ seat }-actions`).children('.ready-btn').remove();
         $(`#${ seat }`).html('<p>Name: Guest </p>');
-        $(`#${ seat }-actions`).html('<button id="status" class="btn btn-success" disabled="disabled">Playing</button>');
+        $(`#${ seat }-actions`).html('<button data-status="status" class="btn btn-success" disabled="disabled">Playing</button>');
       });
     }
   });
@@ -96,7 +97,9 @@
   });
 
   socket.on('a player folds', data => {
-    $(`#${ data.seat }-actions`).children('#status').html('Fold');
+    console.log('player fold', data.seat);
+    console.log(`#${ data.seat }-actions`);
+    $(`#${ data.seat }-actions`).children('button[data-status="status"]').html('Fold');
   });
 
   socket.on('update player statistics', data => {
@@ -106,18 +109,14 @@
 
   socket.on('remove all cards', () => {
     $("#dealer-cards").html(cardImages('face-down'));
-    console.log(seatsOccupied);
     seatsOccupied.forEach(seat => {
-      console.log(`#${ seat }-cards`);
       $(`#${ seat }-cards`).html('');
     });
   });
 
   socket.on('show all cards', data => {
-    console.log('show all');
     for (let seat in data.playerCards) {
       let player = data.playerCards[seat];
-      console.log(`#${ seat }-cards`);
       if (!seat.includes('seat'))
         continue;
       $(`#${ seat }-cards`).html(cardImages(player.cards[0], player.cards[1]));
@@ -125,12 +124,11 @@
   });
 
   socket.on('player cards', data => {
-    console.log(data);
     $(`#${ data.seat }-cards`).html(cardImages(data.first, data.second));
     seatsOccupied.forEach(seat => {
       if (seat !== data.seat) {
         $(`#${ seat }-cards`).html(cardImages('face-down', 'face-down'));
-        $(`#${ seat }-actions`).html('<button id="status" class="btn btn-success" disabled="disabled">Playing</button>');
+        $(`#${ seat }-actions`).html('<button data-status="status" class="btn btn-success" disabled="disabled">Playing</button>');
       }
     });
   });

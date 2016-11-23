@@ -51,6 +51,7 @@ const gameEvents = (io, socket, game, players, db) => {
     Game.ready++;
     if (Players.length > 1 && Game.ready === Players.length && !Game.gameStarted) {
       Game.ready = 0;
+      sortSeats(socket);
       startGame(socket);
     }
   });
@@ -60,6 +61,22 @@ const gameEvents = (io, socket, game, players, db) => {
     .then(response => {
       socket.emit('game list response', { games: response });
     });
+  });
+
+  socket.on('update server seatsOccupied', data => {
+    if (game[socket.gameId]) {
+      let Game = game[socket.gameId];
+      Game.seatsOccupied = data.seatsOccupied;
+    }
+  });
+
+  socket.on('skip turn', data => {
+    let Game = game[socket.gameId];
+    if (Game) {
+      if (Game.seatsOccupied[Game.turn] === data.seat) {
+        nextTurn(socket);
+      }
+    }
   });
 
   socket.on('action button', data => {
@@ -127,11 +144,6 @@ const gameEvents = (io, socket, game, players, db) => {
     startGame(socket);
   }
 
-  function getSeatIndex(socket, seat) {
-    let Game = game[socket.gameId];
-    return Game.seatsOccupied.indexOf(seat);
-  }
-
   function playerRaise(socket) {
     let Game = game[socket.gameId];
     let callAmount = (Game.currentCallMinimum - socket.bid);
@@ -151,6 +163,11 @@ const gameEvents = (io, socket, game, players, db) => {
     console.log("minimum ", Game.currentCallMinimum);
     reorderTurns(socket);
     nextTurn(socket);
+  }
+
+  function getSeatIndex(socket, seat) {
+    let Game = game[socket.gameId];
+    return Game.seatsOccupied.indexOf(seat);
   }
 
   function reorderTurns(socket) {
@@ -215,7 +232,7 @@ const gameEvents = (io, socket, game, players, db) => {
     let Game = game[gameId];
     let Players = players[gameId];
     if (!socket.userName) { socket.userName = 'Guest'; }
-    if (!Game.gameStarted) { socket.fold = 1; }
+    if (Game.gameStarted) { socket.fold = 1; }
     makeSeatOccupied(socket, data.seat);
     socket.isPlayer = 1;
     socket.seat = data.seat;
@@ -239,18 +256,22 @@ const gameEvents = (io, socket, game, players, db) => {
     let Players = players[socket.gameId];
     Game.seatsOccupied.push(seat);
     Players.push(socket);
-    sortSeats(socket);
   }
 
   function sortSeats(socket) {
     let Game = game[socket.gameId];
     let Players = players[socket.gameId];
-    for (let i = 0; i < Game.seatsOccupied.length - 1; i++) {
-      if (Game.seatsOccupied[i] > Game.seatsOccupied[i + 1]) {
-        [Game.seatsOccupied[i], Game.seatsOccupied[i + 1]] = [Game.seatsOccupied[i + 1], Game.seatsOccupied[i]];
-        [Players[i], Players[i + 1]] = [Players[i + 1], Players[i]];
-      }
+    let tempPlayers = [];
+    Game.seatsOccupied.sort();
+    for (let i = 0; i < Game.seatsOccupied.length; i++) {
+      Players.forEach(player => {
+        if (player.seat === Game.seatsOccupied[i]) {
+          tempPlayers.push(player);
+        }
+      });
     }
+    players[socket.gameId] = tempPlayers;
+    io.to(socket.gameId).emit('updated seatsOccupied', { seatsOccupied: Game.seatsOccupied });
   }
 
   function startGame(socket) {
@@ -258,7 +279,15 @@ const gameEvents = (io, socket, game, players, db) => {
     let Game = game[socket.gameId];
     let Players = players[socket.gameId];
     io.to(socket.gameId).emit('remove all cards');
-    Players.forEach(player => { player.fold = 0; player.bid = 0; });
+    Players.forEach(player => {
+      player.fold = 0;
+      player.bid = 0;
+      io.to(socket.gameId).emit('update player statistics', {
+        seat: player.seat,
+        playerBid: player.bid,
+        playerPot: player.pot,
+      });
+    });
     Game.gameStarted = 1;
     Game.turn = 0;
     Game.round = 0;
@@ -340,7 +369,7 @@ const gameEvents = (io, socket, game, players, db) => {
 
   function drawPlayerCards(socket, data) {
     let Game = game[socket.gameId];
-    players[socket.gameId].forEach((player) => {
+    players[socket.gameId].forEach(player => {
       player.cards = [Game.deck.draw(), Game.deck.draw()];
       player.emit('player cards', {
         status: player.status,
