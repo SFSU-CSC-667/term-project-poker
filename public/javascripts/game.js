@@ -48,22 +48,7 @@
     $(`#${ seatsOccupied[data.turn] }-actions`).children('.ready-btn').remove();
     $(`#${ seatsOccupied[data.turn] }-actions`).children().removeClass('hidden');
     $(`#${ seatsOccupied[data.turn] }-actions`).children().prop('disabled', false);
-
-    if (playerBid !== callMinimum) {
-      $(`#${ seatsOccupied[data.turn] }-actions`).children('[data-action="check"]').prop('disabled', true);
-    }
-    if (playerBid >= callMinimum) {
-      $(`#${ seatsOccupied[data.turn] }-actions`).children('[data-action="call"]').prop('disabled', true);
-    }
-    if ((playerBid + playerPot)  < callMinimum) {
-      $(`#${ seatsOccupied[data.turn] }-actions`).children('[data-action="call"]').prop('disabled', true);
-      $(`#${ seatsOccupied[data.turn] }-actions`).children('[data-action="check"]').prop('disabled', true);
-      $(`#${ seatsOccupied[data.turn] }-actions`).children('[data-action="raise"]').prop('disabled', true);
-    }
-    if (playerPot === 0) {
-      $(`#${ seatsOccupied[data.turn] }-actions`).children('[data-action="raise"]').prop('disabled', true);
-      $(`#${ seatsOccupied[data.turn] }-actions`).children('[data-action="all in"]').prop('disabled', true);
-    }
+    disableImpossible(data, playerBid, playerPot);
   });
 
   socket.on('enable ready button', data => {
@@ -153,6 +138,28 @@
       cards += `<img class='card-image ${ card }' />`;
     });
     return cards;
+  }
+
+  function disableImpossible(data, playerBid, playerPot) {
+    if (playerBid !== callMinimum) {
+      $(`#${ seatsOccupied[data.turn] }-actions`).children('[data-action="check"]').prop('disabled', true);
+    }
+    if (playerBid >= callMinimum) {
+      $(`#${ seatsOccupied[data.turn] }-actions`).children('[data-action="call"]').prop('disabled', true);
+    }
+    if ((playerBid + playerPot)  < callMinimum) {
+      $(`#${ seatsOccupied[data.turn] }-actions`).children('[data-action="call"]').prop('disabled', true);
+      $(`#${ seatsOccupied[data.turn] }-actions`).children('[data-action="check"]').prop('disabled', true);
+      $(`#${ seatsOccupied[data.turn] }-actions`).children('[data-action="raise"]').prop('disabled', true);
+    }
+    // Temp disable until we get manual raising.
+    if ((playerBid + playerPot)  < (callMinimum + 200)) {
+      $(`#${ seatsOccupied[data.turn] }-actions`).children('[data-action="raise"]').prop('disabled', true);
+    }
+    if (playerPot === 0) {
+      $(`#${ seatsOccupied[data.turn] }-actions`).children('[data-action="raise"]').prop('disabled', true);
+      $(`#${ seatsOccupied[data.turn] }-actions`).children('[data-action="all in"]').prop('disabled', true);
+    }
   }
 
   function createActionButtons() {
