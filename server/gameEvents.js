@@ -135,21 +135,14 @@ const gameEvents = (io, socket, game, players, db) => {
       nextTurn(socket);
       return;
     }
-    let index = getSeatIndex(socket, Game.winner);
-    Players[index].pot += Game.winnerPot;
-    console.log("We got a winner! ", Game.winner, Game.winnerPot);
-    io.to(socket.gameId).emit('update player statistics', {
-      seat: Game.winner,
-      playerBid: 0,
-      playerPot: Players[index].pot,
-    });
+    playerWins(socket);
     startGame(socket);
   }
 
-  function playerRaise(socket) {
+  function playerRaise(socket, raise) {
     let Game = game[socket.gameId];
     let callAmount = (Game.currentCallMinimum - socket.bid);
-    let raise = 200;
+    raise = 200; /////////////// Hard coded player raise //////////////////
     updatePlayerBid(socket, callAmount + raise);
     Game.currentCallMinimum += raise;
     reorderTurns(socket, Game.turn);
@@ -165,6 +158,25 @@ const gameEvents = (io, socket, game, players, db) => {
     console.log("minimum ", Game.currentCallMinimum);
     reorderTurns(socket, Game.turn);
     nextTurn(socket);
+  }
+
+  function playerWins(socket) {
+    let Game = game[socket.gameId];
+    let Players = players[socket.gameId];
+    let index = getSeatIndex(socket, Game.winner);
+    Players[index].pot += Game.winnerPot;
+    console.log("We got a winner! ", Game.winner, Game.winnerPot);
+    Players.forEach(player => {
+      if (player.userName) {
+        let netGainOrLoss = player.bid + player.pot - player.buyInAmount;
+        db.none(`UPDATE Users SET chips = chips + ${ netGainOrLoss } WHERE email = '${ player.userName }'`);
+      }
+    });
+    io.to(socket.gameId).emit('update player statistics', {
+      seat: Game.winner,
+      playerBid: 0,
+      playerPot: Players[index].pot,
+    });
   }
 
   function getSeatIndex(socket, seat) {
@@ -233,19 +245,20 @@ const gameEvents = (io, socket, game, players, db) => {
     let gameId = socket.gameId;
     let Game = game[gameId];
     let Players = players[gameId];
-    if (!socket.userName) { socket.userName = 'Guest'; }
+    if (!socket.displayName) { socket.displayName = 'Guest'; }
     if (Game.gameStarted) { socket.fold = 1; }
     makeSeatOccupied(socket, data.seat);
     socket.isPlayer = 1;
     socket.seat = data.seat;
     socket.bid = 0;
+    socket.buyInAmount = 1000; /////////////// Hard coded player buy-in //////////////////
     socket.pot = 1000; /////////////// Hard coded player pot //////////////////
     io.to(gameId).emit('new player', {
       seat: data.seat,
       bid: socket.bid,
       pot: socket.pot,
       seatsOccupied: Game.seatsOccupied,
-      html: "<p>Name: " + socket.userName + "</p>"
+      html: "<p>Name: " + socket.displayName + "</p>"
     });
     socket.emit('enable ready button', {
       seat: socket.seat
@@ -371,6 +384,9 @@ const gameEvents = (io, socket, game, players, db) => {
       playerPot: socket.pot,
       playerBid: socket.bid
     });
+    if (socket.userName) {
+      db.none(`UPDATE Users SET chips = chips - ${ additionalAmount } WHERE email = '${ socket.userName }'`);
+    }
   }
 
   function drawFlopCards(socket, data) {

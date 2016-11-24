@@ -2,6 +2,8 @@
   let seatsOccupied = [];
   let playerTookAction;
   let callMinimum;
+  let timer;
+  let timeInterval;
 
   $(".join").on('click', function() {
     let seat = $(this).parent().prop('id');
@@ -55,6 +57,7 @@
     let seat = seatsOccupied[data.turn];
     let playerBid = parseInt($(`#${ seat }-bid`).html().match(/\d+/g).join([]));
     let playerPot = parseInt($(`#${ seat }-pot`).html().match(/\d+/g).join([]));
+    clearInterval(timeInterval);
     startTimer(socket, seat);
     callMinimum = data.callMinimum;
     $(`#${ seat }-actions`).children('.ready-btn').remove();
@@ -179,19 +182,18 @@
   }
 
   function startTimer(player, seat) {
-    let timer = 30;
-    $('#timer').html('Timer: ' + timer);
+    timer = 30;
     playerTookAction = 0;
-    let timeInterval = setInterval(() => {
+    $('#timer').html('Timer: ' + timer);
+    timeInterval = setInterval(() => {
       timer--;
       $('#timer').html('Timer: ' + timer);
       if (!timer || playerTookAction) {
-        playerTookAction = 0;
-        $('#timer').html('');
         if (!timer) {
           $(`#${ seat }-actions`).children().prop('disabled', true);
           player.emit('action button', { action: 'fold' });
         }
+        $('#timer').html('');
         clearInterval(timeInterval);
       }
     }, 1000);
