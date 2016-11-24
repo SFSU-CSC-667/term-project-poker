@@ -12,7 +12,6 @@ const gameEvents = (io, socket, game, players, db) => {
       });
      })
      .catch(response => {
-       console.log(response);
        socket.emit('create game response', { success: 0 });
      });
   });
@@ -154,7 +153,6 @@ const gameEvents = (io, socket, game, players, db) => {
     let allIn = socket.pot - callAmount;
     Game.currentCallMinimum += allIn;
     updatePlayerBid(socket, callAmount + allIn);
-    console.log("minimum ", Game.currentCallMinimum);
     reorderTurns(socket, Game.turn);
     nextTurn(socket);
   }
@@ -168,8 +166,8 @@ const gameEvents = (io, socket, game, players, db) => {
     Players.forEach(player => {
       if (Players[index].userName && player.userName) {
         if (player.userName === Players[index].userName) {
-          let netGainOrLoss = player.bid + player.pot - player.startAmount;
-          db.none(`UPDATE Users SET chips = chips + ${ netGainOrLoss } WHERE email = '${ player.userName }'`);
+          let netGain = player.bid + player.pot - player.startAmount;
+          db.none(`UPDATE Users SET chips = chips + ${ netGain } WHERE email = '${ player.userName }'`);
         }
       }
       player.startAmount = player.pot; // New Start Amount.
@@ -312,7 +310,7 @@ const gameEvents = (io, socket, game, players, db) => {
     Game.round = 0;
     Game.winnerPot = 0;
     Game.deck.shuffle();
-    smallBigBlinds(socket);
+    if (!smallBigBlinds(socket)) { return; }
     if (Players[Game.turn + 1]) { Game.turn++; } else {  Game.turn = 0; }
     io.to(socket.gameId).emit('turn flag', { seat: Game.seatsOccupied[Game.turn] });
     Players[Game.turn].emit('player turn', { turn: Game.turn, callMinimum: Game.currentCallMinimum });
@@ -359,21 +357,45 @@ const gameEvents = (io, socket, game, players, db) => {
       Game.blindIncrement = 0;
       reorderTurns(Players[Game.blindIncrement], Game.blindIncrement);
     }
-    console.log('blind', Game.blindIncrement);
   }
 
   function smallBigBlinds(socket) {
     let Game = game[socket.gameId];
     let Players = players[socket.gameId];
+    if (validateBlinds(socket, 50) === 2) { return 0; }
+    else if (!validateBlinds(socket, 50)) { startGame(socket); return 0; }
     updatePlayerBid(Players[Game.turn], 50);
     if (Players[Game.turn + 1]) {
       Game.turn++;
+      if (validateBlinds(socket, 100) === 2) { return 0; }
+      else if (!validateBlinds(socket, 100)) { startGame(socket); return 0; }
       updatePlayerBid(Players[Game.turn], 100);
     } else {
       Game.turn = 0;
+      if (validateBlinds(socket, 100) === 2) { return 0; }
+      else if (!validateBlinds(socket, 100)) { startGame(socket); return 0; }
       updatePlayerBid(Players[Game.turn], 100);
     }
     Game.currentCallMinimum = 100;
+    return 1;
+  }
+
+  function validateBlinds(socket, amount) {
+    let Game = game[socket.gameId];
+    let Players = players[socket.gameId];
+    let seat = Game.seatsOccupied[Game.turn];
+    if ((Players[Game.turn].pot - amount) < 0) {
+      Players.splice(Players.indexOf(Players[Game.turn]), 1);
+      if (Players.length < 2) {
+        delete game[socket.gameId];
+        io.to(socket.gameId).emit('reset game');
+        return 2;
+      }
+      Game.seatsOccupied.splice(Game.seatsOccupied.indexOf(Game.seatsOccupied[Game.turn]), 1);
+      io.to(socket.gameId).emit('insufficient blind kick', { seat: seat, seatsOccupied: Game.seatsOccupied });
+      return 0;
+    }
+    return 1;
   }
 
   function updatePlayerBid(socket, additionalAmount) {

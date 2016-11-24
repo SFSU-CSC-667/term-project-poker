@@ -42,7 +42,6 @@
   });
 
   socket.on('turn flag', data => {
-    console.log(data.seat);
     seatsOccupied.forEach(seat => {
       if (seat === data.seat) {
         $(`#${ seat }-actions`).children('button[data-status="status"]').html('My Turn');
@@ -153,8 +152,13 @@
   socket.on('player offline', data => {
     socket.emit('skip turn', { seat: data.seat });
     seatsOccupied.splice(seatsOccupied.indexOf(data.seat), 1);
-    socket.emit('update server seatsOccupied', { seatsOccupied: seatsOccupied });
     $(`#${ data.seat }-actions`).html('<button data-status="status" class="btn btn-danger" disabled="disabled">Offline</button>');
+    setTimeout(() => { freeUpSeat(data.seat); }, 5000);
+  });
+
+  socket.on('insufficient blind kick', data => {
+    seatsOccupied = data.seatsOccupied;
+    freeUpSeat(data.seat);
   });
 
   function cardImages(...cardNames) {
@@ -199,12 +203,23 @@
       if (!timer || playerTookAction) {
         if (!timer) {
           $(`#${ seat }-actions`).children().prop('disabled', true);
+          $(`#${ seat }-raise`).children().prop('disabled', true);
           player.emit('action button', { action: 'fold' });
         }
         $('#timer').html('');
         clearInterval(timeInterval);
       }
     }, 1000);
+  }
+
+  function freeUpSeat(seat) {
+    console.log(seat);
+    $(`#${ seat }`).html(`<button class="join btn btn-lg btn-primary">Join</button>`);
+    $(`#${ seat }-bid`).html('');
+    $(`#${ seat }-pot`).html('');
+    $(`#${ seat }-cards`).html('');
+    $(`#${ seat }-actions`).html('');
+    $(`#${ seat }-raise`).html('');
   }
 
   function createActionButtons() {
@@ -222,7 +237,7 @@
     let maxRaise = playerPot + playerBid - callMinimum;
     return (
       `<input id="slider" type="range" min="50" max=${ maxRaise } step="50" value="50"/>` +
-      '<p>Raise Amount: </p><p id="raise-amount">50</p>'
+      '<p>Raise Amount: <span id="raise-amount">50</span></p>'
     );
   }
 
