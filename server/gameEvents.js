@@ -49,6 +49,7 @@ const gameEvents = (io, socket, game, players, db) => {
     let Game = game[socket.gameId];
     let Players = players[socket.gameId];
     Game.ready++;
+    socket.broadcast.to(socket.gameId).emit('player is ready', { seat: socket.seat });
     if (Players.length > 1 && Game.ready === Players.length && !Game.gameStarted) {
       Game.ready = 0;
       startGame(socket);
@@ -106,12 +107,14 @@ const gameEvents = (io, socket, game, players, db) => {
       nextTurn(socket);
     } else if (Players[Game.turn + 1]) {
       Game.turn++;
+      io.to(socket.gameId).emit('turn flag', { seat: Game.seatsOccupied[Game.turn] });
       Players[Game.turn].emit('player turn', { turn: Game.turn, callMinimum: Game.currentCallMinimum });
     } else {
       if (dealerCheck(Game.round, socket)) { return; }
       console.log("Round over");
       Game.turn = 0;
       if (Players[Game.turn].fold) { nextTurn(socket); return; }
+      io.to(socket.gameId).emit('turn flag', { seat: Game.seatsOccupied[Game.turn] });
       Players[Game.turn].emit('player turn', { turn: Game.turn, callMinimum: Game.currentCallMinimum });
     }
   }
@@ -296,9 +299,8 @@ const gameEvents = (io, socket, game, players, db) => {
     Game.deck.shuffle();
     smallBigBlinds(socket);
     if (Players[Game.turn + 1]) { Game.turn++; } else {  Game.turn = 0; }
-    Players[Game.turn].emit('player turn', {
-      turn: Game.turn, callMinimum: Game.currentCallMinimum
-    });
+    io.to(socket.gameId).emit('turn flag', { seat: Game.seatsOccupied[Game.turn] });
+    Players[Game.turn].emit('player turn', { turn: Game.turn, callMinimum: Game.currentCallMinimum });
   }
 
   function dealerCheck(round, socket) {

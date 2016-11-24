@@ -24,14 +24,22 @@
     socket.emit('player ready');
   });
 
-  socket.on('player offline', data => {
-    socket.emit('skip turn', { seat: data.seat });
-    seatsOccupied.splice(seatsOccupied.indexOf(data.seat), 1);
-    socket.emit('update server seatsOccupied', { seatsOccupied: seatsOccupied });
-    $(`#${ data.seat }-actions`).html('<button data-status="status" class="btn btn-danger" disabled="disabled">Offline</button>');
+  socket.emit('game viewer', { gameId: sessionStorage.getItem('gameId') });
+
+  socket.on('player is ready', data => {
+    $(`#${ data.seat }-actions`).html('<button data-status="status" class="btn btn-success" disabled="disabled">I\'m Ready</button>');
   });
 
-  socket.emit('game viewer', { gameId: sessionStorage.getItem('gameId') });
+  socket.on('turn flag', data => {
+    console.log(data.seat);
+    seatsOccupied.forEach(seat => {
+      if (seat === data.seat) {
+        $(`#${ seat }-actions`).children('button[data-status="status"]').html('My Turn');
+      } else {
+        $(`#${ seat }-actions`).children('button[data-status="status"]').html("I'm Waiting");
+      }
+    });
+  });
 
   socket.on('new player', data => {
     $(`#${ data.seat }-bid`).html('playerBid: ' + data.bid);
@@ -82,8 +90,6 @@
   });
 
   socket.on('a player folds', data => {
-    console.log('player fold', data.seat);
-    console.log(`#${ data.seat }-actions`);
     $(`#${ data.seat }-actions`).children('button[data-status="status"]').html('Fold');
   });
 
@@ -113,7 +119,6 @@
     seatsOccupied.forEach(seat => {
       if (seat !== data.seat) {
         $(`#${ seat }-cards`).html(cardImages('face-down', 'face-down'));
-        $(`#${ seat }-actions`).html('<button data-status="status" class="btn btn-success" disabled="disabled">Playing</button>');
       }
     });
   });
@@ -128,6 +133,13 @@
 
   socket.on('draw river card', data => {
     $("#dealer-cards").append(cardImages(data.riverCard));
+  });
+
+  socket.on('player offline', data => {
+    socket.emit('skip turn', { seat: data.seat });
+    seatsOccupied.splice(seatsOccupied.indexOf(data.seat), 1);
+    socket.emit('update server seatsOccupied', { seatsOccupied: seatsOccupied });
+    $(`#${ data.seat }-actions`).html('<button data-status="status" class="btn btn-danger" disabled="disabled">Offline</button>');
   });
 
   function cardImages(...cardNames) {
@@ -147,13 +159,13 @@
     if (playerBid >= callMinimum) {
       $(`#${ seatsOccupied[data.turn] }-actions`).children('[data-action="call"]').prop('disabled', true);
     }
-    if ((playerBid + playerPot)  < callMinimum) {
+    if ((playerBid + playerPot) < callMinimum) {
       $(`#${ seatsOccupied[data.turn] }-actions`).children('[data-action="call"]').prop('disabled', true);
       $(`#${ seatsOccupied[data.turn] }-actions`).children('[data-action="check"]').prop('disabled', true);
       $(`#${ seatsOccupied[data.turn] }-actions`).children('[data-action="raise"]').prop('disabled', true);
     }
     // Temp disable until we get manual raising.
-    if ((playerBid + playerPot)  < (callMinimum + 200)) {
+    if ((playerBid + playerPot) < (callMinimum + 200)) {
       $(`#${ seatsOccupied[data.turn] }-actions`).children('[data-action="raise"]').prop('disabled', true);
     }
     if (playerPot === 0) {
