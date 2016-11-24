@@ -17,7 +17,9 @@
     event.preventDefault();
     playerTookAction = 1;
     let seatAction = $(this).parent().attr('id');
+    let seat = seatAction.split('-')[0];
     $(`#${ seatAction }`).children().prop('disabled', true);
+    $(`#${ seat }-raise`).children().prop('disabled', true);
     socket.emit('action button', { action: $(this).data('action'), raise: parseInt($('#raise-amount').html()) });
   });
 
