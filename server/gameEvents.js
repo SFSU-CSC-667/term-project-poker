@@ -167,10 +167,13 @@ const gameEvents = (io, socket, game, players, db) => {
     Players[index].pot += Game.winnerPot;
     console.log("We got a winner! ", Game.winner, Game.winnerPot);
     Players.forEach(player => {
-      if (player.userName) {
-        let netGainOrLoss = player.bid + player.pot - player.buyInAmount;
-        db.none(`UPDATE Users SET chips = chips + ${ netGainOrLoss } WHERE email = '${ player.userName }'`);
+      if (Players[index].userName && player.userName) {
+        if (player.userName === Players[index].userName) {
+          let netGainOrLoss = player.bid + player.pot - player.startAmount;
+          db.none(`UPDATE Users SET chips = chips + ${ netGainOrLoss } WHERE email = '${ player.userName }'`);
+        }
       }
+      player.startAmount = player.pot; // New Start Amount.
     });
     io.to(socket.gameId).emit('update player statistics', {
       seat: Game.winner,
@@ -251,7 +254,7 @@ const gameEvents = (io, socket, game, players, db) => {
     socket.isPlayer = 1;
     socket.seat = data.seat;
     socket.bid = 0;
-    socket.buyInAmount = 1000; /////////////// Hard coded player buy-in //////////////////
+    socket.startAmount = 1000; /////////////// Hard coded player buy-in //////////////////
     socket.pot = 1000; /////////////// Hard coded player pot //////////////////
     io.to(gameId).emit('new player', {
       seat: data.seat,
