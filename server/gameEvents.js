@@ -88,7 +88,7 @@ const gameEvents = (io, socket, game, players, db) => {
         playerCall(socket);
         break;
       case 'raise':
-        playerRaise(socket);
+        playerRaise(socket, data.raise);
         break;
       case 'fold':
         playerFold(socket);
@@ -142,7 +142,6 @@ const gameEvents = (io, socket, game, players, db) => {
   function playerRaise(socket, raise) {
     let Game = game[socket.gameId];
     let callAmount = (Game.currentCallMinimum - socket.bid);
-    raise = 200; /////////////// Hard coded player raise //////////////////
     updatePlayerBid(socket, callAmount + raise);
     Game.currentCallMinimum += raise;
     reorderTurns(socket, Game.turn);

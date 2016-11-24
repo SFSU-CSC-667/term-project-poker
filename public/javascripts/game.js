@@ -18,7 +18,7 @@
     playerTookAction = 1;
     let seatAction = $(this).parent().attr('id');
     $(`#${ seatAction }`).children().prop('disabled', true);
-    socket.emit('action button', { action: $(this).data('action') });
+    socket.emit('action button', { action: $(this).data('action'), raise: parseInt($('#raise-amount').html()) });
   });
 
   $('body').on('click', ".ready-btn", function(event) {
@@ -26,6 +26,11 @@
     let seat = $(this).parent().attr('id');
     $(`#${ seat }`).children('.ready-btn').attr('disabled', true);
     socket.emit('player ready');
+  });
+
+  $('body').on('change', '#slider', function(event) {
+    event.preventDefault();
+    $('#raise-amount').html(this.value);
   });
 
   socket.emit('game viewer', { gameId: sessionStorage.getItem('gameId') });
@@ -63,6 +68,7 @@
     $(`#${ seat }-actions`).children('.ready-btn').remove();
     $(`#${ seat }-actions`).children().removeClass('hidden');
     $(`#${ seat }-actions`).children().prop('disabled', false);
+    $(`#${ seat }-raise`).html(createRaiseSlider(playerBid, playerPot));
     disableImpossible(seat, playerBid, playerPot);
   });
 
@@ -207,6 +213,14 @@
       "<button class='hidden action-btn btn btn-success' data-action='raise' disabled='disabled'>Raise</button>" +
       "<button class='hidden action-btn btn btn-success' data-action='fold' disabled='disabled'>Fold</button>"   +
       "<button class='hidden action-btn btn btn-success' data-action='all in' disabled='disabled'>All In</button>"
+    );
+  }
+
+  function createRaiseSlider(playerBid, playerPot) {
+    let maxRaise = playerPot + playerBid - callMinimum;
+    return (
+      `<input id="slider" type="range" min="50" max=${ maxRaise } step="50" value="50"/>` +
+      '<p>Raise Amount: </p><p id="raise-amount">50</p>'
     );
   }
 
