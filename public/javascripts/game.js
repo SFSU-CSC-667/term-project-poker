@@ -1,5 +1,6 @@
 (() => {
   let seatsOccupied = [];
+  let playerTookAction;
   let callMinimum;
 
   $(".join").on('click', function() {
@@ -12,6 +13,7 @@
 
   $('body').on('click', ".action-btn", function(event) {
     event.preventDefault();
+    playerTookAction = 1;
     let seatAction = $(this).parent().attr('id');
     $(`#${ seatAction }`).children().prop('disabled', true);
     socket.emit('action button', { action: $(this).data('action') });
@@ -50,13 +52,15 @@
   });
 
   socket.on('player turn', data => {
-    let playerBid = parseInt($(`#${ seatsOccupied[data.turn] }-bid`).html().match(/\d+/g).join([]));
-    let playerPot = parseInt($(`#${ seatsOccupied[data.turn] }-pot`).html().match(/\d+/g).join([]));
+    let seat = seatsOccupied[data.turn];
+    let playerBid = parseInt($(`#${ seat }-bid`).html().match(/\d+/g).join([]));
+    let playerPot = parseInt($(`#${ seat }-pot`).html().match(/\d+/g).join([]));
+    startTimer(socket, seat);
     callMinimum = data.callMinimum;
-    $(`#${ seatsOccupied[data.turn] }-actions`).children('.ready-btn').remove();
-    $(`#${ seatsOccupied[data.turn] }-actions`).children().removeClass('hidden');
-    $(`#${ seatsOccupied[data.turn] }-actions`).children().prop('disabled', false);
-    disableImpossible(data, playerBid, playerPot);
+    $(`#${ seat }-actions`).children('.ready-btn').remove();
+    $(`#${ seat }-actions`).children().removeClass('hidden');
+    $(`#${ seat }-actions`).children().prop('disabled', false);
+    disableImpossible(seat, playerBid, playerPot);
   });
 
   socket.on('enable ready button', data => {
@@ -152,26 +156,45 @@
     return cards;
   }
 
-  function disableImpossible(data, playerBid, playerPot) {
+  function disableImpossible(seat, playerBid, playerPot) {
     if (playerBid !== callMinimum) {
-      $(`#${ seatsOccupied[data.turn] }-actions`).children('[data-action="check"]').prop('disabled', true);
+      $(`#${ seat }-actions`).children('[data-action="check"]').prop('disabled', true);
     }
     if (playerBid >= callMinimum) {
-      $(`#${ seatsOccupied[data.turn] }-actions`).children('[data-action="call"]').prop('disabled', true);
+      $(`#${ seat }-actions`).children('[data-action="call"]').prop('disabled', true);
     }
     if ((playerBid + playerPot) < callMinimum) {
-      $(`#${ seatsOccupied[data.turn] }-actions`).children('[data-action="call"]').prop('disabled', true);
-      $(`#${ seatsOccupied[data.turn] }-actions`).children('[data-action="check"]').prop('disabled', true);
-      $(`#${ seatsOccupied[data.turn] }-actions`).children('[data-action="raise"]').prop('disabled', true);
+      $(`#${ seat }-actions`).children('[data-action="call"]').prop('disabled', true);
+      $(`#${ seat }-actions`).children('[data-action="check"]').prop('disabled', true);
+      $(`#${ seat }-actions`).children('[data-action="raise"]').prop('disabled', true);
     }
     // Temp disable until we get manual raising.
     if ((playerBid + playerPot) < (callMinimum + 200)) {
-      $(`#${ seatsOccupied[data.turn] }-actions`).children('[data-action="raise"]').prop('disabled', true);
+      $(`#${ seat }-actions`).children('[data-action="raise"]').prop('disabled', true);
     }
     if (playerPot === 0) {
-      $(`#${ seatsOccupied[data.turn] }-actions`).children('[data-action="raise"]').prop('disabled', true);
-      $(`#${ seatsOccupied[data.turn] }-actions`).children('[data-action="all in"]').prop('disabled', true);
+      $(`#${ seat }-actions`).children('[data-action="raise"]').prop('disabled', true);
+      $(`#${ seat }-actions`).children('[data-action="all in"]').prop('disabled', true);
     }
+  }
+
+  function startTimer(player, seat) {
+    let timer = 30;
+    $('#timer').html('Timer: ' + timer);
+    playerTookAction = 0;
+    let timeInterval = setInterval(() => {
+      timer--;
+      $('#timer').html('Timer: ' + timer);
+      if (!timer || playerTookAction) {
+        playerTookAction = 0;
+        $('#timer').html('');
+        if (!timer) {
+          $(`#${ seat }-actions`).children().prop('disabled', true);
+          player.emit('action button', { action: 'fold' });
+        }
+        clearInterval(timeInterval);
+      }
+    }, 1000);
   }
 
   function createActionButtons() {
