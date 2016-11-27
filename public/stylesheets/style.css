@@ -2,22 +2,27 @@ body {
   padding-top: 70px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
+
 a {
   color: #00B7FF;
 }
+
 .hidden {
   display: none;
 }
+
 .block-item {
   text-align: center;
   display: block;
   margin: 0 auto;
 }
+
 .modal-title {
   color: white;
   font-size: 18pt;
   padding: 0px;
 }
+
 .account-detail {
   padding: 20px;
   list-style: none;
@@ -72,6 +77,11 @@ a {
   width: 60%;
 }
 
+.btn {
+  margin-right: 3px;
+  border-radius: 0 !important;
+}
+
 .nav-brand {
   text-align: center;
   padding-top: 5px;
@@ -93,15 +103,9 @@ a {
   background-color: #337ab7;
   -webkit-border-top-left-radius: 5px;
   -webkit-border-top-right-radius: 5px;
-   border-top-left-radius: 5px;
-   border-top-right-radius: 5px;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
   text-align: center;
-}
-
-.seat {
-  margin-top: 70px;
-  display: inline-block;
-  padding-left: 50px;
 }
 
 #loading {
@@ -241,12 +245,14 @@ input[type=range] {
   margin: 18px 0;
   width: 100%;
 }
+
 input[type=range]:focus {
   outline: none;
 }
+
 input[type=range]::-webkit-slider-runnable-track {
   width: 100%;
-  height: 8.4px;
+  height: 8.0px;
   cursor: pointer;
   animate: 0.2s;
   box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
@@ -254,10 +260,11 @@ input[type=range]::-webkit-slider-runnable-track {
   border-radius: 1.3px;
   border: 0.2px solid #010101;
 }
+
 input[type=range]::-webkit-slider-thumb {
   box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
   border: 1px solid #000000;
-  height: 36px;
+  height: 26px;
   width: 16px;
   border-radius: 3px;
   background: #ffffff;
@@ -265,12 +272,14 @@ input[type=range]::-webkit-slider-thumb {
   -webkit-appearance: none;
   margin-top: -14px;
 }
+
 input[type=range]:focus::-webkit-slider-runnable-track {
   background: #367ebd;
 }
+
 input[type=range]::-moz-range-track {
   width: 100%;
-  height: 8.4px;
+  height: 8.0px;
   cursor: pointer;
   animate: 0.2s;
   box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
@@ -278,18 +287,20 @@ input[type=range]::-moz-range-track {
   border-radius: 1.3px;
   border: 0.2px solid #010101;
 }
+
 input[type=range]::-moz-range-thumb {
   box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
   border: 1px solid #000000;
-  height: 36px;
+  height: 26px;
   width: 16px;
   border-radius: 3px;
   background: #ffffff;
   cursor: pointer;
 }
+
 input[type=range]::-ms-track {
   width: 100%;
-  height: 8.4px;
+  height: 8.0px;
   cursor: pointer;
   animate: 0.2s;
   background: transparent;
@@ -297,30 +308,35 @@ input[type=range]::-ms-track {
   border-width: 16px 0;
   color: transparent;
 }
+
 input[type=range]::-ms-fill-lower {
   background: #2a6495;
   border: 0.2px solid #010101;
   border-radius: 2.6px;
   box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
 }
+
 input[type=range]::-ms-fill-upper {
   background: #3071a9;
   border: 0.2px solid #010101;
   border-radius: 2.6px;
   box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
 }
+
 input[type=range]::-ms-thumb {
   box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
   border: 1px solid #000000;
-  height: 36px;
+  height: 26px;
   width: 16px;
   border-radius: 3px;
   background: #ffffff;
   cursor: pointer;
 }
+
 input[type=range]:focus::-ms-fill-lower {
   background: #3071a9;
 }
+
 input[type=range]:focus::-ms-fill-upper {
   background: #367ebd;
 }

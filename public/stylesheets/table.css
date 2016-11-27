@@ -1,0 +1,109 @@
+#table {
+  background-image: url('../images/table.png');
+  background-repeat: no-repeat;
+  height: 400px;
+  width: 700px;
+  margin-left: 13.5em;
+  margin-top: 10em;
+  transform: scale(0.9);
+  position: relative;
+  background-position: center;
+}
+
+#dealer-cards {
+  margin-left: 11em;
+  margin-top: 10em;
+  display: inline-block;
+}
+
+#dealer-cards > img {
+  margin-right: -10px;
+}
+
+.actions > .btn {
+  padding: 5px;
+  -webkit-transition: 0.25s ease-in-out;
+  -moz-transition: 0.25s ease-in-out;
+  -o-transition: 0.25s ease-in-out;
+  transition: 0.25s ease-in-out;
+}
+
+.actions > .btn:hover {
+  transform: scale(1.2);
+}
+
+#seat1-position {
+  margin-top: -1em;
+  margin-left: 34em;
+  position:absolute;
+}
+
+#seat2-position {
+  margin-top: -17em;
+  margin-left: 2em;
+  position:absolute;
+}
+
+#seat3-position {
+  margin-top: -39.5em;
+  margin-left: 34em;
+  position:absolute;
+}
+
+#seat4-position {
+  margin-top: -17em;
+  margin-left: 65em;
+  position:absolute;
+}
+
+#seat1-statistics {
+  margin-left: 24em;
+  margin-top: 5em;
+  position:absolute;
+  font-weight: bold;
+}
+
+#seat2-statistics {
+  margin-top: -3em;
+  margin-left: 5em;
+  position:absolute;
+  font-weight: bold;
+}
+
+#seat3-statistics {
+  margin-left: 24em;
+  margin-top: -13em;
+  position:absolute;
+  font-weight: bold;
+}
+
+#seat4-statistics {
+  margin-top: -3em;
+  margin-left: 41em;
+  position:absolute;
+  font-weight: bold;
+}
+
+#raise-text {
+  border: 1px black solid;
+  background-color: #428bca;
+  color: white;
+  padding: 0px;
+  margin-bottom: -5px;
+  text-align: center;
+}
+
+#seat1, #seat2, #seat3, #seat4 {
+  margin-bottom: -10px;
+}
+
+#timer {
+  border: 1px black solid;
+  background-color: #d9534f;
+  color: white;
+  padding: 5px;
+  font-size: 2em;
+  margin-top: -15.4em;
+  margin-left: -8em;
+  position: absolute;
+}

@@ -234,7 +234,12 @@ const gameEvents = (io, socket, game, players, db) => {
     }
     let Game = game[socket.gameId];
     let Players = players[socket.gameId];
+    let displayNames = {};
+    Game.seatsOccupied.forEach((seat, index) => {
+      displayNames[seat] = Players[index].displayName;
+    });
     socket.emit('game update', {
+      displayNames: displayNames,
       cards: Game.cards,
       seatsOccupied: Game.seatsOccupied,
       gameStarted: Game.gameStarted
@@ -342,7 +347,7 @@ const gameEvents = (io, socket, game, players, db) => {
         // Define winner and give pot;
         //
         console.log("Total pot:", Game.winnerPot);
-        setTimeout(() => { startGame(socket); }, 2000);
+        setTimeout(() => { startGame(socket); }, 3000);
         return 1;
     }
   }

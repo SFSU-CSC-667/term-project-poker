@@ -7,44 +7,55 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="expires" content="0">
     <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/table.css' />
     <link rel='stylesheet' href='/stylesheets/style.css' />
     <link rel='stylesheet' href='/stylesheets/cards.css' />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
   </head>
   <body>
     <% include includes/header.ejs %>
-    <div class="dealer" id="dealer-cards"><img class='card-image face-down'/></div>
-    <div id="timer"></div>      
-    <div class="seat">
+    <div id='table'>
+      <div id="dealer-cards"><img class='card-image face-down'/></div>
+      <div id="timer" class="hidden"></div>
+      <div id='seat1-statistics'>
+        <div id='seat1-bid'></div>
+        <div id='seat1-pot'></div>
+      </div>
+      <div id='seat2-statistics'>
+        <div id='seat2-bid'></div>
+        <div id='seat2-pot'></div>
+      </div>
+      <div id='seat3-statistics'>
+        <div id='seat3-bid'></div>
+        <div id='seat3-pot'></div>
+      </div>
+      <div id='seat4-statistics'>
+        <div id='seat4-bid'></div>
+        <div id='seat4-pot'></div>
+      </div>
+    </div>
+    <div id="seat1-position">
       <div id="seat1"><button class='join btn btn-lg btn-primary'>Join</button></div>
-      <div id='seat1-bid'></div>
-      <div id='seat1-pot'></div>
-      <div id="seat1-cards"></div>
-      <div id="seat1-actions"></div>
+      <div id="seat1-cards" class="player-cards"></div>
+      <div class="actions" id="seat1-actions"></div>
       <div id="seat1-raise"></div>
     </div>
-    <div class="seat">
+    <div id="seat2-position">
       <div id="seat2"><button class='join btn btn-lg btn-primary'>Join</button></div>
-      <div id='seat2-bid'></div>
-      <div id='seat2-pot'></div>
-      <div id="seat2-cards"></div>
-      <div id="seat2-actions"></div>
+      <div id="seat2-cards" class="player-cards"></div>
+      <div class="actions" id="seat2-actions"></div>
       <div id="seat2-raise"></div>
     </div>
-    <div class="seat">
+    <div id="seat3-position">
       <div id="seat3"><button class='join btn btn-lg btn-primary'>Join</button></div>
-      <div id='seat3-bid'></div>
-      <div id='seat3-pot'></div>
-      <div id="seat3-cards"></div>
-      <div id="seat3-actions"></div>
+      <div id="seat3-cards" class="player-cards"></div>
+      <div class="actions" id="seat3-actions"></div>
       <div id="seat3-raise"></div>
     </div>
-    <div class="seat">
+    <div id="seat4-position">
       <div id="seat4"><button class='join btn btn-lg btn-primary'>Join</button></div>
-      <div id='seat4-bid'></div>
-      <div id='seat4-pot'></div>
-      <div id="seat4-cards"></div>
-      <div id="seat4-actions"></div>
+      <div id="seat4-cards" class="player-cards"></div>
+      <div class="actions" id="seat4-actions"></div>
       <div id="seat4-raise"></div>
     </div>
     <% include includes/footer.ejs %>

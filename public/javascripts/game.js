@@ -52,8 +52,8 @@
   });
 
   socket.on('new player', data => {
-    $(`#${ data.seat }-bid`).html('playerBid: ' + data.bid);
-    $(`#${ data.seat }-pot`).html('playerPot: ' + data.pot);
+    $(`#${ data.seat }-bid`).html('Bid: ' + data.bid);
+    $(`#${ data.seat }-pot`).html('Pot: ' + data.pot);
     $(`#${ data.seat }`).html(data.html);
     $(`#${ data.seat }-actions`).html(createActionButtons());
     seatsOccupied = data.seatsOccupied;
@@ -87,13 +87,13 @@
     if (data.gameStarted) {
       $("#dealer-cards").append(cardImages(data.cards));
       seatsOccupied.forEach(seat => {
-        $(`#${ seat }`).html("<p>Name: Guest </p>");
+        $(`#${ seat }`).html(`<p>Name: ${ data.displayNames[seat] } </p>`);
         $(`#${ seat }-cards`).html(cardImages('face-down', 'face-down'));
       });
     } else {
       seatsOccupied.forEach(seat => {
         $(`#${ seat }-actions`).children('.ready-btn').remove();
-        $(`#${ seat }`).html('<p>Name: Guest </p>');
+        $(`#${ seat }`).html(`<p>Name: ${ data.displayNames[seat] } </p>`);
         $(`#${ seat }-actions`).html('<button data-status="status" class="btn btn-success" disabled="disabled">Playing</button>');
       });
     }
@@ -108,8 +108,8 @@
   });
 
   socket.on('update player statistics', data => {
-    $(`#${ data.seat }-bid`).html('playerBid: ' + data.playerBid);
-    $(`#${ data.seat }-pot`).html('playerPot: ' + data.playerPot);
+    $(`#${ data.seat }-bid`).html('Bid: ' + data.playerBid);
+    $(`#${ data.seat }-pot`).html('Pot: ' + data.playerPot);
   });
 
   socket.on('remove all cards', () => {
@@ -129,7 +129,8 @@
   });
 
   socket.on('player cards', data => {
-    $(`#${ data.seat }-cards`).html(cardImages(data.first, data.second));
+    $(`#${ data.seat }-cards`).html(cardImages(data.first));
+    setTimeout(() => { $(`#${ data.seat }-cards`).append(cardImages(data.second)); }, 200);
     seatsOccupied.forEach(seat => {
       if (seat !== data.seat) {
         $(`#${ seat }-cards`).html(cardImages('face-down', 'face-down'));
@@ -157,8 +158,10 @@
   });
 
   socket.on('insufficient blind kick', data => {
-    seatsOccupied = data.seatsOccupied;
-    freeUpSeat(data.seat);
+    setTimeout(() => {
+      seatsOccupied = data.seatsOccupied;
+      freeUpSeat(data.seat);
+    }, 1000);
   });
 
   function cardImages(...cardNames) {
@@ -197,6 +200,7 @@
     timer = 30;
     playerTookAction = 0;
     $('#timer').html('Timer: ' + timer);
+    $(`#timer`).removeClass('hidden');
     timeInterval = setInterval(() => {
       timer--;
       $('#timer').html('Timer: ' + timer);
@@ -206,6 +210,7 @@
           $(`#${ seat }-raise`).children().prop('disabled', true);
           player.emit('action button', { action: 'fold' });
         }
+        $(`#timer`).addClass('hidden');
         $('#timer').html('');
         clearInterval(timeInterval);
       }
@@ -213,7 +218,6 @@
   }
 
   function freeUpSeat(seat) {
-    console.log(seat);
     $(`#${ seat }`).html(`<button class="join btn btn-lg btn-primary">Join</button>`);
     $(`#${ seat }-bid`).html('');
     $(`#${ seat }-pot`).html('');
@@ -236,8 +240,8 @@
   function createRaiseSlider(playerBid, playerPot) {
     let maxRaise = playerPot + playerBid - callMinimum;
     return (
-      `<input id="slider" type="range" min="50" max=${ maxRaise } step="50" value="50"/>` +
-      '<p>Raise Amount: <span id="raise-amount">50</span></p>'
+      '<p id="raise-text">Raise Amount: <span id="raise-amount">50</span></p>' +
+      `<input id="slider" type="range" min="50" max=${ maxRaise } step="50" value="50"/>`
     );
   }
 
