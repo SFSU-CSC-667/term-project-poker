@@ -186,13 +186,13 @@
       $(`#${ seat }-actions`).children('[data-action="check"]').prop('disabled', true);
       $(`#${ seat }-actions`).children('[data-action="raise"]').prop('disabled', true);
     }
-    // Temp disable until we get manual raising.
-    if ((playerBid + playerPot) < (callMinimum + 200)) {
+    if ((playerBid + playerPot) < (callMinimum + 50)) {
       $(`#${ seat }-actions`).children('[data-action="raise"]').prop('disabled', true);
     }
     if (playerPot === 0) {
       $(`#${ seat }-actions`).children('[data-action="raise"]').prop('disabled', true);
       $(`#${ seat }-actions`).children('[data-action="all in"]').prop('disabled', true);
+      $(`#${ seat }-actions`).children('[data-action="check"]').prop('disabled', false);
     }
   }
 
