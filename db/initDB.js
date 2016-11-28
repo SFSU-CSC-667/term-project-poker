@@ -1,11 +1,13 @@
 const pgp = require('pg-promise')();
 
+pgp.pg.defaults.ssl = true;
+
 let connection = {
-  host: 'localhost',
+  host: 'ec2-54-235-78-240.compute-1.amazonaws.com',
   port: 5432,
-  database: 'poker-game',
-  user: 'user',
-  password: 'root'
+  database: 'd96qs31grpmtm6',
+  user: 'ggmuhtujnkmfwl',
+  password: '8_VEz6_jG4N3Z8AyF-wdzv1VGb',
 };
 
 const db = pgp(connection);
