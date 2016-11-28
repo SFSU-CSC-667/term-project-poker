@@ -1,24 +1,31 @@
 (() => {
-  socket.on('chatMessage', function(from, msg) {
+  socket.on('message response', data => {
     var me = $('#user').val();
-    var color = (from == me) ? 'green' : '#009afd';
-    var from = (from == me) ? socket.userName : from;
-    $('#message-list').append('<li><b style="color:' + color + '">' + from + '</b>: ' + msg + '</li>');
+    // var color = (from == me) ? 'green' : '#009afd';
+    // var from = (from == me) ? socket.userName : from;
+    $('#message-list').append('<li>' + data.displayName + '</b>: ' + data.message + '</li>');
   });
 
-  $(document).ready(function(){
-    $('#user').val(socket.userName);
-    socket.emit('chatMessage', 'System', '<b>' + socket.userName + '</b> has joined the chat');
+  socket.emit('join chat');
+
+  socket.on('user details', data => {
+    let message = 'System: ' + '<b>' + data.displayName + '</b> has joined the chat';
+    $('#user').val(data.displayName);
+    socket.emit('join message', { message });
+  });
+
+  socket.on('join response', data => {
+    $('#message-list').append('<li>' + data.message + '</li>');
   });
 
 })();
 
-function submitfunction(){
+function submitfunction() {
 
   var from = $('#user').val();
   var message = $('#message').val();
-  if(message != '') {
-    socket.emit('chatMessage', from, message);
+  if (message !== '') {
+    socket.emit('send message', { message });
   }
   $('#message').val('').focus();
 

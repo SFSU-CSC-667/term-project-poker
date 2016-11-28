@@ -57,7 +57,7 @@ const accountEvents = (io, socket, users, db) => {
           users[socket.id] = { firstName: response.firstname, email: data.email };
           console.log("Users: " + Object.keys(users).length);
           socket.userName = data.email;
-          socket.displayName = response.firstname + ' ' + response.lastname[0] + '.';
+          socket.displayName = response.firstname + ' ' + response.lastname[0];
         } else {
           socket.emit("account signin response", { success: 0 });
         }
