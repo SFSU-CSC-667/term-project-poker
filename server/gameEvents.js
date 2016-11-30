@@ -263,7 +263,7 @@ const gameEvents = (io, socket, game, players, db) => {
       bid: socket.bid,
       pot: socket.pot,
       seatsOccupied: Game.seatsOccupied,
-      html: "<p>Name: " + socket.displayName + "</p>"
+      html: "<p class='display-name'>Name: " + socket.displayName + "</p>"
     });
     socket.emit('enable ready button', {
       seat: socket.seat

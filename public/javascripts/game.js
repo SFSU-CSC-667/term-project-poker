@@ -87,13 +87,13 @@
     if (data.gameStarted) {
       $("#dealer-cards").append(cardImages(data.cards));
       seatsOccupied.forEach(seat => {
-        $(`#${ seat }`).html(`<p>Name: ${ data.displayNames[seat] } </p>`);
+        $(`#${ seat }`).html(`<p class='display-name'>Name: ${ data.displayNames[seat] } </p>`);
         $(`#${ seat }-cards`).html(cardImages('face-down', 'face-down'));
       });
     } else {
       seatsOccupied.forEach(seat => {
         $(`#${ seat }-actions`).children('.ready-btn').remove();
-        $(`#${ seat }`).html(`<p>Name: ${ data.displayNames[seat] } </p>`);
+        $(`#${ seat }`).html(`<p class='display-name'>Name: ${ data.displayNames[seat] } </p>`);
         $(`#${ seat }-actions`).html('<button data-status="status" class="btn btn-success" disabled="disabled">Playing</button>');
       });
     }
@@ -139,7 +139,7 @@
   });
 
   socket.on('draw flop cards', data => {
-    $("#dealer-cards").html(cardImages('face-down', data.first, data.second, data.third));
+    $("#dealer-cards").html(cardImages(data.first, data.second, data.third));
   });
 
   socket.on('draw turn card', data => {
