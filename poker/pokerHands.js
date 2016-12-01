@@ -1,12 +1,15 @@
-var deckFile = require('./deck.js');
-var Deck = new deckFile();
+const deckFile = require('./deck.js');
+const Deck = new deckFile();
 
-class Hands{
-  
+class PokerHands{
+  constructor() {
+    this.winningHand = [];
+  }
+
   getHand(hand, sharedCards){
-    
+
     let playerHand = [];
-    
+
     if(this.containsRoyalFlush(hand, sharedCards)){
       playerHand = this.getRoyalFlushHand(hand, sharedCards);
       playerHand.push(10);
@@ -47,7 +50,7 @@ class Hands{
       playerHand = this.getHighHand(hand, sharedCards);
       playerHand.push(1);
     }
-    
+
     return playerHand;
 
   }
@@ -58,20 +61,20 @@ class Hands{
   combineHand(hand, sharedCards){
 
     hand = hand.concat(sharedCards);
-    
+
     return hand;
 
   }
 
   prepareHand(hand){
-    
+
     let newHand = [];
 
     for( let index in hand )
       newHand.push(hand[index] % 13) ;
 
     newHand.sort(function(a,b){return a-b;});
-    
+
     return newHand;
 
   }
@@ -80,15 +83,15 @@ class Hands{
 
     for( let index in hand )
       hand[index] = Math.floor( hand[index] / 13 );
-    
+
     return hand;
 
   }
 
   filter(card, hand){
-    
+
     let newHand = [];
-    
+
     for(let i in hand)
       if( hand[i]%13 != card )
         newHand.push(hand[i]);
@@ -98,7 +101,7 @@ class Hands{
   }
 
   getIndex(hand, pairCard){
-    
+
     for(let i = 0; i < hand.length; i++)
       if(hand[i]%13 == pairCard)
         return hand[i];
@@ -110,29 +113,29 @@ class Hands{
   /********************************************************************/
 
   getKickers(hand, numOfCards){
-    
+
     let kickers = [];
 
     while(true){
-      
+
       let largestCard = hand[0];
       let indexToRemove = 0;
-      
-      if(hand[0] != 0) 
-        for( let j = 1 ; j < hand.length ; j++ )         
+
+      if(hand[0] != 0)
+        for( let j = 1 ; j < hand.length ; j++ )
       if( largestCard%13 < hand[j]%13 ){
         largestCard = hand[j];
         indexToRemove = j;
       }
-      
+
       kickers.push(largestCard);
       hand.splice(indexToRemove, 1);
-      
+
       if(kickers.length == numOfCards)
         return kickers;
-    
+
     }
-        
+
   }
 
   /********************************************************************/
@@ -140,14 +143,14 @@ class Hands{
   /********************************************************************/
 
   getHighHand(hand, sharedCards){
-    
+
     let numOfKickers = 5;
     let newHand = [];
 
     hand = this.combineHand(hand, sharedCards);
 
     newHand = this.getKickers(hand, numOfKickers);
-    
+
     return newHand;
 
   }
@@ -171,11 +174,11 @@ class Hands{
   }
 
   getPairCard(hand, sharedCards){
-    
+
     hand = this.combineHand(hand, sharedCards);
     hand = this.prepareHand(hand);
     hand.reverse();
-    
+
     /* return ace */
     if(hand[hand.length-1] == 0 && hand[hand.length-2] == 0)
       return 0;
@@ -189,20 +192,20 @@ class Hands{
   }
 
   getPairHand(hand, sharedCards){
-    
+
     /* get pair cards and add to new hand */
-    let pairCard = this.getPairCard(hand, sharedCards); 
+    let pairCard = this.getPairCard(hand, sharedCards);
     let pairHand = [];
     let newHand = [];
     let numOfKickers = 3;
     let kickers;
 
     hand = this.combineHand(hand, sharedCards);
-    
+
     for(let i = 0; i < hand.length; i++)
       if(hand[i]%13 == pairCard)
         pairHand.push(hand[i]);
-    
+
     hand = this.filter(pairCard, hand);
     kickers = this.getKickers(hand, numOfKickers);
     newHand.push(pairHand);
@@ -216,7 +219,7 @@ class Hands{
   /************************ find two pair  ****************************/
   /********************************************************************/
   containsTwoPair(hand, sharedCards){
-    
+
     let pairFound = this.getContainsPair(hand, sharedCards);
     let pairCard;
 
@@ -227,7 +230,7 @@ class Hands{
 
     hand = this.filter(pairCard, hand);
     sharedCards = this.filter(pairCard, sharedCards);
-    
+
     pairFound = this.getContainsPair(hand, sharedCards);
 
     if(pairFound)
@@ -239,16 +242,16 @@ class Hands{
 
   getPairIndex(hand, sharedCards, pairCard){
 
-    let newHand = []; 
+    let newHand = [];
     let combinedHand = hand.concat(sharedCards);
-    
+
     let firstCardIndex = this.getIndex(combinedHand, pairCard);
     let index = combinedHand.indexOf(firstCardIndex);
 
     combinedHand.splice(index, 1);
 
     let secondCardIndex = this.getIndex(combinedHand, pairCard);
-    
+
     newHand.push(firstCardIndex);
     newHand.push(secondCardIndex);
 
@@ -257,26 +260,26 @@ class Hands{
   }
 
   getTwoPairHand(hand, sharedCards){
-    
+
     let newHand = [];
-    let pairCards = []; 
+    let pairCards = [];
     let numOfKickers = 1;
-    
+
     for(let i = 0; i < 2; i++){
-      
+
       let pairCard = this.getPairCard(hand, sharedCards);
       let pairCardIndexs = this.getPairIndex(hand, sharedCards, pairCard);
-      
+
       newHand.push(pairCardIndexs);
-      
+
       hand = this.filter(pairCard, hand);
       sharedCards = this.filter(pairCard, sharedCards);
-    
+
     }
-    
+
     hand = this.combineHand(hand, sharedCards);
     let kickers = this.getKickers(hand, numOfKickers);
-    
+
     newHand.push(kickers);
 
     return newHand;
@@ -306,7 +309,7 @@ class Hands{
     hand = this.combineHand(hand, sharedCards);
     hand = this.prepareHand(hand);
     hand.reverse();
-    
+
     let ace = 0;
 
     /* look for ace */
@@ -322,10 +325,10 @@ class Hands{
   }
 
   getTripsIndexs(hand, sharedCards, tripsCard){
-    
+
     let newHand = [];
     hand = this.combineHand(hand, sharedCards);
-    
+
     for(let i = 0; i < hand.length; i++)
       if(hand[i]%13 == tripsCard)
         newHand.push(hand[i]);
@@ -335,21 +338,21 @@ class Hands{
   }
 
   getTripsHand(hand, sharedCards){
-    
+
     /* add trips to new hand */
     let tripsCard = this.getTripsCard(hand, sharedCards);
     let newHand = [];
     let numOfKickers = 2;
     let tripsIndexs = this.getTripsIndexs(hand, sharedCards, tripsCard);
-   
+
     hand = this.combineHand(hand, sharedCards);
     hand = this.filter(tripsCard, hand);
-    
+
     let kickers = this.getKickers(hand, numOfKickers);
-    
+
     newHand.push(tripsIndexs);
     newHand.push(kickers);
-    
+
     return newHand;
 
   }
@@ -358,30 +361,30 @@ class Hands{
   /********************* find straight ********************************/
   /********************************************************************/
   containsStraight(hand, sharedCards){
-    
+
     hand = this.combineHand(hand, sharedCards);
-    hand = this.prepareHand(hand); 
+    hand = this.prepareHand(hand);
     hand = this.removeDuplicates(hand);
-     
-    let ace = 0, king = 12, queen = 11, jack = 10, ten = 9; 
-     
+
+    let ace = 0, king = 12, queen = 11, jack = 10, ten = 9;
+
     if(hand.includes(ace)   && hand.includes(king) && hand.includes(queen) &&
        hand.includes(jack)  && hand.includes(ten))
        return true;
 
     /* find 5 consecutive numbers */
     for( let i = 0; i < hand.length - 4; i++ ){
-      
+
       let tempHand = [];
 
       for( let j = i; j < i + 5; j++ )
         tempHand.push(hand[j]);
-      
+
       if(this.checkStraight(tempHand))
         return true;
-    
+
     }
-    
+
     return false;
 
   }
@@ -393,15 +396,15 @@ class Hands{
          return false;
 
     return true;
-    
+
   }
 
   removeDuplicates(hand){
-    
-    let counter = 0; 
+
+    let counter = 0;
 
     while(true){
-      
+
       if(hand[counter] == hand[counter+1])
         hand.splice(counter, 1);
       else
@@ -415,41 +418,41 @@ class Hands{
   }
 
   getStraightCards(hand, sharedCards){
-    
+
     let newHand = [];
 
     hand = this.combineHand(hand, sharedCards);
     hand = this.prepareHand(hand);
-   
+
     /* check for aces */
-    let ace = 0, king = 12, queen = 11, jack = 10, ten = 9; 
-     
+    let ace = 0, king = 12, queen = 11, jack = 10, ten = 9;
+
     if(hand.includes(ace)   && hand.includes(king) && hand.includes(queen) &&
        hand.includes(jack)  && hand.includes(ten)){
-         
+
          newHand.push(ace);
          newHand.push(king);
          newHand.push(queen);
          newHand.push(jack);
          newHand.push(ten);
-         
+
          return newHand;
 
        }
-    
+
 
     /* find 5 consecutive numbers */
     for( let i = 6; i > 3; i-- ){
-      
+
       newHand = [];
 
       for( let j = i; j > i - 5; j-- )
         newHand.push(hand[j]);
-      
+
       if(this.checkStraight(newHand.reverse()))
         return newHand;
-      
-    
+
+
     }
 
     return -1;
@@ -457,12 +460,12 @@ class Hands{
   }
 
   getStraightHand(hand, sharedCards){
-    
+
     let straightCards = this.getStraightCards(hand, sharedCards);
     let straightHand = [];
 
     hand = this.combineHand(hand, sharedCards);
-    
+
     /* push ace first */
 
     for(let i = 0; i < straightCards.length; i++)
@@ -471,7 +474,7 @@ class Hands{
           straightHand.push(hand[j]);
       break;
         }
-    
+
     return straightHand;
 
   }
@@ -480,27 +483,27 @@ class Hands{
   /********************************************************************/
 
   containsFlush(hand, sharedCards){
-    
+
     hand = this.combineHand(hand, sharedCards);
     hand = this.prepareFlush(hand);
-      
+
     /* need to check for grouping */
     for( let suit = 0; suit < 4; suit++ )
       if( this.checkFlush(suit, hand) )
         return true;
-    
+
     return false;
 
   }
 
   checkFlush(suit, cards){
-    
+
     let counter = 0;
 
     for( let index in cards )
       if( suit == cards[index] )
         counter++;
-    
+
     if(counter > 4)
       return true;
 
@@ -513,11 +516,11 @@ class Hands{
     hand = this.combineHand(hand, sharedCards);
     hand = this.prepareFlush(hand);
     hand.sort(function(a,b){ return a - b});
-    
+
     let counter = 1;
 
     for(let i = 0; i < hand.length; i++){
-      
+
       if(hand[i] == hand[i+1])
         counter++;
       else
@@ -525,23 +528,23 @@ class Hands{
 
       if(counter >= 5)
         return hand[i];
-    
+
     }
-    
+
   }
 
   /* check for aces */
   getFlushCards(hand, sharedCards){
-    
+
     let flushSuit = this.getFlushSuit(hand, sharedCards);
     let newHand = [];
-    let cardSuit; 
+    let cardSuit;
     hand = this.combineHand(hand, sharedCards);
-    
+
     for(let i = 0; i < hand.length; i++){
-      
+
       cardSuit = Math.floor( hand[i] / 13 );
-      
+
       if(cardSuit == flushSuit)
         newHand.push(hand[i]);
 
@@ -549,20 +552,20 @@ class Hands{
 
     newHand.sort(function(a,b){ return a-b});
     newHand.reverse();
-    
+
     return newHand;
-    
+
   }
 
   getFlushHand(hand, sharedCards){
-    
+
     let flushCards = this.getFlushCards(hand, sharedCards);
-      
+
     if(flushCards.length == 5)
       return flushCards;
 
     if( (flushCards[flushCards.length-1] )%13 == 0){
-      
+
       let ace = flushCards.pop();
 
       while(flushCards.length != 4)
@@ -574,11 +577,11 @@ class Hands{
     else
       while(flushCards.length != 5)
         flushCards.pop();
-    
+
     return flushCards;
 
 
-   
+
   }
 
   /********************************************************************/
@@ -586,31 +589,31 @@ class Hands{
   /********************************************************************/
 
   containsQuads(hand, sharedCards){
-    
+
     hand = this.combineHand(hand, sharedCards);
     hand = this.prepareHand(hand);
-    
+
     for( let i = 0; i < 4; i++ )
       if(hand[i] == hand[i+1] && hand[i] == hand[i+2] && hand[i] == hand[i+3])
         return true;
-     
+
     return false;
-    
+
   }
 
   getQuadCard(hand, sharedCards){
-    
+
     hand = this.combineHand(hand, sharedCards);
     hand = this.prepareHand(hand);
-    
+
     for( let i = 0; i < 4; i++ )
       if(hand[i] == hand[i+1] && hand[i] == hand[i+2] && hand[i] == hand[i+3])
         return hand[i];
-     
+
   }
 
   getQuadIndexs(hand, quadCard){
-    
+
     let newHand = [];
 
     for( let i = 0; i < hand.length; i++ )
@@ -621,24 +624,24 @@ class Hands{
 
   }
   getQuadHand(hand, sharedCards){
-    
+
     let quadCard = this.getQuadCard(hand, sharedCards);
     let newHand = [];
     let numOfKickers = 1;
-    
+
 
     hand = hand.concat(sharedCards);
-    
+
     let quadIndexs = this.getQuadIndexs(hand, quadCard);
-   
+
     hand = this.filter(quadCard, hand);
     let kickers = this.getKickers(hand, numOfKickers);
-    
+
     newHand.push(quadIndexs);
     newHand.push(kickers);
-    
+
     return newHand;
-       
+
   }
 
   /********************************************************************/
@@ -649,12 +652,12 @@ class Hands{
 
     let tripsFound = this.containsTrips(hand, sharedCards);
     let tripsCard;
-    
+
     if(tripsFound)
       tripsCard = this.getTripsCard(hand, sharedCards);
     else
       return false;
-   
+
     hand = this.filter(tripsCard, hand);
     sharedCards = this.filter(tripsCard, sharedCards);
 
@@ -668,16 +671,16 @@ class Hands{
   }
 
   getFullHouseHand(hand, sharedCards){
-    
-    let newHand = []; 
+
+    let newHand = [];
 
     let tripsCard = this.getTripsCard(hand, sharedCards);
     let tripIndex = this.getTripsIndexs(hand, sharedCards, tripsCard);
 
     hand = this.filter(tripsCard, hand);
     sharedCards = this.filter(tripsCard, sharedCards);
-    
-    let pairCard = this.getPairCard(hand, sharedCards); 
+
+    let pairCard = this.getPairCard(hand, sharedCards);
     let pairIndex = this.getPairIndex(hand, sharedCards, pairCard);
 
     newHand.push(tripIndex);
@@ -691,11 +694,11 @@ class Hands{
   /********************************************************************/
 
   containsStraightFlush(hand, sharedCards){
-    
+
     hand = this.combineHand(hand, sharedCards);
     hand.sort(function(a,b){ return a - b});
 
-    for(let i = 0; i < hand.length - 4; i++)    
+    for(let i = 0; i < hand.length - 4; i++)
       if( (hand[i] == hand[i+1]-1 ) && (hand[i] == hand[i+2]-2 ) &&
           (hand[i] == hand[i+3]-3 ) && (hand[i] == hand[i+4]-4))
         return true;
@@ -705,7 +708,7 @@ class Hands{
   }
 
   getStraightFlushHand(hand, sharedCards){
-    
+
     let flushFound = this.containsFlush(hand, sharedCards);
 
     if(flushFound)
@@ -714,17 +717,17 @@ class Hands{
     let newHand = [];
     hand.sort(function(a,b){ return a-b});
     hand.reverse();
-    
-    for(let i = 0; i < hand.length - 4; i++)    
+
+    for(let i = 0; i < hand.length - 4; i++)
       if( (hand[i] == hand[i+1]+1 ) && (hand[i] == hand[i+2]+2 ) &&
           (hand[i] == hand[i+3]+3 ) && (hand[i] == hand[i+4]+4 )){
-          
+
       newHand.push(hand[i]);
       newHand.push(hand[i+1]);
       newHand.push(hand[i+2]);
       newHand.push(hand[i+3]);
       newHand.push(hand[i+4]);
-          break; 
+          break;
        }
 
     return newHand;
@@ -736,10 +739,10 @@ class Hands{
   /********************************************************************/
 
   containsRoyalFlush(hand, sharedCards){
-    
-    let flushFound = this.containsFlush(hand, sharedCards); 
+
+    let flushFound = this.containsFlush(hand, sharedCards);
     let ace = 0, king = 12, queen = 11, jack = 10, ten = 9;
-    
+
     if(!flushFound)
       return false;
 
@@ -753,11 +756,11 @@ class Hands{
        return true;
 
     return false;
-   
+
   }
 
   getRoyalFlushHand(hand, sharedCards){
-    
+
     let flushHand = this.getFlushHand(hand, sharedCards);
 
     return flushHand;
@@ -769,7 +772,7 @@ class Hands{
   /********************************************************************/
 
   compareHand(playerOne, playerTwo ){
-    
+
     let playerOneID = playerOne[0];
     let playerOneCards = playerOne[1];
     let playerOneHand = playerOneCards[playerOneCards.length-1];
@@ -777,14 +780,14 @@ class Hands{
     let playerTwoID = playerTwo[0];
     let playerTwoCards = playerTwo[1];
     let playerTwoHand = playerTwoCards[playerOneCards.length-1];
-    
+
     if( playerOneHand > playerTwoHand )
       return playerOneID;
     else if( playerOneHand < playerTwoHand )
       return playerTwoID;
     else{
 
-      /* in case of same type of hand e.g. both players have full houses */    
+      /* in case of same type of hand e.g. both players have full houses */
       if(playerOneHand == 1)
         return this.compareValue(playerOne, playerTwo);
       else if(playerOneHand == 2)
@@ -796,31 +799,31 @@ class Hands{
       else if(playerOneHand == 5)
         return this.compareValue(playerOne, playerTwo);
       else if(playerOneHand == 6)
-        return this.compareValue(playerOne, playerTwo); 
+        return this.compareValue(playerOne, playerTwo);
       else if(playerOneHand == 7)
         return this.compareFullHouse(playerOne, playerTwo);
       else if(playerOneHand == 8)
         return this.compareQuads(playerOne, playerTwo);
       else if(playerOneHand == 9)
-        return this.compareValue(playerOne, playerTwo); 
+        return this.compareValue(playerOne, playerTwo);
       else if(playerOneHand == 10)
         return this.compareValue(playerOne, playerTwo);
     }
-     
+
   }
 
   compareValue(playerOne, playerTwo){
-    
+
     let ace = 0;
-    
+
     let playerOneID = playerOne[0];
     let playerTwoID = playerTwo[0];
 
     let playerOneCards = this.prepareHand(playerOne[1]);
     let playerTwoCards = this.prepareHand(playerTwo[1]);
-    
+
     for(let i = 0; i < playerOneCards.length; i++){
-      
+
       /* check for ace */
       if(playerOneCards[i] == ace && playerTwoCards[i] != ace)
         return playerOneID;
@@ -839,7 +842,7 @@ class Hands{
   }
 
   comparePair(playerOne, playerTwo){
-    
+
     let playerOneID = playerOne[0];
     let playerOneCards = playerOne[1];
 
@@ -848,10 +851,10 @@ class Hands{
 
     let playerOnePair = this.getValue(playerOneCards[0][0]);
     let playerTwoPair = this.getValue(playerTwoCards[0][0]);
-    
+
     let playerOneKickers = playerOneCards[1];
     let playerTwoKickers = playerTwoCards[1];
-    
+
     if(playerOnePair > playerTwoPair)
       return playerOneID;
     else if(playerOnePair < playerTwoPair)
@@ -861,9 +864,9 @@ class Hands{
   }
 
   getValue(card){
-    
+
     let cardValue = card%13;
-    
+
     if(cardValue == 0)
       cardValue = 13;
 
@@ -872,13 +875,13 @@ class Hands{
   }
 
   compareTwoPair(playerOne, playerTwo){
-    
+
     let playerOneID = playerOne[0];
     let playerOneCards = playerOne[1];
 
     let playerTwoID = playerTwo[0];
     let playerTwoCards = playerTwo[1];
-    
+
     let playerOneFirstPair = this.getValue(playerOneCards[0][0]);
     let playerOneSecondPair = this.getValue(playerOneCards[1][1]);
     let playerOneKicker = this.getValue(playerOneCards[2]);
@@ -904,48 +907,48 @@ class Hands{
         else
           return "tie";
       }
-       
+
     }
 
   }
 
   compareTrips(playerOne, playerTwo){
-    
+
     let playerOneID = playerOne[0];
     let playerOneCards = playerOne[1];
 
     let playerTwoID = playerTwo[0];
     let playerTwoCards = playerTwo[1];
-    
+
     let playerOneTrips = this.getValue(playerOneCards[0][1]);
     let playerOneKickers = playerOneCards[1];
 
     let playerTwoTrips = this.getValue(playerTwoCards[0][1]);
     let playerTwoKickers = playerTwoCards[1];
-    
+
     if(playerOneTrips > playerTwoTrips)
       return playerOneID;
     else if(playerOneTrips < playerTwoTrips)
       return playerTwoID;
     else
       return this.compareValue(playerOne, playerTwo);
-     
+
   }
 
   compareFullHouse(playerOne, playerTwo){
-    
+
     let playerOneID = playerOne[0];
     let playerOneCards = playerOne[1];
 
     let playerTwoID = playerTwo[0];
     let playerTwoCards = playerTwo[1];
-    
+
     let playerOneTrips = this.getValue(playerOneCards[0][1]);
     let playerOnePair = this.getValue(playerOneCards[1][1]);
 
     let playerTwoTrips = this.getValue(playerTwoCards[0][1]);
     let playerTwoPair = this.getValue(playerTwoCards[1][1]);
-    
+
     if(playerOneTrips > playerTwoTrips)
       return playerOneID;
     else if(playerOneTrips < playerTwoTrips)
@@ -962,67 +965,67 @@ class Hands{
   }
 
   compareQuads(playerOne, playerTwo){
-    
+
     let playerOneID = playerOne[0];
     let playerOneCards = playerOne[1];
-    
+
     let playerTwoID = playerTwo[0];
     let playerTwoCards = playerTwo[1];
-    
+
     let playerOneQuads = this.getValue(playerOneCards[0][1]);
     let playerOneKicker = this.getValue(playerOneCards[1]);
-    
+
     let playerTwoQuads = this.getValue(playerTwoCards[0][1]);
     let playerTwoKicker = this.getValue(playerTwoCards[1]);
-    
+
     if(playerOneQuads > playerTwoQuads)
       return playerOneID;
     else if(playerOneQuads < playerTwoQuads)
       return playerTwoID;
     else
-      return this.compareValue(playerOne, playerTwo);    
-    
+      return this.compareValue(playerOne, playerTwo);
+
   }
 
   getWinningIndexs(hand){
-    
+
     let newHand = [];
 
-    for(let i = 0; i < hand.length - 1; i++)  
+    for(let i = 0; i < hand.length - 1; i++)
       newHand = newHand.concat(hand[i]);
-    
+
     return newHand;
 
 
   }
- 
+
   processHands(sharedCards, playerCards){
-    
+
     let players = [];
 
     for(var i in playerCards){
       let playerHand = playerCards[1];
       playerHand = playerHand.concat(sharedCards);
-      
+
 
     }
   }
 
   getIndices(playerHand){
-    
+
     let newHand =  [];
     let deck = Deck.getDeck();
 
     for(var i in playerHand)
       newHand.push( deck.indexOf(playerHand[i]) );
-     
+
     return newHand;
 
   }
-     
+
   determineWinner(players){
-    
-    let currentWinner = players[0]; 
+
+    let currentWinner = players[0];
     let currentWinnerID;
     let winningHand = currentWinner[1];
     let winningInfo = [];
@@ -1033,62 +1036,62 @@ class Hands{
 
 
     for(let i = 1; i < players.length; i++){
-      
+
       currentWinnerID = currentWinner[0];
 
       let newPlayer = players[i];
-      let newPlayerID = players[i][ID]; 
+      let newPlayerID = players[i][ID];
       let winnerID = this.compareHand(currentWinner, newPlayer);
       let winnerHand;
 
       if(winnerID == currentWinnerID)
         continue;
       else if(winnerID == newPlayerID){
-        
+
         currentWinner = newPlayer;
         winnerHand = currentWinner[1];
         currentWinnerID = currentWinner[0];
 
         tiePool = [];
         tieFlag = false;
-      
+
       }
       else{
-       
+
         winningHand = currentWinner[1];
         tiePool.push(newPlayerID);
         tieFlag = true;
-        
+
         if( !tiePool.includes(currentWinnerID) )
           tiePool.push(currentWinnerID);
-      
+
       }
-    
+
     }
-    
+
     if(tieFlag){
-      
-      tiePool.push( this.getWinningIndexs(winningHand) );
+
+      this.winningHand = this.getWinningIndexs(winningHand);
       return tiePool;
-    
+
     }
     else{
-      
+
       winningInfo.push(currentWinnerID);
-      winningInfo.push( this.getWinningIndexs(winningHand) );
+      this.winningHand = this.getWinningIndexs(winningHand);
       return winningInfo;
-    
+
     }
 
   }
-  
+
   processHands(sharedCards, playerCards){
-    
+
     let players = [];
     let sharedIndices = this.getIndices(sharedCards);
-    
+
     for(var i in playerCards){
-      
+
       let playerID = playerCards[i][0];
       let playerIndices = this.getIndices(playerCards[i][1]);
       let playerHand = this.getHand(sharedIndices, playerIndices);
@@ -1098,12 +1101,22 @@ class Hands{
       players.push(player);
 
     }
-    
+
     let winner = this.determineWinner(players);
     return winner;
-  
+
+  }
+
+  getWinningHand(){
+
+    let deck = Deck.getDeck();
+    let winningCards = [];
+    this.winningHand.forEach(cardIndex => { winningCards.push(deck[cardIndex]); });
+    return winningCards;
+
   }
 
 }//End class
 
-module.exports = Hands;
+
+module.exports = PokerHands;

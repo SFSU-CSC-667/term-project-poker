@@ -1,5 +1,6 @@
 const gameEvents = (io, socket, game, players, db) => {
   const Deck = require('../poker/deck.js');
+  const PokerHands = require('../poker/pokerHands.js');
 
   socket.on('create game request', data => {
     db.one('INSERT INTO Games (GameName, MaxPlayers, MinBid, MinChips) VALUES' +
@@ -38,7 +39,8 @@ const gameEvents = (io, socket, game, players, db) => {
         deck: new Deck(), ready: 0,
         seatsOccupied: [], currentPot: 0,
         currentCallMinimum: 100, turn: 0, round: 0,
-        gameStarted: false, blindIncrement: -1
+        gameStarted: false, blindIncrement: -1,
+        pokerHands: new PokerHands()
       };
     }
     acceptRequest(socket, data);
@@ -343,13 +345,55 @@ const gameEvents = (io, socket, game, players, db) => {
         break;
       case 4:
         showAllCards(socket);
-        //
-        // Define winner and give pot;
-        //
+        determineWinner(socket);
         console.log("Total pot:", Game.winnerPot);
         setTimeout(() => { startGame(socket); }, 3000);
         return 1;
     }
+  }
+
+  function determineWinner(socket) {
+    let Game = game[socket.gameId];
+    let Players = players[socket.gameId];
+    let playerCards = [];
+    let winners = [];
+    Players.forEach(player => {
+      let seatId = player.seat;
+      let cards = player.cards;
+      let playerDetails = [seatId, cards];
+      playerCards.push(playerDetails);
+    });
+    winners = Game.pokerHands.processHands(Game.cards, playerCards);
+    if (winners.length === 1) {
+      Game.winner = winners[0];
+      playerWins(socket);
+      return;
+    }
+    multipleWinners(socket, winners);
+  }
+
+  function multipleWinners(socket, winners) {
+    let Game = game[socket.gameId];
+    let Players = players[socket.gameId];
+    let splitPot = Game.winnerPot / winners.length;
+    console.log("We got multiple winners! ", winners, splitPot);
+    winners.forEach(winner => {
+      Players[getSeatIndex(socket, winner)].pot += splitPot;
+      Players.forEach(player => {
+        if (Players[getSeatIndex(socket, winner)].userName && player.userName) {
+          if (player.userName === Players[getSeatIndex(winner)].userName) {
+            let netGain = player.bid + player.pot - player.startAmount;
+            db.none(`UPDATE Users SET chips = chips + ${ netGain } WHERE email = '${ player.userName }'`);
+          }
+        }
+        player.startAmount = player.pot; // New Start Amount.
+      });
+      io.to(socket.gameId).emit('update player statistics', {
+        seat: winner,
+        playerBid: 0,
+        playerPot: Players[getSeatIndex(socket, winner)].pot,
+      });
+    });
   }
 
   function incrementBlinds(socket) {
