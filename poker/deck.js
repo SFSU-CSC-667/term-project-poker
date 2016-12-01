@@ -2,7 +2,10 @@ class Deck {
   constructor() {
     this.createDeck();
   }
-
+    
+  getDeck(){
+    return this.deck;
+  }
   draw() {
     if (!this.deck.length) {
       this.createDeck();

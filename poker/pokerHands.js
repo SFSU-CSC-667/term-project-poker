@@ -1,7 +1,7 @@
 var deckFile = require('./deck.js');
-var Deck = deckFile.Deck;
+var Deck = new deckFile();
 
-class DWinner{
+class Hands{
   
   getHand(hand, sharedCards){
     
@@ -1011,6 +1011,12 @@ class DWinner{
   getIndices(playerHand){
     
     let newHand =  [];
+    let deck = Deck.getDeck();
+
+    for(var i in playerHand)
+      newHand.push( deck.indexOf(playerHand[i]) );
+     
+    return newHand;
 
   }
      
@@ -1418,7 +1424,16 @@ class DWinner{
     this.testQuads();
     this.testStraightFlush();
     this.testRoyalFlush();
+    this.testGetIndices();
+    this.testProcessHands();
+  }
 
+  testGetIndices(){
+    
+    console.log("testing getIndices");  
+    let playerHand = ['ace-hearts', 'ace-spades', 'two-diamonds', 'three-clubs', 'ace-spades'];
+    this.getIndices(playerHand);
+  
   }
 
   /********************************************************************/
@@ -1434,19 +1449,58 @@ class DWinner{
     let playerTwoID = "Player2";
     let playerThree = [];
     let playerThreeID = "Player3";
-
+    
+    
     playerOne.push(playerOneID);
     playerTwo.push(playerTwoID);
     playerThree.push(playerThreeID);
+    
 
     let playerOneHand = [2, 3]; 
     let playerTwoHand = [4, 23];
     let playerThreeHand = [6, 10];
     let sharedCards = [0, 13, 26, 39 , 9];
-    
+     
     playerOneHand = this.getHand(playerOneHand, sharedCards);
     playerTwoHand = this.getHand(playerTwoHand, sharedCards);
     playerThreeHand = this.getHand(playerThreeHand, sharedCards);
+     
+    playerOne.push(playerOneHand);
+    playerTwo.push(playerTwoHand);
+    playerThree.push(playerThreeHand);
+
+    players.push(playerOne);
+    players.push(playerTwo);
+    players.push(playerThree);
+    
+    let winner = this.determineWinner(players);
+    
+    console.log(winner);
+  
+  }
+
+  testProcessHands(){
+    
+    let players = [];
+
+    let playerOne = [];
+    let playerOneID = "Player1";
+    let playerTwo = [];
+    let playerTwoID = "Player2";
+    let playerThree = [];
+    let playerThreeID = "Player3";
+    
+    
+    playerOne.push(playerOneID);
+    playerTwo.push(playerTwoID);
+    playerThree.push(playerThreeID);
+    
+
+    let playerOneHand = ['two-hearts', 'three-hearts']; 
+    let playerTwoHand = ['three-spades', 'king-spades'];
+    let playerThreeHand = ['five-hearts', 'nine-hearts'];
+    let sharedCards = ['ace-hearts', 'ace-diamonds', 'ace-spades', 'ace-clubs' , 'eight-hearts'];
+    
 
     playerOne.push(playerOneHand);
     playerTwo.push(playerTwoHand);
@@ -1455,18 +1509,36 @@ class DWinner{
     players.push(playerOne);
     players.push(playerTwo);
     players.push(playerThree);
-
-    let winner = this.determineWinner(players);
     
-    console.log(winner);
+    console.log(this.processHands(sharedCards, players));
+    
+  }
+  
+  processHands(sharedCards, playerCards){
+    
+    let players = [];
+    let sharedIndices = this.getIndices(sharedCards);
+    
+    for(var i in playerCards){
+      
+      let playerID = playerCards[i][0];
+      let playerIndices = this.getIndices(playerCards[i][1]);
+      let playerHand = this.getHand(sharedIndices, playerIndices);
+      let player = [];
+      player.push(playerID);
+      player.push(playerHand);
+      players.push(player);
 
+    }
+    
+    let winner = this.determineWinner(players);
+    return winner;
+  
   }
 
 }//End class
-/*
-console.log(Deck.indexOf('ace-hearts'));
-*/
-var dt = new DWinner();
+
+var dt = new Hands();
 
 dt.testDetermineWinner();
 dt.testCompare();
