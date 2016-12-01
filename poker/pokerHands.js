@@ -779,7 +779,7 @@ class PokerHands{
 
     let playerTwoID = playerTwo[0];
     let playerTwoCards = playerTwo[1];
-    let playerTwoHand = playerTwoCards[playerOneCards.length-1];
+    let playerTwoHand = playerTwoCards[playerTwoCards.length-1];
 
     if( playerOneHand > playerTwoHand )
       return playerOneID;
@@ -1042,14 +1042,14 @@ class PokerHands{
       let newPlayer = players[i];
       let newPlayerID = players[i][ID];
       let winnerID = this.compareHand(currentWinner, newPlayer);
-      let winnerHand;
+
 
       if(winnerID == currentWinnerID)
         continue;
       else if(winnerID == newPlayerID){
 
         currentWinner = newPlayer;
-        winnerHand = currentWinner[1];
+        winningHand = currentWinner[1];
         currentWinnerID = currentWinner[0];
 
         tiePool = [];
