@@ -1538,8 +1538,4 @@ class Hands{
 
 }//End class
 
-var dt = new Hands();
-
-dt.testDetermineWinner();
-dt.testCompare();
-dt.testHands();
+module.exports = Hands;
