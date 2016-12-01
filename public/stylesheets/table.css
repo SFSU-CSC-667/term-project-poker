@@ -131,7 +131,23 @@
   color: white;
   padding: 5px;
   font-size: 2em;
-  margin-top: -15.4em;
-  margin-left: -8em;
+  margin-top: -12.5em;
+  margin-left: -5.8em;
   position: absolute;
+}
+
+#previous-cards {
+  margin-top: -20.5em;
+  margin-left: -10.5em;
+  position: absolute;
+}
+
+#previous-cards > p {
+  margin-left: 5em;
+  padding-bottom: -1em;
+  font-weight: bold;
+}
+
+#previous-cards > #winning-cards > img {
+  margin-right: -1.5em;
 }

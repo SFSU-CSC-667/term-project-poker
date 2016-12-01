@@ -16,7 +16,11 @@
     <% include includes/header.ejs %>
     <div id='table'>
       <div id="dealer-cards"><img class='card-image face-down'/></div>
-      <div id="timer" class="hidden"></div>
+      <div id="timer" class="hidden">30</div>
+      <div id="previous-cards" class="hidden">
+        <p>Previous Winning Hand:</p>
+        <div id="winning-cards"><img class='card-image face-down'/></div>
+      </div>
       <div id='seat1-statistics'>
         <div id='seat1-bid'></div>
         <div id='seat1-pot'></div>

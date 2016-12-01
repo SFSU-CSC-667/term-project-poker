@@ -344,8 +344,8 @@ const gameEvents = (io, socket, game, players, db) => {
         Game.round++;
         break;
       case 4:
-        showAllCards(socket);
         determineWinner(socket);
+        showAllCards(socket);
         console.log("Total pot:", Game.winnerPot);
         setTimeout(() => { startGame(socket); }, 3000);
         return 1;
@@ -502,12 +502,16 @@ const gameEvents = (io, socket, game, players, db) => {
   }
 
   function showAllCards(socket) {
+    let Game = game[socket.gameId];
     let Players = players[socket.gameId];
     let playerCards = {};
     Players.forEach(player => {
       playerCards[player.seat] = { cards: player.cards };
     });
-    io.to(socket.gameId).emit('show all cards', { playerCards: playerCards });
+    io.to(socket.gameId).emit('show all cards', {
+      playerCards: playerCards,
+      winningHand: Game.pokerHands.getWinningHand()
+    });
   }
 
 };

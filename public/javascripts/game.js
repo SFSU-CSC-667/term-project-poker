@@ -122,6 +122,8 @@
   socket.on('show all cards', data => {
     for (let seat in data.playerCards) {
       let player = data.playerCards[seat];
+      $('#winning-cards').html(cardImages(data.winningHand));
+      $('#previous-cards').removeClass('hidden');
       if (!seat.includes('seat'))
         continue;
       $(`#${ seat }-cards`).html(cardImages(player.cards[0], player.cards[1]));
