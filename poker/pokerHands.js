@@ -116,16 +116,27 @@ class PokerHands{
 
     let kickers = [];
 
+    this.getCards(hand);
+      
     while(true){
 
       let largestCard = hand[0];
       let indexToRemove = 0;
+      
 
-      if(hand[0] != 0)
-        for( let j = 1 ; j < hand.length ; j++ )
-      if( largestCard%13 < hand[j]%13 ){
-        largestCard = hand[j];
-        indexToRemove = j;
+
+      for( let j = 1 ; j < hand.length ; j++ ){
+          
+        if(hand[j]%13 == 0){
+          largestCard = hand[j];
+          indexToRemove = j;
+          break;
+        }
+        else if( largestCard%13 < hand[j]%13 ){
+          largestCard = hand[j];
+          indexToRemove = j;
+        }
+        
       }
 
       kickers.push(largestCard);
@@ -1116,7 +1127,52 @@ class PokerHands{
 
   }
 
-}//End class
+  
+  /*
+  testProcessHands(){
+    
+    let players = [];
 
+    let playerOne = [];
+    let playerOneID = "Player1";
+    let playerTwo = [];
+    let playerTwoID = "Player2";
+    //let playerThree = [];
+    //let playerThreeID = "Player3";
+    
+    
+    playerOne.push(playerOneID);
+    playerTwo.push(playerTwoID);
+    //playerThree.push(playerThreeID);
+    
+
+    let playerOneHand = ['four-hearts', 'nine-hearts']; 
+    let playerTwoHand = ['jack-spades', 'king-spades'];
+    //let playerThreeHand = ['five-hearts', 'jack-hearts'];
+    let sharedCards = ['jack-hearts', 'eight-diamonds', 'ace-spades', 'two-clubs' , 'queen-hearts'];
+    
+
+    playerOne.push(playerOneHand);
+    playerTwo.push(playerTwoHand);
+    //playerThree.push(playerThreeHand);
+
+    players.push(playerOne);
+    players.push(playerTwo);
+    //players.push(playerThree);
+    
+    console.log(this.processHands(sharedCards, players));
+    this.getCards(this.winningHand);
+  }
+
+  getCards(playerHand){
+    
+      let deck = Deck.getDeck();
+      
+      for(var i in playerHand)
+          console.log(deck[playerHand[i]]);
+
+  }*/
+
+}//End class
 
 module.exports = PokerHands;
