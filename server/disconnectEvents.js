@@ -5,6 +5,7 @@ const disconnectEvents = (io, socket, connections, users, game, players) => {
     delete connections[socket.id];
     delete users[socket.id];
     console.log("Connected: " + Object.keys(connections).length);
+    if (!Object.keys(connections).length) { io.guestCount = 0; }
   });
 
   function removeFromGames(socket) {
