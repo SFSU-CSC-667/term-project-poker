@@ -8,6 +8,8 @@ module.exports = function(io, db) {
       console.log("Test DB query: ", response);
   });
 
+  io.guestCount = 0;
+
   io.on('connection', socket => ioConnect(io, socket, db));
 
   router.get('/', (request, response, next) => {

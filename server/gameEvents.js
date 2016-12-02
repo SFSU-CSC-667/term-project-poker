@@ -252,7 +252,10 @@ const gameEvents = (io, socket, game, players, db) => {
     let gameId = socket.gameId;
     let Game = game[gameId];
     let Players = players[gameId];
-    if (!socket.displayName) { socket.displayName = 'Guest'; }
+    if (!socket.displayName) {
+      io.guestCount++;
+      socket.displayName = 'Guest ' + io.guestCount;
+    }
     if (Game.gameStarted) { socket.fold = 1; }
     makeSeatOccupied(socket, data.seat);
     socket.isPlayer = 1;

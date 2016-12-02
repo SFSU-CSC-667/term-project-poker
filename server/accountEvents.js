@@ -9,11 +9,31 @@ const accountEvents = (io, socket, users, db) => {
 
   socket.on('account signin', data => {
     loginAccount(data);
-  })
+  });
 
   socket.on('request account information', data => {
     accountInfo(data.email);
-  })
+  });
+
+  socket.on('request firstname change', data => {
+    db.none(`UPDATE Users SET firstname = '${ data.newFirstname }' WHERE email = '${ data.email }'`)
+    .then(response => {
+      socket.emit('firstname change response', { success: 1, newFirstname: data.newFirstname });
+    })
+    .catch(response => {
+      socket.emit('firstname change response', { success: 0 });
+    });
+  });
+
+  socket.on('request lastname change', data => {
+    db.none(`UPDATE Users SET lastname = '${ data.newFirstname }' WHERE email = '${ data.email }'`)
+    .then(response => {
+      socket.emit('lastname change response', { success: 1, newLastname: data.newLastname });
+    })
+    .catch(response => {
+      socket.emit('lastname change response', { success: 0 });
+    });
+  });
 
   function accountInfo(email) {
     db.one(`SELECT * FROM Users WHERE Email='${ email }'`)

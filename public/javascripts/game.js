@@ -35,6 +35,52 @@
     $('#raise-amount').html(this.value);
   });
 
+  $(document).on('keydown', 'body', event => {
+    switch (event.which) {
+      case 49:
+        if (!verifyButtonEnabled('check')) { return; }
+        $('.action-btn[data-action="check"]').addClass('scale-up');
+        $('.action-btn[data-action="check"]').trigger('click');
+        setTimeout(() => {
+          $('.action-btn[data-action="check"]').removeClass('scale-up');
+        }, 250);
+        break;
+      case 50:
+        if (!verifyButtonEnabled('call')) { return; }
+        $('.action-btn[data-action="call"]').addClass('scale-up');
+        $('.action-btn[data-action="call"]').trigger('click');
+        setTimeout(() => {
+          $('.action-btn[data-action="call"]').removeClass('scale-up');
+        }, 250);
+        break;
+      case 51:
+        if (!verifyButtonEnabled('raise')) { return; }
+        $('.action-btn[data-action="raise"]').addClass('scale-up');
+        $('.action-btn[data-action="raise"]').trigger('click');
+        setTimeout(() => {
+          $('.action-btn[data-action="raise"]').removeClass('scale-up');
+        }, 250);
+        break;
+      case 52:
+        if (!verifyButtonEnabled('fold')) { return; }
+        $('.action-btn[data-action="fold"]').addClass('scale-up');
+        $('.action-btn[data-action="fold"]').trigger('click');
+        setTimeout(() => {
+          $('.action-btn[data-action="fold"]').removeClass('scale-up');
+        }, 250);
+        break;
+      case 53:
+        if (!verifyButtonEnabled('all in')) { return; }
+        $('.action-btn[data-action="all in"]').addClass('scale-up');
+        $('.action-btn[data-action="all in"]').trigger('click');
+        setTimeout(() => {
+          $('.action-btn[data-action="all in"]').removeClass('scale-up');
+        }, 250);
+        break;
+    }
+
+  });
+
   socket.emit('game viewer', { gameId: sessionStorage.getItem('gameId') });
 
   socket.on('player is ready', data => {
@@ -70,6 +116,7 @@
     $(`#${ seat }-actions`).children().removeClass('hidden');
     $(`#${ seat }-actions`).children().prop('disabled', false);
     $(`#${ seat }-raise`).html(createRaiseSlider(playerBid, playerPot));
+    $(`#slider`).focus();
     disableImpossible(seat, playerBid, playerPot);
   });
 
@@ -226,6 +273,11 @@
     $(`#${ seat }-cards`).html('');
     $(`#${ seat }-actions`).html('');
     $(`#${ seat }-raise`).html('');
+  }
+
+  function verifyButtonEnabled(action) {
+    let button = $(`.action-btn[data-action='${ action }']`);
+    return button.prop('disabled') ? false : true;
   }
 
   function createActionButtons() {

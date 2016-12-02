@@ -30,6 +30,10 @@ a {
   padding-right: 100px;
 }
 
+.scale-up {
+  transform: scale(1.2);
+}
+
 .nav-item-right {
   float: right;
   padding: 10px;

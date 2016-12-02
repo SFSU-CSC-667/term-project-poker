@@ -1,6 +1,10 @@
 const chatEvents = (io, socket) => {
+
   socket.on('join chat', () => {
-    if (!socket.displayName) { socket.displayName = 'Guest'; }
+    if (!socket.displayName) {
+      io.guestCount++;
+      socket.displayName = 'Guest ' + io.guestCount;
+    }
     socket.emit('user details', { displayName: socket.displayName });
   });
 
