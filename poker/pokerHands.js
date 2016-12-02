@@ -116,8 +116,6 @@ class PokerHands{
 
     let kickers = [];
 
-    this.getCards(hand);
-      
     while(true){
 
       let largestCard = hand[0];
