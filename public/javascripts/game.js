@@ -62,19 +62,19 @@
         }, 250);
         break;
       case 52:
-        if (!verifyButtonEnabled('fold')) { return; }
-        $('.action-btn[data-action="fold"]').addClass('scale-up');
-        $('.action-btn[data-action="fold"]').trigger('click');
-        setTimeout(() => {
-          $('.action-btn[data-action="fold"]').removeClass('scale-up');
-        }, 250);
-        break;
-      case 53:
         if (!verifyButtonEnabled('all in')) { return; }
         $('.action-btn[data-action="all in"]').addClass('scale-up');
         $('.action-btn[data-action="all in"]').trigger('click');
         setTimeout(() => {
           $('.action-btn[data-action="all in"]').removeClass('scale-up');
+        }, 250);
+        break;
+      case 53:
+        if (!verifyButtonEnabled('fold')) { return; }
+        $('.action-btn[data-action="fold"]').addClass('scale-up');
+        $('.action-btn[data-action="fold"]').trigger('click');
+        setTimeout(() => {
+          $('.action-btn[data-action="fold"]').removeClass('scale-up');
         }, 250);
         break;
     }
@@ -285,9 +285,9 @@
       "<button class='hidden ready-btn btn btn-success'>Ready</button>" +
       "<button class='hidden action-btn btn btn-success' data-action='check' disabled='disabled'>Check</button>" +
       "<button class='hidden action-btn btn btn-success' data-action='call' disabled='disabled'>Call</button>"   +
-      "<button class='hidden action-btn btn btn-success' data-action='raise' disabled='disabled'>Raise</button>" +
-      "<button class='hidden action-btn btn btn-success' data-action='fold' disabled='disabled'>Fold</button>"   +
-      "<button class='hidden action-btn btn btn-success' data-action='all in' disabled='disabled'>All In</button>"
+      "<button class='hidden action-btn btn btn-primary' data-action='raise' disabled='disabled'>Raise</button>" +
+      "<button class='hidden action-btn btn btn-success' data-action='all in' disabled='disabled'>All In</button>" +
+      "<button class='hidden action-btn btn btn-danger' data-action='fold' disabled='disabled'>Fold</button>"
     );
   }
 
