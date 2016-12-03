@@ -22,6 +22,18 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+if (app.get('env') === 'production') {
+  app.use((request, response, next) => {
+    if (request.headers['x-forwarded-proto'] !== 'https') {
+      response.redirect('https://' + request.headers.host + request.url);
+    }
+    else {
+      next();
+    }
+  });
+}
+
 app.use('/', routes);
 app.use('/users', users);
 
@@ -55,4 +67,7 @@ app.use((error, request, response, next) => {
     error: {}
   });
 });
+
+
+
 module.exports = app;
