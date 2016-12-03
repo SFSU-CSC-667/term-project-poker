@@ -14,7 +14,7 @@ const socket = io.connect();
       $(".passwords").data('tooltip', false).tooltip({
         title: 'Passwords must match!'
       }).tooltip('show');
-    };
+    }
   });
 
   $('#signin-form').on('submit', event => {
@@ -38,7 +38,7 @@ const socket = io.connect();
     $("#account-modal").modal('hide');
     sessionStorage.clear();
     location.reload();
-  })
+  });
 
   $('body').on('click', '.account-btn', function(event) {
     event.preventDefault();
@@ -59,17 +59,16 @@ const socket = io.connect();
     $('#lastname-edit').replaceWith("<button id='change-lastname' class='right btn btn-primary'> Change </button>");
   });
 
-
   $('body').on('click', '#change-firstname', event => {
     socket.emit('request firstname change', {
-      email: $(".account-email").val(),
+      email: $(".account-email").html(),
       newFirstname: $("#account-firstname").val()
     });
   });
 
   $('body').on('click', '#change-lastname', event => {
     socket.emit('request lastname change', {
-      email: $(".account-email").val(),
+      email: $(".account-email").html(),
       newLastname: $("#account-lastname").val()
     });
   });
@@ -103,7 +102,7 @@ const socket = io.connect();
     $('#account-lastname').html(data.last);
     $('#account-chips').html(data.chips);
     $('#account-modal').modal('show');
-  })
+  });
 
   socket.on('account creation response', data => {
     if (data.success) {

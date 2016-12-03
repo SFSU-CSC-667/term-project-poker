@@ -26,7 +26,7 @@ const accountEvents = (io, socket, users, db) => {
   });
 
   socket.on('request lastname change', data => {
-    db.none(`UPDATE Users SET lastname = '${ data.newFirstname }' WHERE email = '${ data.email }'`)
+    db.none(`UPDATE Users SET lastname = '${ data.newLastname }' WHERE email = '${ data.email }'`)
     .then(response => {
       socket.emit('lastname change response', { success: 1, newLastname: data.newLastname });
     })
@@ -53,9 +53,9 @@ const accountEvents = (io, socket, users, db) => {
   }
 
   function createAccount(data, hash) {
-    db.query("INSERT INTO Users (FirstName, LastName, Email, Password, Chips) "
-         + `VALUES ('${ data.first }', '${ data.last }', '${ data.email }', `
-         + `'${ hash }', '5000')`)
+    db.query("INSERT INTO Users (FirstName, LastName, Email, Password, Chips) " +
+             `VALUES ('${ data.first }', '${ data.last }', '${ data.email }', ` +
+             `'${ hash }', '5000')`)
     .then(response => {
       console.log("Account created. " + data.email)
       socket.emit("account creation response", { success: 1 });
