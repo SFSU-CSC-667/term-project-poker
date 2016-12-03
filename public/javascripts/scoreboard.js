@@ -1,5 +1,5 @@
 (() => {
-
+    socket.emit('update scoreboard');
     setInterval(refreshScoreboard => {
         socket.emit('update scoreboard');
     }, 5000);

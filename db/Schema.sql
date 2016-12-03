@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS Players
     BuyIn INTEGER,
     NetGain INTEGER,
     IsPlaying BOOLEAN,
-    SeatNumber INTEGER
+    SeatNumber VARCHAR (10)
 );
 
 DROP TABLE IF EXISTS PlayersActions CASCADE;

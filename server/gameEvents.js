@@ -46,6 +46,25 @@ const gameEvents = (io, socket, game, players, db) => {
     acceptRequest(socket, data);
   });
 
+  socket.on('buyin request', () => {
+    getPlayerInfo(socket)
+        .then(playerData => {
+            getGameInfo(socket)
+                .then(gameData => {
+                    socket.emit('joining game', {
+                    buyInMin: gameData['minchips'],
+                      buyInMax: playerData['chips']
+                  });
+                })
+                .catch(error => {
+                    console.log("An error occured while getting game info. ", error.message);
+                });
+        })
+        .catch(error => {
+            console.log("An error occured while getting player info. ", error.message);
+        });
+  });
+
   socket.on('player ready', data => {
     let Game = game[socket.gameId];
     let Players = players[socket.gameId];
@@ -261,7 +280,7 @@ const gameEvents = (io, socket, game, players, db) => {
     socket.isPlayer = 1;
     socket.seat = data.seat;
     socket.bid = 0;
-    socket.startAmount = 1000; /////////////// Hard coded player buy-in //////////////////
+    socket.startAmount = data.startAmount;
     socket.pot = 1000; /////////////// Hard coded player pot //////////////////
     io.to(gameId).emit('new player', {
       seat: data.seat,
@@ -270,6 +289,18 @@ const gameEvents = (io, socket, game, players, db) => {
       seatsOccupied: Game.seatsOccupied,
       html: "<p class='display-name'>Name: " + socket.displayName + "</p>"
     });
+    getPlayerInfo(socket)
+        .then(playerInfo => {
+            addPlayer({
+                gameId: socket.gameId,
+                playerId: playerInfo["userid"],
+                startAmount: data.startAmount,
+                seat: data.seat
+            })
+        }).catch(error => {
+          console.log("An error occured while getting player info. ", error.message);
+    })
+
     socket.emit('enable ready button', {
       seat: socket.seat
     });
@@ -515,6 +546,28 @@ const gameEvents = (io, socket, game, players, db) => {
       playerCards: playerCards,
       winningHand: Game.pokerHands.getWinningHand()
     });
+  }
+
+  function getPlayerInfo(socket) {
+    let GameQuery = "SELECT * FROM Users WHERE Email=${ UserName };";
+    return db.one(GameQuery, {
+      UserName: socket.userName
+    });
+  }
+
+  function getGameInfo(socket) {
+      let GameQuery = "SELECT * FROM Games WHERE GameId=${ gameId };";
+      return db.one(GameQuery, {
+          gameId: socket.gameId
+      });
+  }
+
+  function addPlayer(data) {
+    let GameQuery = "INSERT INTO Players VALUES " +
+        "(${ gameId }, ${ playerId }, 0, ${ startAmount }, 0, TRUE , ${ seat }) " +
+        "WHERE NOT EXISTS " +
+        "(SELECT GameId, UserId FROM Players P WHERE P.GameId=${ gameId } AND P.UserId=${ playerId });";
+    return db.none(GameQuery, data)
   }
 
 };

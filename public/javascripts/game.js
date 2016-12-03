@@ -4,13 +4,33 @@
   let callMinimum;
   let timer;
   let timeInterval;
+  let seat;
 
   $(".join").on('click', function() {
-    let seat = $(this).parent().prop('id');
-    socket.emit('join request', {
-      seat: seat
+    seat = $(this).parent().prop('id');
+    socket.emit('buyin request');
+      $("#buyin-modal").modal('show');
+  });
+
+  socket.on('joining game', data => {
+    $('#buyin-slider').attr({
+      min: data.buyInMin,
+        max: data.buyInMax,
+        value: data.buyInMin
     });
-    $(`#${ seat }`).children('.ready-btn').removeClass('hidden');
+    $('#buyin-label').html('Amount: ' + data.buyInMin);
+  });
+
+  $('#buyin-slider').on('change mousemove mouseup', () => {
+      $('#buyin-label').html('Amount: ' + $('#buyin-slider').val());
+  });
+
+  $("#buyin-submit").on('click', function() {
+      socket.emit('join request', {
+          startAmount: $('#buyin-slider').val(),
+          seat: seat
+      });
+      $(`#${ seat }`).children('.ready-btn').removeClass('hidden');
   });
 
   $('body').on('click', ".action-btn", function(event) {
