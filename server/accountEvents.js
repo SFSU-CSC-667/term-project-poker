@@ -48,7 +48,7 @@ const accountEvents = (io, socket, users, db) => {
     })
     .catch(response => {
       socket.emit('account information response', { success: 0 });
-      console.log("Account info failure. " + email)
+      console.log("Account info failure. " + email);
     });
   }
 
@@ -57,11 +57,11 @@ const accountEvents = (io, socket, users, db) => {
              `VALUES ('${ data.first }', '${ data.last }', '${ data.email }', ` +
              `'${ hash }', '5000')`)
     .then(response => {
-      console.log("Account created. " + data.email)
+      console.log("Account created. " + data.email);
       socket.emit("account creation response", { success: 1 });
     })
     .catch(response => {
-      console.log("Account entry failure. " + data.email)
+      console.log("Account entry failure. " + data.email);
       socket.emit("account creation response", {
         success: 0, detail: response.detail
       });
@@ -86,8 +86,8 @@ const accountEvents = (io, socket, users, db) => {
     .catch(response => {
       console.log(response);
       socket.emit("account signin response", { success: 0 });
-    })
+    });
   }
-}
+};
 
 module.exports = accountEvents;
