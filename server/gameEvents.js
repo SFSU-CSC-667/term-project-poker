@@ -331,6 +331,7 @@ const gameEvents = (io, socket, game, players, db) => {
   }
 
   function startGame(socket) {
+    if (!game[socket.gameId] || !players[socket.gameId]) { return; }
     console.log("New Game");
     sortSeats(socket);
     incrementBlinds(socket);
@@ -352,9 +353,9 @@ const gameEvents = (io, socket, game, players, db) => {
     Game.winnerPot = 0;
     Game.deck.shuffle();
     if (!smallBigBlinds(socket)) { return; }
-    if (Players[Game.turn + 1]) { Game.turn++; } else {  Game.turn = 0; }
-    io.to(socket.gameId).emit('turn flag', { seat: Game.seatsOccupied[Game.turn] });
-    Players[Game.turn].emit('player turn', { turn: Game.turn, callMinimum: Game.currentCallMinimum });
+    reorderTurns(socket, Game.turn);
+    drawPlayerCards(socket);
+    nextTurn(socket);
   }
 
   function dealerCheck(round, socket) {
@@ -362,22 +363,18 @@ const gameEvents = (io, socket, game, players, db) => {
     let Players = players[socket.gameId];
     switch (round) {
       case 0:
-        drawPlayerCards(socket);
-        Game.round++;
-        break;
-      case 1:
         drawFlopCards(socket);
         Game.round++;
         break;
-      case 2:
+      case 1:
         drawTurnCard(socket);
         Game.round++;
         break;
-      case 3:
+      case 2:
         drawRiverCard(socket);
         Game.round++;
         break;
-      case 4:
+      case 3:
         determineWinner(socket);
         showAllCards(socket);
         console.log("Total pot:", Game.winnerPot);
