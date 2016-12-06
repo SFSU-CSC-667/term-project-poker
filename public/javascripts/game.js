@@ -9,15 +9,19 @@
   $(".join").on('click', function() {
     seat = $(this).parent().prop('id');
     socket.emit('buyin request');
-      $("#buyin-modal").modal('show');
   });
 
   socket.on('joining game', data => {
     $('#buyin-slider').attr({
       min: data.buyInMin,
-        max: data.buyInMax,
-        value: data.buyInMin
+      max: data.buyInMax,
+      value: data.buyInMin
     });
+    if (data.buyInMin !== data.buyInMax) {
+      $("#buyin-modal").modal('show');
+    } else {
+      $("#buyin-submit").trigger("click");
+    }
     $('#buyin-label').html('Amount: ' + data.buyInMin);
   });
 
