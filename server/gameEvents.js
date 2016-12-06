@@ -48,20 +48,20 @@ const gameEvents = (io, socket, game, players, db) => {
 
   socket.on('buyin request', () => {
       getGameInfo(socket)
-          .then(gameData => {
-              getPlayerInfo(socket)
-                  .then(playerData => {
-                      socket.emit('joining game', {
-                          buyInMin: gameData['minchips'],
-                          buyInMax: playerData['chips']
-                      });
-                  })
-                  .catch(() => {
-                      socket.emit('joining game', {
-                          buyInMin: gameData['minchips'],
-                          buyInMax: gameData['minchips']
-                      });
-                  });
+      .then(gameData => {
+          getPlayerInfo(socket)
+          .then(playerData => {
+              socket.emit('joining game', {
+                  buyInMin: gameData['minchips'],
+                  buyInMax: playerData['chips']
+              });
+          })
+          .catch(() => {
+              socket.emit('joining game', {
+                  buyInMin: gameData['minchips'],
+                  buyInMax: gameData['minchips']
+              });
+          });
           })
           .catch(error => {
               console.log("An error occured while getting game info. ", error.message);

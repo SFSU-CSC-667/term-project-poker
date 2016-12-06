@@ -279,9 +279,14 @@
       $('#timer').html('Timer: ' + timer);
       if (!timer || playerTookAction) {
         if (!timer) {
+          if (verifyButtonEnabled('check')) {
+            console.log("CHECK");
+            player.emit('action button', { action: 'check' });
+          } else {
+            player.emit('action button', { action: 'fold' });
+          }
           $(`#${ seat }-actions`).children().prop('disabled', true);
           $(`#${ seat }-raise`).children().prop('disabled', true);
-          player.emit('action button', { action: 'fold' });
         }
         $(`#timer`).addClass('hidden');
         $('#timer').html('');
