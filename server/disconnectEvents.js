@@ -40,7 +40,6 @@ const disconnectEvents = (io, socket, connections, users, game, players, db) => 
         .catch(error => {
           console.log("An error occured while getting player info.");
         });
-
     Players = players[socket.gameId];
     io.to(socket.gameId).emit('player offline', {
       seat: socket.seat

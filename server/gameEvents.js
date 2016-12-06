@@ -47,22 +47,25 @@ const gameEvents = (io, socket, game, players, db) => {
   });
 
   socket.on('buyin request', () => {
-    getPlayerInfo(socket)
-        .then(playerData => {
-            getGameInfo(socket)
-                .then(gameData => {
-                    socket.emit('joining game', {
-                    buyInMin: gameData['minchips'],
-                      buyInMax: playerData['chips']
+      getGameInfo(socket)
+          .then(gameData => {
+              getPlayerInfo(socket)
+                  .then(playerData => {
+                      socket.emit('joining game', {
+                          buyInMin: gameData['minchips'],
+                          buyInMax: playerData['chips']
+                      });
+                  })
+                  .catch(() => {
+                      socket.emit('joining game', {
+                          buyInMin: gameData['minchips'],
+                          buyInMax: gameData['minchips']
+                      });
                   });
-                })
-                .catch(error => {
-                    console.log("An error occured while getting game info. ", error.message);
-                });
-        })
-        .catch(error => {
-            console.log("An error occured while getting player info. ", error.message);
-        });
+          })
+          .catch(error => {
+              console.log("An error occured while getting game info. ", error.message);
+          });
   });
 
   socket.on('player ready', data => {
@@ -281,7 +284,7 @@ const gameEvents = (io, socket, game, players, db) => {
     socket.seat = data.seat;
     socket.bid = 0;
     socket.startAmount = data.startAmount;
-    socket.pot = 1000; /////////////// Hard coded player pot //////////////////
+    socket.pot = data.startAmount;
     io.to(gameId).emit('new player', {
       seat: data.seat,
       bid: socket.bid,
@@ -300,7 +303,6 @@ const gameEvents = (io, socket, game, players, db) => {
         }).catch(error => {
           console.log("An error occured while getting player info. ", error.message);
     })
-
     socket.emit('enable ready button', {
       seat: socket.seat
     });
