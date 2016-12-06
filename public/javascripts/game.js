@@ -197,7 +197,7 @@
         continue;
       $(`#${ seat }-cards`).html(cardImages(player.cards[0], player.cards[1]));
     }
-    if (data.winningHand) {
+    if (data.winner) {
       $('#winning-cards').html(cardImages(data.winningHand));
       $(`.${ data.playerCards[data.winner].cards[0] }`).addClass('highlight-card');
       $(`.${ data.playerCards[data.winner].cards[1] }`).addClass('highlight-card');

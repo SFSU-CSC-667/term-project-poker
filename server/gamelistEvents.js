@@ -1,6 +1,5 @@
 const gamelistEvents = (io, socket, db) => {
     socket.on('update gamelist', updateScore => {
-        console.log('update gamelist');
         responseGameListUpdate();
     });
 

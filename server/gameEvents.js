@@ -300,9 +300,7 @@ const gameEvents = (io, socket, game, players, db) => {
               startAmount: data.startAmount,
               seat: data.seat
           });
-      }).catch(error => {
-        console.log("An error occured while getting player info. ", error.message);
-      });
+      }).catch(error => {});
     }
     socket.emit('enable ready button', {
       seat: socket.seat
@@ -379,7 +377,6 @@ const gameEvents = (io, socket, game, players, db) => {
       case 3:
         determineWinner(socket);
         showAllCards(socket);
-        console.log("Total pot:", Game.winnerPot);
         setTimeout(() => { startGame(socket); }, 3000);
         return 1;
     }
