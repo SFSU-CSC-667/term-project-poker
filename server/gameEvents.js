@@ -134,7 +134,6 @@ const gameEvents = (io, socket, game, players, db) => {
       Players[Game.turn].emit('player turn', { turn: Game.turn, callMinimum: Game.currentCallMinimum });
     } else {
       if (dealerCheck(Game.round, socket)) { return; }
-      console.log("Round over");
       Game.turn = 0;
       if (Players[Game.turn].fold) { nextTurn(socket); return; }
       io.to(socket.gameId).emit('turn flag', { seat: Game.seatsOccupied[Game.turn] });
@@ -336,7 +335,6 @@ const gameEvents = (io, socket, game, players, db) => {
 
   function startGame(socket) {
     if (!game[socket.gameId] || !players[socket.gameId]) { return; }
-    console.log("New Game");
     sortSeats(socket);
     incrementBlinds(socket);
     let Game = game[socket.gameId];

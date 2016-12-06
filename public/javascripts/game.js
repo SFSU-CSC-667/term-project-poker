@@ -197,10 +197,12 @@
         continue;
       $(`#${ seat }-cards`).html(cardImages(player.cards[0], player.cards[1]));
     }
-    $('#winning-cards').html(cardImages(data.winningHand));
-    $(`.${ data.playerCards[data.winner].cards[0] }`).addClass('highlight-card');
-    $(`.${ data.playerCards[data.winner].cards[1] }`).addClass('highlight-card');
-    $('#previous-cards').removeClass('hidden');
+    if (data.winningHand) {
+      $('#winning-cards').html(cardImages(data.winningHand));
+      $(`.${ data.playerCards[data.winner].cards[0] }`).addClass('highlight-card');
+      $(`.${ data.playerCards[data.winner].cards[1] }`).addClass('highlight-card');
+      $('#previous-cards').removeClass('hidden');
+    }
   });
 
   socket.on('player cards', data => {

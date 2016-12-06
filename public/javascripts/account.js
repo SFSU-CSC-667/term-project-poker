@@ -96,7 +96,6 @@ const socket = io.connect();
   });
 
   socket.on('account information response', data => {
-    console.log(data);
     $('.account-email').html(data.email);
     $('#account-firstname').html(data.first);
     $('#account-lastname').html(data.last);
