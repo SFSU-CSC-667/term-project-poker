@@ -2,21 +2,6 @@ const gameEvents = (io, socket, game, players, db) => {
   const Deck = require('../poker/deck.js');
   const PokerHands = require('../poker/pokerHands.js');
 
-  socket.on('create game request', data => {
-    db.one('INSERT INTO Games (GameName, MaxPlayers, MinBid, MinChips) VALUES' +
-    `('${ data.gameName }', 4, 50, 500) RETURNING GameId`)
-    .then(response => {
-      socket.emit('create game response', {
-        success: 1,
-        gameId: response.gameid,
-        gameName: data.gameName
-      });
-     })
-     .catch(response => {
-       socket.emit('create game response', { success: 0 });
-     });
-  });
-
   socket.on('game viewer', data => {
     socket.leave('lobby');
     if (data.gameId) {

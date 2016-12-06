@@ -5,18 +5,34 @@ const chatEvents = (io, socket) => {
       io.guestCount++;
       socket.displayName = 'Guest ' + io.guestCount;
     }
-    socket.emit('user details', { displayName: socket.displayName });
+    if (socket.gameId) {
+      socket.to(socket.gameId).emit('user details', { displayName: socket.displayName });
+    } else {
+      socket.to('lobby').emit('user details', { displayName: socket.displayName });
+    }
   });
 
   socket.on('send message', data => {
-    io.emit('message response', {
-      displayName: socket.displayName,
-      message: data.message
-    });
+    if (socket.gameId) {
+      io.to(socket.gameId).emit('message response', {
+        displayName: socket.displayName,
+        message: data.message
+      });
+    } else {
+      io.to('lobby').emit('message response', {
+        displayName: socket.displayName,
+        message: data.message
+      });
+    }
+
   });
 
   socket.on('join message', data => {
-    io.emit('join response', { message: data.message });
+    if (socket.gameId) {
+      io.to(socket.gameId).emit('join response', { message: data.message });
+    } else {
+      io.to('lobby').emit('join response', { message: data.message });
+    }
   })
 }
 

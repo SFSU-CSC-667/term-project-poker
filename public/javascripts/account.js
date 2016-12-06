@@ -62,14 +62,14 @@ const socket = io.connect();
   $('body').on('click', '#change-firstname', event => {
     socket.emit('request firstname change', {
       email: $(".account-email").html(),
-      newFirstname: $("#account-firstname").val()
+      newFirstname: `\'${ $("#account-firstname").val() }\'`
     });
   });
 
   $('body').on('click', '#change-lastname', event => {
     socket.emit('request lastname change', {
       email: $(".account-email").html(),
-      newLastname: $("#account-lastname").val()
+      newLastname: `\'${ $("#account-lastname").val() }\'`
     });
   });
 
@@ -85,13 +85,13 @@ const socket = io.connect();
 
   socket.on('firstname change response', data => {
     if (!data.success) { alert('Error changing name, try again later.'); }
-    $('#account-firstname').replaceWith(`<span id="account-firstname">${ data.newFirstname }</span>`);
+    $('#account-firstname').replaceWith(`<span id="account-firstname">${ data.newFirstname.slice(1, -1) }</span>`);
     $('#change-firstname').replaceWith("<button id='firstname-edit' class='right btn btn-info'> Edit </button>");
   });
 
   socket.on('lastname change response', data => {
     if (!data.success) { alert('Error changing name, try again later.'); }
-    $('#account-lastname').replaceWith(`<span id="account-lastname">${ data.newLastname }</span>`);
+    $('#account-lastname').replaceWith(`<span id="account-lastname">${ data.newLastname.slice(1, -1) }</span>`);
     $('#change-lastname').replaceWith("<button id='lastname-edit' class='right btn btn-info'> Edit </button>");
   });
 
