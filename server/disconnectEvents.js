@@ -30,16 +30,18 @@ const disconnectEvents = (io, socket, connections, users, game, players, db) => 
   }
 
   function removeFromGames(socket) {
-    getPlayerInfo(socket)
-        .then(playerData => {
-          setPlayerStatus({
-            gameId: socket.gameId,
-              playerId: playerData['userid']
-          });
-        })
-        .catch(error => {
-          console.log("An error occured while getting player info.");
+    if (socket.userName) {
+      getPlayerInfo(socket)
+      .then(playerData => {
+        setPlayerStatus({
+          gameId: socket.gameId,
+            playerId: playerData['userid']
         });
+      })
+      .catch(error => {
+        console.log("An error occured while getting player info.");
+      });
+    }
     Players = players[socket.gameId];
     io.to(socket.gameId).emit('player offline', {
       seat: socket.seat

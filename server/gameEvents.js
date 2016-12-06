@@ -292,17 +292,19 @@ const gameEvents = (io, socket, game, players, db) => {
       seatsOccupied: Game.seatsOccupied,
       html: "<p class='display-name'>Name: " + socket.displayName + "</p>"
     });
-    getPlayerInfo(socket)
-        .then(playerInfo => {
-            addPlayer({
-                gameId: socket.gameId,
-                playerId: playerInfo["userid"],
-                startAmount: data.startAmount,
-                seat: data.seat
-            })
-        }).catch(error => {
-          console.log("An error occured while getting player info. ", error.message);
-    })
+    if (!socket.userName) {
+      getPlayerInfo(socket)
+      .then(playerInfo => {
+          addPlayer({
+              gameId: socket.gameId,
+              playerId: playerInfo["userid"],
+              startAmount: data.startAmount,
+              seat: data.seat
+          })
+      }).catch(error => {
+        console.log("An error occured while getting player info. ", error.message);
+      });
+    }
     socket.emit('enable ready button', {
       seat: socket.seat
     });
