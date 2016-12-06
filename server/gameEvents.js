@@ -300,7 +300,7 @@ const gameEvents = (io, socket, game, players, db) => {
               playerId: playerInfo["userid"],
               startAmount: data.startAmount,
               seat: data.seat
-          })
+          });
       }).catch(error => {
         console.log("An error occured while getting player info. ", error.message);
       });
@@ -544,6 +544,7 @@ const gameEvents = (io, socket, game, players, db) => {
       playerCards[player.seat] = { cards: player.cards };
     });
     io.to(socket.gameId).emit('show all cards', {
+      winner: Game.winner,
       playerCards: playerCards,
       winningHand: Game.pokerHands.getWinningHand()
     });
@@ -568,7 +569,7 @@ const gameEvents = (io, socket, game, players, db) => {
         "(${ gameId }, ${ playerId }, 0, ${ startAmount }, 0, TRUE , ${ seat }) " +
         "WHERE NOT EXISTS " +
         "(SELECT GameId, UserId FROM Players P WHERE P.GameId=${ gameId } AND P.UserId=${ playerId });";
-    return db.none(GameQuery, data)
+    return db.none(GameQuery, data);
   }
 
 };

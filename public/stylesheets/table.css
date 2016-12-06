@@ -19,6 +19,10 @@
   margin-right: -20px;
 }
 
+.highlight-card {
+  border: 3px solid #ff9900;
+}
+
 .actions > .btn {
   padding: 5px;
   -webkit-transition: 0.25s ease-in-out;
