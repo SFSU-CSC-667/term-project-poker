@@ -395,6 +395,7 @@ const gameEvents = (io, socket, game, players, db) => {
     let Game = game[socket.gameId];
     let Players = players[socket.gameId];
     let splitPot = Game.winnerPot / winners.length;
+    Game.winners = winners;
     console.log("We got multiple winners! ", winners, splitPot);
     winners.forEach(winner => {
       Players[getSeatIndex(socket, winner)].pot += splitPot;
@@ -529,6 +530,7 @@ const gameEvents = (io, socket, game, players, db) => {
     });
     io.to(socket.gameId).emit('show all cards', {
       winner: Game.winner,
+      winners: Game.winners,
       playerCards: playerCards,
       winningHand: Game.pokerHands.getWinningHand()
     });

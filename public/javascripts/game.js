@@ -217,6 +217,14 @@
       $(`.${ data.playerCards[data.winner].cards[1] }`).addClass('highlight-card');
       $('#previous-cards').removeClass('hidden');
     }
+    if (data.winners) {
+      $('#winning-cards').html(cardImages(data.winningHand));
+      data.winners.forEach(winner => {
+        $(`.${ data.playerCards[winner].cards[0] }`).addClass('highlight-card');
+        $(`.${ data.playerCards[winner].cards[1] }`).addClass('highlight-card');
+        $('#previous-cards').removeClass('hidden');
+      });
+    }
   });
 
   socket.on('player cards', data => {
