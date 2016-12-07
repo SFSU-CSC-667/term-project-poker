@@ -169,11 +169,16 @@ const gameEvents = (io, socket, game, players, db) => {
     let Game = game[socket.gameId];
     let Players = players[socket.gameId];
     let index = getSeatIndex(socket, Game.winner);
-    Players[index].pot += Game.winnerPot;
+    let winner = Players[index];
+    if (winner.bid !== Game.currentCallMinimum) {
+      determineSidePots(socket, winner);
+      return;
+    }
+    winner.pot += Game.winnerPot;
     console.log("We got a winner! ", Game.winner, Game.winnerPot);
     Players.forEach(player => {
-      if (Players[index].userName && player.userName) {
-        if (player.userName === Players[index].userName) {
+      if (winner.userName && player.userName) {
+        if (player.userName === winner.userName) {
           let netGain = player.bid + player.pot - player.startAmount;
           db.none(`UPDATE Users SET chips = chips + ${ netGain } WHERE email = '${ player.userName }'`);
         }
@@ -183,7 +188,154 @@ const gameEvents = (io, socket, game, players, db) => {
     io.to(socket.gameId).emit('update player statistics', {
       seat: Game.winner,
       playerBid: 0,
-      playerPot: Players[index].pot,
+      playerPot: winner.pot,
+    });
+    Game.winner = undefined;
+  }
+
+  function determineSidePots(socket, winner) {
+    let Game = game[socket.gameId];
+    let Players = players[socket.gameId];
+    let playerCards = [];
+    let winners = [];
+    winners.push(winner);
+    Players.forEach(player => {
+      if (player.fold || player === winner) { return; }
+      let seatId = player.seat;
+      let cards = player.cards;
+      let playerDetails = [seatId, cards];
+      playerCards.push(playerDetails);
+    });
+    let mainPot = (winner.bid * (playerCards.length + 1));
+    console.log("MainPot " + mainPot);
+    winner.pot += mainPot;
+    Game.winnerPot -= mainPot;
+    if (playerCards.length > 2) {
+      let winnerSeats = Game.pokerHands.processHands(Game.cards, playerCards);
+      let lowestBid = Game.currentCallMinimum;
+      let lowestBidder;
+      let sidePot1;
+      winnerSeats.forEach(seat => {
+        let player = Players[getSeatIndex(socket, seat)];
+        if (lowestBid > player.bid) {
+          lowestBid = player.bid;
+          lowestBidder = player;
+        }
+        winners.push(player);
+      });
+      if (lowestBidder) {
+        sidePot1 = lowestBidder.bid * winnerSeats.length;
+        console.log("sidePot1 " + sidePot1);
+        winnerSeats.forEach(seat => {
+          Players[getSeatIndex(socket, seat)].pot += sidePot1 / winnerSeats.length;
+        });
+        Game.winningPot -= sidePot1;
+        playerCards.splice([lowestBidder.seat, lowestBidder.cards], 1);
+        lowestBidder = undefined;
+        if (Game.winningPot) {
+          if (playerCards.length > 2) {
+            winnerSeats = Game.pokerHands.processHands(Game.cards, playerCards);
+            let sidePot2;
+            lowestBid = Game.currentCallMinimum;
+            winnerSeats.forEach(seat => {
+              let player = Players[getSeatIndex(socket, seat)];
+              if (lowestBid > player.bid) {
+                lowestBid = player.bid;
+                lowestBidder = player;
+              }
+              if (winners.indexOf(player) > - 1) {
+                winners.push(player);
+              }
+            });
+            if (lowestBidder) {
+              sidePot2 = lowestBidder.bid * winnerSeats.length;
+              console.log("sidePot2 " + sidePot2);
+              winnerSeats.forEach(seat => {
+                Players[getSeatIndex(socket, seat)].pot += sidePot2 / winnerSeats.length;
+              });
+              Game.winningPot -= sidePot2;
+              playerCards.splice([lowestBidder.seat, lowestBidder.cards], 1);
+              lowestBidder = undefined;
+              if (playerCards.length > 2) {
+                winnerSeats = Game.pokerHands.processHands(Game.cards, playerCards);
+                let sidePot3;
+                lowestBid = Game.currentCallMinimum;
+                winnerSeats.forEach(seat => {
+                  let player = Players[getSeatIndex(socket, seat)];
+                  if (lowestBid > player.bid) {
+                    lowestBid = player.bid;
+                    lowestBidder = player;
+                  }
+                  if (winners.indexOf(player) > - 1) {
+                    winners.push(player);
+                  }
+                });
+                if (lowestBidder) {
+                  sidePot3 = lowestBidder.bid * winnerSeats.length;
+                  console.log("sidePot3 " + sidePot3);
+                  winnerSeats.forEach(seat => {
+                    Players[getSeatIndex(socket, seat)].pot += sidePot3 / winnerSeats.length;
+                  });
+                  Game.winningPot -= sidePot2;
+                  playerCards.splice([lowestBidder.seat, lowestBidder.cards], 1);
+                  lowestBidder = undefined;
+                } else {
+                  winnerSeats.forEach(seat => {
+                    Players[getSeatIndex(socket, seat)].pot += (Game.winnerPot / winnerSeats.length);
+                  });
+                }
+                if (Game.winnerPot) {
+                  let player = Players[getSeatIndex(socket, playerCards[0][0])];
+                  player.pot += Game.winnerPot;
+                  if (winners.indexOf(player) > - 1) {
+                    winners.push(player);
+                  }
+                }
+              } else {
+                let player = Players[getSeatIndex(socket, playerCards[0][0])];
+                player.pot += Game.winnerPot;
+                if (winners.indexOf(player) > - 1) {
+                  winners.push(player);
+                }
+              }
+            } else {
+              winnerSeats.forEach(seat => {
+                Players[getSeatIndex(socket, seat)].pot += (Game.winnerPot / winnerSeats.length);
+              });
+            }
+          } else {
+            let player = Players[getSeatIndex(socket, playerCards[0][0])];
+            player.pot += Game.winnerPot;
+            if (winners.indexOf(player.seat) > -1) {
+              winners.push(player);
+            }
+          }
+        }
+      } else {
+        winnerSeats.forEach(seat => {
+          Players[getSeatIndex(socket, seat)].pot += (Game.winnerPot / winnerSeats.length);
+        });
+      }
+    } else {
+      let player = Players[getSeatIndex(socket, playerCards[0][0])];
+      player.pot += Game.winnerPot;
+      winners.push(player);
+    }
+    winners.forEach(winner => {
+      Players.forEach(player => {
+        if (winner.userName && player.userName) {
+          if (player.userName === winner.userName) {
+            let netGain = player.bid + player.pot - player.startAmount;
+            db.none(`UPDATE Users SET chips = chips + ${ netGain } WHERE email = '${ player.userName }'`);
+          }
+        }
+        player.startAmount = player.pot; // New Start Amount.
+      });
+      io.to(socket.gameId).emit('update player statistics', {
+        seat: winner.seat,
+        playerBid: 0,
+        playerPot: winner.pot,
+      });
     });
   }
 
@@ -230,6 +382,7 @@ const gameEvents = (io, socket, game, players, db) => {
       }
     });
     if (count === 1) {
+      socket.fold = 0;
       Game.winner = possibleWinner;
       return true;
     }
@@ -377,6 +530,7 @@ const gameEvents = (io, socket, game, players, db) => {
     let playerCards = [];
     let winners = [];
     Players.forEach(player => {
+      if (player.fold) { return; }
       let seatId = player.seat;
       let cards = player.cards;
       let playerDetails = [seatId, cards];
@@ -401,7 +555,7 @@ const gameEvents = (io, socket, game, players, db) => {
       Players[getSeatIndex(socket, winner)].pot += splitPot;
       Players.forEach(player => {
         if (Players[getSeatIndex(socket, winner)].userName && player.userName) {
-          if (player.userName === Players[getSeatIndex(winner)].userName) {
+          if (player.userName === Players[getSeatIndex(socket, winner)].userName) {
             let netGain = player.bid + player.pot - player.startAmount;
             db.none(`UPDATE Users SET chips = chips + ${ netGain } WHERE email = '${ player.userName }'`);
           }
@@ -414,6 +568,7 @@ const gameEvents = (io, socket, game, players, db) => {
         playerPot: Players[getSeatIndex(socket, winner)].pot,
       });
     });
+    Game.winners = undefined;
   }
 
   function incrementBlinds(socket) {
