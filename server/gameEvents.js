@@ -377,6 +377,7 @@ const gameEvents = (io, socket, game, players, db) => {
     let playerCards = [];
     let winners = [];
     Players.forEach(player => {
+      if (player.fold) { return; }
       let seatId = player.seat;
       let cards = player.cards;
       let playerDetails = [seatId, cards];
@@ -401,7 +402,7 @@ const gameEvents = (io, socket, game, players, db) => {
       Players[getSeatIndex(socket, winner)].pot += splitPot;
       Players.forEach(player => {
         if (Players[getSeatIndex(socket, winner)].userName && player.userName) {
-          if (player.userName === Players[getSeatIndex(winner)].userName) {
+          if (player.userName === Players[getSeatIndex(socket, winner)].userName) {
             let netGain = player.bid + player.pot - player.startAmount;
             db.none(`UPDATE Users SET chips = chips + ${ netGain } WHERE email = '${ player.userName }'`);
           }
