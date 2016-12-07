@@ -366,7 +366,7 @@ const gameEvents = (io, socket, game, players, db) => {
       case 3:
         determineWinner(socket);
         showAllCards(socket);
-        setTimeout(() => { startGame(socket); }, 3000);
+        setTimeout(() => { startGame(socket); }, 7000);
         return 1;
     }
   }

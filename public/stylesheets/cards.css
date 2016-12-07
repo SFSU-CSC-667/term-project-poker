@@ -6,6 +6,7 @@
 }
 
 .player-cards > .card-image {
+  margin-right: 0.5em;
   animation: card-deal-animation .3s linear forwards;
 }
 
