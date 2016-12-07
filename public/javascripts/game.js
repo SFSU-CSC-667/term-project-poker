@@ -163,8 +163,11 @@
   });
 
   socket.on('reset game', data => {
-    seatsOccupied = [];
-    window.location.reload();
+    // seatsOccupied = [];
+    // window.location.reload();
+    $(`#timer`).addClass('hidden');
+    $('#timer').html('');
+    clearInterval(timeInterval);
   });
 
   socket.on('game update', data => {
@@ -250,17 +253,17 @@
   });
 
   socket.on('player offline', data => {
-    socket.emit('skip turn', { seat: data.seat });
-    seatsOccupied.splice(seatsOccupied.indexOf(data.seat), 1);
+    // socket.emit('skip turn', { seat: data.seat });
+    // seatsOccupied.splice(seatsOccupied.indexOf(data.seat), 1);
     $(`#${ data.seat }-actions`).html('<button data-status="status" class="btn btn-danger" disabled="disabled">Offline</button>');
-    setTimeout(() => { freeUpSeat(data.seat); }, 5000);
+    // setTimeout(() => { freeUpSeat(data.seat); }, 5000);
   });
 
-  socket.on('insufficient blind kick', data => {
+  socket.on('unoccupy seat', data => {
     setTimeout(() => {
       seatsOccupied = data.seatsOccupied;
       freeUpSeat(data.seat);
-    }, 1000);
+    }, 3000);
   });
 
   function cardImages(...cardNames) {

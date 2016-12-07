@@ -503,6 +503,7 @@ const gameEvents = (io, socket, game, players, db) => {
   function dealerCheck(round, socket) {
     let Game = game[socket.gameId];
     let Players = players[socket.gameId];
+    if (Players.length < 2) { wipeTable(socket); return 1; }
     switch (round) {
       case 0:
         drawFlopCards(socket);
@@ -522,6 +523,24 @@ const gameEvents = (io, socket, game, players, db) => {
         setTimeout(() => { startGame(socket); }, 7000);
         return 1;
     }
+  }
+
+  function wipeTable(socket) {
+    let Game = game[socket.gameId];
+    let Players = players[socket.gameId];
+    io.to(socket.gameId).emit('remove all cards');
+    io.to(socket.gameId).emit('reset game');
+    Game.ready = 1;
+    Players.forEach(player => {
+      player.fold = 0;
+      player.bid = 0;
+      io.to(socket.gameId).emit('update player statistics', {
+        seat: player.seat,
+        playerBid: player.bid,
+        playerPot: player.pot,
+      });
+    });
+    Game.gameStarted = 0;
   }
 
   function determineWinner(socket) {
@@ -586,18 +605,18 @@ const gameEvents = (io, socket, game, players, db) => {
   function smallBigBlinds(socket) {
     let Game = game[socket.gameId];
     let Players = players[socket.gameId];
-    if (validateBlinds(socket, 50) === 2) { return 0; }
-    else if (!validateBlinds(socket, 50)) { startGame(socket); return 0; }
+    // if (validateBlinds(socket, 50) === 2) { return 0; }
+    if (!validateBlinds(socket, 50)) { startGame(socket); return 0; }
     updatePlayerBid(Players[Game.turn], 50);
     if (Players[Game.turn + 1]) {
       Game.turn++;
-      if (validateBlinds(socket, 100) === 2) { return 0; }
-      else if (!validateBlinds(socket, 100)) { startGame(socket); return 0; }
+      // if (validateBlinds(socket, 100) === 2) { return 0; }
+      if (!validateBlinds(socket, 100)) { startGame(socket); return 0; }
       updatePlayerBid(Players[Game.turn], 100);
     } else {
       Game.turn = 0;
-      if (validateBlinds(socket, 100) === 2) { return 0; }
-      else if (!validateBlinds(socket, 100)) { startGame(socket); return 0; }
+      // if (validateBlinds(socket, 100) === 2) { return 0; }
+      if (!validateBlinds(socket, 100)) { startGame(socket); return 0; }
       updatePlayerBid(Players[Game.turn], 100);
     }
     Game.currentCallMinimum = 100;
@@ -610,13 +629,13 @@ const gameEvents = (io, socket, game, players, db) => {
     let seat = Game.seatsOccupied[Game.turn];
     if ((Players[Game.turn].pot - amount) < 0) {
       Players.splice(Players.indexOf(Players[Game.turn]), 1);
-      if (Players.length < 2) {
-        delete game[socket.gameId];
-        io.to(socket.gameId).emit('reset game');
-        return 2;
-      }
+      // if (Players.length < 2) {
+      //   delete game[socket.gameId];
+      //   io.to(socket.gameId).emit('reset game');
+      //   return 2;
+      // }
       Game.seatsOccupied.splice(Game.seatsOccupied.indexOf(Game.seatsOccupied[Game.turn]), 1);
-      io.to(socket.gameId).emit('insufficient blind kick', { seat: seat, seatsOccupied: Game.seatsOccupied });
+      io.to(socket.gameId).emit('unoccupy seat', { seat: seat, seatsOccupied: Game.seatsOccupied });
       return 0;
     }
     return 1;
