@@ -5,24 +5,13 @@
   let timer;
   let timeInterval;
   let seat;
+  let maxRaise;
+  let buyInMin;
+  let buyInMax;
 
   $(".join").on('click', function() {
     seat = $(this).parent().prop('id');
     socket.emit('buyin request');
-  });
-
-  socket.on('joining game', data => {
-    $('#buyin-slider').attr({
-      min: data.buyInMin,
-      max: data.buyInMax,
-      value: data.buyInMin
-    });
-    if (data.buyInMin !== data.buyInMax) {
-      $("#buyin-modal").modal('show');
-    } else {
-      $("#buyin-submit").trigger("click");
-    }
-    $('#buyin-label').html('Amount: ' + data.buyInMin);
   });
 
   $('#buyin-slider').on('change mousemove mouseup', () => {
@@ -30,11 +19,12 @@
   });
 
   $("#buyin-submit").on('click', function() {
-      socket.emit('join request', {
-          startAmount: $('#buyin-slider').val(),
-          seat: seat
-      });
-      $(`#${ seat }`).children('.ready-btn').removeClass('hidden');
+    if (!validateBuyIn()) { return; }
+    socket.emit('join request', {
+      startAmount: $('#buyin-slider').val(),
+      seat: seat
+    });
+    $(`#${ seat }`).children('.ready-btn').removeClass('hidden');
   });
 
   $('body').on('click', ".action-btn", function(event) {
@@ -42,9 +32,13 @@
     playerTookAction = 1;
     let seatAction = $(this).parent().attr('id');
     let seat = seatAction.split('-')[0];
+    let raise = parseInt($('#raise-amount').html());
+    if ($(this).data('action') === 'raise') {
+      if(!validateRaise(raise)) { return; }
+    }
     $(`#${ seatAction }`).children().prop('disabled', true);
     $(`#${ seat }-raise`).children().prop('disabled', true);
-    socket.emit('action button', { action: $(this).data('action'), raise: parseInt($('#raise-amount').html()) });
+    socket.emit('action button', { action: $(this).data('action'), raise: raise });
   });
 
   $('body').on('click', ".ready-btn", function(event) {
@@ -103,6 +97,22 @@
         break;
     }
 
+  });
+
+  socket.on('joining game', data => {
+    buyInMin = data.buyInMin;
+    buyInMax = data.buyInMax;
+    $('#buyin-slider').attr({
+      min: buyInMin,
+      max: buyInMax,
+      value: buyInMin
+    });
+    if (buyInMin !== buyInMax) {
+      $("#buyin-modal").modal('show');
+    } else {
+      $("#buyin-submit").trigger("click");
+    }
+    $('#buyin-label').html('Amount: ' + buyInMin);
   });
 
   socket.emit('game viewer', { gameId: sessionStorage.getItem('gameId') });
@@ -307,11 +317,6 @@
     $(`#${ seat }-raise`).html('');
   }
 
-  function verifyButtonEnabled(action) {
-    let button = $(`.action-btn[data-action='${ action }']`);
-    return button.prop('disabled') ? false : true;
-  }
-
   function createActionButtons() {
     return (
       "<button class='hidden ready-btn btn btn-success'>Ready</button>" +
@@ -324,11 +329,32 @@
   }
 
   function createRaiseSlider(playerBid, playerPot) {
-    let maxRaise = playerPot + playerBid - callMinimum;
+    maxRaise = playerPot + playerBid - callMinimum;
     return (
       '<p id="raise-text">Raise Amount: <span id="raise-amount">50</span></p>' +
       `<input id="slider" type="range" min="50" max=${ maxRaise } step="50" value="50"/>`
     );
+  }
+
+  function verifyButtonEnabled(action) {
+    let button = $(`.action-btn[data-action='${ action }']`);
+    return button.prop('disabled') ? false : true;
+  }
+
+  function validateBuyIn() {
+    if ($('#buyin-slider').val() > buyInMax || $('#buyin-slider').val() < buyInMin) {
+      alert(`Minimum Buy In : ${ buyInMin }\nMaximum Buy In : ${ buyInMax }`);
+      return false;
+    }
+    return true;
+  }
+
+  function validateRaise(raise) {
+    if (raise < 50 || raise > maxRaise) {
+      alert(`Minimum Raise : 50\nMaximum Raise : ${ maxRaise }`);
+      return false;
+    }
+    return true;
   }
 
 })();
