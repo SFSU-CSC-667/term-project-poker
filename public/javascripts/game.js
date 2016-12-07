@@ -34,7 +34,7 @@
     let seat = seatAction.split('-')[0];
     let raise = parseInt($('#raise-amount').html());
     if ($(this).data('action') === 'raise') {
-      if(!validateRaise(raise)) { return; }
+      if (!validateRaise(raise)) { return; }
     }
     $(`#${ seatAction }`).children().prop('disabled', true);
     $(`#${ seat }-raise`).children().prop('disabled', true);
@@ -113,6 +113,10 @@
       $("#buyin-submit").trigger("click");
     }
     $('#buyin-label').html('Amount: ' + buyInMin);
+  });
+
+  socket.on('seat already occupied', data => {
+    alert('This seat is already occupied!');
   });
 
   socket.emit('game viewer', { gameId: sessionStorage.getItem('gameId') });

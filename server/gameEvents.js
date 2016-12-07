@@ -258,6 +258,10 @@ const gameEvents = (io, socket, game, players, db) => {
     let gameId = socket.gameId;
     let Game = game[gameId];
     let Players = players[gameId];
+    if (Game.seatsOccupied.indexOf(data.seat) > -1) {
+      socket.emit('seat already occupied');
+      return;
+    }
     if (!socket.displayName) {
       io.guestCount++;
       socket.displayName = 'Guest ' + io.guestCount;
