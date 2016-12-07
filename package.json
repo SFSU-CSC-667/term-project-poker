@@ -1,7 +1,6 @@
 {
   "name": "poker-game",
   "version": "1.0.0",
-  "private": true,
   "scripts": {
     "start": "node ./bin/www"
   },
