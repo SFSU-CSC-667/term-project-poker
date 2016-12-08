@@ -73,16 +73,6 @@ const socket = io.connect();
     });
   });
 
-  if (sessionStorage.getItem('email') && sessionStorage.getItem('password')) {
-    $('.signin-btn').replaceWith(loading());
-    let user = sessionStorage.getItem('email');
-    let password = sessionStorage.getItem('password');
-    socket.emit('account signin', {
-      email: user,
-      password: password
-    });
-  }
-
   socket.on('firstname change response', data => {
     if (!data.success) { alert('Error changing name, try again later.'); }
     $('#account-firstname').replaceWith(`<span id="account-firstname">${ data.newFirstname.slice(1, -1) }</span>`);
@@ -105,7 +95,9 @@ const socket = io.connect();
 
   socket.on('account creation response', data => {
     if (data.success) {
-      alert("Account creation is successful.");
+      storeSession($('#email').val(), $('#password').val());
+      signIn();
+      $("#register-form").trigger('reset');
       $("#register-modal").modal('hide');
     } else {
       alert(data.detail);
@@ -114,7 +106,7 @@ const socket = io.connect();
 
   socket.on('account signin response', data => {
     if (data.success) {
-      if (data.form) { storeSession(); }
+      if (data.form) { storeSession($('#account-email').val(), $('#account-password').val()); }
       $('#signin-form').trigger('reset');
       $('#loading').replaceWith(`<button class='account-btn btn btn-primary'>${ data.user }</button>`);
     } else {
@@ -122,6 +114,20 @@ const socket = io.connect();
       alert("Invalid credentials");
     }
   });
+
+  signIn();
+
+  function signIn() {
+    if (sessionStorage.getItem('email') && sessionStorage.getItem('password')) {
+      $('.signin-btn').replaceWith(loading());
+      let user = sessionStorage.getItem('email');
+      let password = sessionStorage.getItem('password');
+      socket.emit('account signin', {
+        email: user,
+        password: password
+      });
+    }
+  }
 
   function requestAccount() {
     socket.emit('account registration', {
@@ -132,9 +138,9 @@ const socket = io.connect();
     });
   }
 
-  function storeSession() {
-    sessionStorage.setItem('email', $('#account-email').val());
-    sessionStorage.setItem('password', $('#account-password').val());
+  function storeSession(email, password) {
+    sessionStorage.setItem('email', email);
+    sessionStorage.setItem('password', password);
   }
 
   function loading() {
@@ -147,4 +153,5 @@ const socket = io.connect();
       '</div>'
     );
   }
+
 })();
