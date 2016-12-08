@@ -162,12 +162,15 @@
     $(`#${ data.seat }-actions`).children('.ready-btn').removeClass('hidden');
   });
 
-  socket.on('reset game', data => {
-    // seatsOccupied = [];
-    // window.location.reload();
+  socket.on('reset timer', data => {
     $(`#timer`).addClass('hidden');
     $('#timer').html('');
     clearInterval(timeInterval);
+  });
+
+  socket.on('reset game', data => {
+    seatsOccupied = [];
+    window.location.reload();
   });
 
   socket.on('game update', data => {
@@ -253,17 +256,12 @@
   });
 
   socket.on('player offline', data => {
-    // socket.emit('skip turn', { seat: data.seat });
-    // seatsOccupied.splice(seatsOccupied.indexOf(data.seat), 1);
     $(`#${ data.seat }-actions`).html('<button data-status="status" class="btn btn-danger" disabled="disabled">Offline</button>');
-    // setTimeout(() => { freeUpSeat(data.seat); }, 5000);
   });
 
   socket.on('unoccupy seat', data => {
-    setTimeout(() => {
-      seatsOccupied = data.seatsOccupied;
-      freeUpSeat(data.seat);
-    }, 3000);
+    seatsOccupied = data.seatsOccupied;
+    freeUpSeat(data.seat);
   });
 
   function cardImages(...cardNames) {
@@ -286,6 +284,10 @@
     if ((playerBid + playerPot) < callMinimum) {
       $(`#${ seat }-actions`).children('[data-action="call"]').prop('disabled', true);
       $(`#${ seat }-actions`).children('[data-action="check"]').prop('disabled', true);
+      $(`#${ seat }-actions`).children('[data-action="raise"]').prop('disabled', true);
+    }
+    if (playerBid > callMinimum) {
+      $(`#${ seat }-actions`).children('[data-action="call"]').prop('disabled', true);
       $(`#${ seat }-actions`).children('[data-action="raise"]').prop('disabled', true);
     }
     if ((playerBid + playerPot) < (callMinimum + 50)) {

@@ -47,14 +47,18 @@ const disconnectEvents = (io, socket, connections, users, game, players, db) => 
     io.to(socket.gameId).emit('player offline', {
       seat: socket.seat
     });
-    if (Game.seatsOccupied[Game.turn] === socket.seat) {
-      skipTurn(socket);
+    if (game[socket.gameId]) {
+      if (Game.seatsOccupied[Game.turn] === socket.seat) { skipTurn(socket); }
+      Game.seatsOccupied.splice(Game.seatsOccupied.indexOf(socket.seat), 1);
+      Players.splice(Players.indexOf(socket), 1);
+      io.to(socket.gameId).emit('unoccupy seat', { seat: socket.seat, seatsOccupied: Game.seatsOccupied });
     }
-    Game.seatsOccupied.splice(Game.seatsOccupied.indexOf(socket.seat), 1);
-    Players.splice(Players.indexOf(socket), 1);
-    io.to(socket.gameId).emit('unoccupy seat', { seat: socket.seat, seatsOccupied: Game.seatsOccupied });
     socket.leave(socket.gameId);
     socket.status = 'Offline';
+    if (!Players.length) {
+      delete game[socket.gameId];
+      io.to(socket.gameId).emit('reset game');
+    }
   }
 
   function skipTurn(socket) {
@@ -62,15 +66,14 @@ const disconnectEvents = (io, socket, connections, users, game, players, db) => 
     let Players = players[socket.gameId];
     if (Players[Game.turn + 1] && Players[Game.turn + 1].fold) {
       Game.turn++;
-      nextTurn(socket);
+      skipTurn(socket);
     } else if (Players[Game.turn + 1]) {
       Game.turn++;
       io.to(socket.gameId).emit('turn flag', { seat: Game.seatsOccupied[Game.turn] });
       Players[Game.turn].emit('player turn', { turn: Game.turn, callMinimum: Game.currentCallMinimum });
     } else {
-      if (dealerCheck(Game.round, socket)) { return; }
       Game.turn = 0;
-      if (Players[Game.turn].fold) { nextTurn(socket); return; }
+      if (Players[Game.turn].fold) { skipTurn(socket); return; }
       io.to(socket.gameId).emit('turn flag', { seat: Game.seatsOccupied[Game.turn] });
       Players[Game.turn].emit('player turn', { turn: Game.turn, callMinimum: Game.currentCallMinimum });
     }

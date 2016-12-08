@@ -170,7 +170,8 @@ const gameEvents = (io, socket, game, players, db) => {
     let Players = players[socket.gameId];
     let index = getSeatIndex(socket, Game.winner);
     let winner = Players[index];
-    if (winner.bid !== Game.currentCallMinimum) {
+    if (winner.bid < Game.currentCallMinimum) {
+      console.log("Determing Side Pots");
       determineSidePots(socket, winner);
       return;
     }
@@ -207,7 +208,6 @@ const gameEvents = (io, socket, game, players, db) => {
       playerCards.push(playerDetails);
     });
     let mainPot = (winner.bid * (playerCards.length + 1));
-    console.log("MainPot " + mainPot);
     winner.pot += mainPot;
     Game.winnerPot -= mainPot;
     if (playerCards.length > 2) {
@@ -225,7 +225,6 @@ const gameEvents = (io, socket, game, players, db) => {
       });
       if (lowestBidder) {
         sidePot1 = lowestBidder.bid * winnerSeats.length;
-        console.log("sidePot1 " + sidePot1);
         winnerSeats.forEach(seat => {
           Players[getSeatIndex(socket, seat)].pot += sidePot1 / winnerSeats.length;
         });
@@ -249,7 +248,6 @@ const gameEvents = (io, socket, game, players, db) => {
             });
             if (lowestBidder) {
               sidePot2 = lowestBidder.bid * winnerSeats.length;
-              console.log("sidePot2 " + sidePot2);
               winnerSeats.forEach(seat => {
                 Players[getSeatIndex(socket, seat)].pot += sidePot2 / winnerSeats.length;
               });
@@ -272,7 +270,6 @@ const gameEvents = (io, socket, game, players, db) => {
                 });
                 if (lowestBidder) {
                   sidePot3 = lowestBidder.bid * winnerSeats.length;
-                  console.log("sidePot3 " + sidePot3);
                   winnerSeats.forEach(seat => {
                     Players[getSeatIndex(socket, seat)].pot += sidePot3 / winnerSeats.length;
                   });
@@ -529,9 +526,10 @@ const gameEvents = (io, socket, game, players, db) => {
     let Game = game[socket.gameId];
     let Players = players[socket.gameId];
     io.to(socket.gameId).emit('remove all cards');
-    io.to(socket.gameId).emit('reset game');
+    io.to(socket.gameId).emit('reset timer');
     Game.ready = 1;
     Players.forEach(player => {
+      player.pot += player.bid;
       player.fold = 0;
       player.bid = 0;
       io.to(socket.gameId).emit('update player statistics', {
@@ -631,7 +629,7 @@ const gameEvents = (io, socket, game, players, db) => {
       Players.splice(Players.indexOf(Players[Game.turn]), 1);
       // if (Players.length < 2) {
       //   delete game[socket.gameId];
-      //   io.to(socket.gameId).emit('reset game');
+      //   io.to(socket.gameId).emit('reset timer');
       //   return 2;
       // }
       Game.seatsOccupied.splice(Game.seatsOccupied.indexOf(Game.seatsOccupied[Game.turn]), 1);
