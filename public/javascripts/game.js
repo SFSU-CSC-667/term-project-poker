@@ -26,7 +26,7 @@
     seat = $(this).parent().prop('id');
     socket.emit('buyin request');
   });
-  
+
   $('body').on('click', ".action-btn", function(event) {
     event.preventDefault();
     playerTookAction = 1;
@@ -218,6 +218,7 @@
       $(`#${ seat }-cards`).html(cardImages(player.cards[0], player.cards[1]));
     }
     if (data.winner) {
+      console.log('winner');
       $('#winning-cards').html(cardImages(data.winningHand));
       $(`.${ data.playerCards[data.winner].cards[0] }`).addClass('highlight-card');
       $(`.${ data.playerCards[data.winner].cards[1] }`).addClass('highlight-card');

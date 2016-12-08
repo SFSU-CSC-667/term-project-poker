@@ -177,6 +177,7 @@ const gameEvents = (io, socket, game, players, db) => {
       return;
     }
     winner.pot += Game.winnerPot;
+    showAllCards(socket);
     console.log("We got a winner! ", Game.winner, Game.winnerPot);
     Players.forEach(player => {
       if (winner.userName && player.userName) {
@@ -517,7 +518,6 @@ const gameEvents = (io, socket, game, players, db) => {
         break;
       case 3:
         determineWinner(socket);
-        showAllCards(socket);
         setTimeout(() => {
           if (players[socket.gameId].length < 2) { wipeTable(socket); return 1; }
           startGame(socket);
@@ -571,6 +571,7 @@ const gameEvents = (io, socket, game, players, db) => {
     let Players = players[socket.gameId];
     let splitPot = Game.winnerPot / winners.length;
     Game.winners = winners;
+    showAllCards(socket);
     console.log("We got multiple winners! ", winners, splitPot);
     winners.forEach(winner => {
       Players[getSeatIndex(socket, winner)].pot += splitPot;

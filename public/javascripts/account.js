@@ -1,6 +1,9 @@
 const socket = io.connect();
 
 (() => {
+
+  signIn();
+  
   $(".register-btn").on('click', event => {
     event.preventDefault();
     $("#register-modal").modal('show');
@@ -114,8 +117,6 @@ const socket = io.connect();
       alert("Invalid credentials");
     }
   });
-
-  signIn();
 
   function signIn() {
     if (sessionStorage.getItem('email') && sessionStorage.getItem('password')) {
