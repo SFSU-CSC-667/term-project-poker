@@ -88,8 +88,39 @@
           </li>
           <hr />
           <li class="account-detail">
+            <button id="delete-account-btn" class="left btn btn-danger">Delete Account</button>
             <button id="signout-btn" class="right btn btn-primary">Sign Out</button>
           </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="delete-account-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-delete-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <span class="left glyphicon glyphicon-remove-sign"></span>
+        <h4 class="modal-title modal-delete-header" id="myModalLabel">Delete Account</h4>
+      </div>
+      <div class="modal-body">
+        <ul class="Account information">
+          <form id='delete-form'>
+            <div class="modal-body">
+              <label for="email">Email / Username</label>
+              <input class='form-control' id='delete-email' type="email" placeholder='ex. example@mail.com' required /> <br>
+              <label for="password">Confirm Password</label>
+              <input class='form-control' id='delete-password' type="password" placeholder='Password' required /> <br>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="left btn btn-primary" data-dismiss="modal">Changed My Mind</button>
+              <button id="signin-submit" class="right btn btn-danger">Confirm Deletion</button>
+            </div>
+          </form>
         </ul>
       </div>
     </div>

@@ -3,7 +3,7 @@ const socket = io.connect();
 (() => {
 
   signIn();
-  
+
   $(".register-btn").on('click', event => {
     event.preventDefault();
     $("#register-modal").modal('show');
@@ -18,6 +18,14 @@ const socket = io.connect();
         title: 'Passwords must match!'
       }).tooltip('show');
     }
+  });
+
+  $('#delete-form').on('submit', event => {
+    event.preventDefault();
+    socket.emit('request account deletion', {
+      email: $("#delete-email").val(),
+      password: $("#delete-password").val()
+    });
   });
 
   $('#signin-form').on('submit', event => {
@@ -43,9 +51,15 @@ const socket = io.connect();
     location.reload();
   });
 
-  $('body').on('click', '.account-btn', function(event) {
+  $('body').on('click', '#delete-account-btn', function(event) {
     event.preventDefault();
-    socket.emit('request account information', { email: $(this)[0].innerHTML });
+    $(".modal").modal('hide');
+    $("#delete-account-modal").modal('show');
+  });
+
+  $('body').on('click', '.account-btn', event => {
+    event.preventDefault();
+    socket.emit('request account information', { email: $('.user-email').html() });
   });
 
   $('body').on('click', '#firstname-edit', event => {
@@ -88,6 +102,16 @@ const socket = io.connect();
     $('#change-lastname').replaceWith("<button id='lastname-edit' class='right btn btn-info'> Edit </button>");
   });
 
+  socket.on('account deletion response', data => {
+    if (data.success) {
+      alert(`${ data.email } has been deleted.`);
+    } else {
+      alert("Account deletion failed, Try again later.");
+    }
+    $('delete-form').trigger('reset');
+    $('delete-account-modal').modal('hide');
+  });
+
   socket.on('account information response', data => {
     $('.account-email').html(data.email);
     $('#account-firstname').html(data.first);
@@ -111,10 +135,12 @@ const socket = io.connect();
     if (data.success) {
       if (data.form) { storeSession($('#account-email').val(), $('#account-password').val()); }
       $('#signin-form').trigger('reset');
-      $('#loading').replaceWith(`<button class='account-btn btn btn-primary'>${ data.user }</button>`);
+      $('#loading').replaceWith(`<button class='account-btn btn btn-primary'>
+        <span class='glyphicon glyphicon-wrench'></span>&nbsp&nbsp<i class='user-email'>${ data.user }</a></button>`);
     } else {
       $('#loading').replaceWith('<button class="signin-btn btn btn-primary">Sign In</button>');
       alert("Invalid credentials");
+      sessionStorage.clear();
     }
   });
 

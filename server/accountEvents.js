@@ -15,6 +15,10 @@ const accountEvents = (io, socket, users, db) => {
     accountInfo(data.email);
   });
 
+  socket.on('request account deletion', data => {
+    deleteAccount(data);
+  });
+
   socket.on('request firstname change', data => {
     db.none(`UPDATE Users SET firstname = ${ data.newFirstname } WHERE email = '${ data.email }'`)
     .then(response => {
@@ -65,6 +69,26 @@ const accountEvents = (io, socket, users, db) => {
       socket.emit("account creation response", {
         success: 0, detail: response.detail
       });
+    });
+  }
+
+  function deleteAccount(data) {
+    db.one(`SELECT * FROM Users WHERE Email='${ data.email }'`)
+    .then(response => {
+      bcrypt.compare(data.password, response.password, (error, success) => {
+        if (success) {
+          db.none(`DELETE FROM Users WHERE Email='${ data.email }'`);
+          socket.emit("account deletion response", {
+            success: 1, email: data.email
+          });
+        } else {
+          socket.emit("account deletion response", { success: 0 });
+        }
+      });
+    })
+    .catch(response => {
+      console.log(response);
+      socket.emit("account deletion response", { success: 0 });
     });
   }
 
