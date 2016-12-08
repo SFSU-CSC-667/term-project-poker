@@ -9,11 +9,6 @@
   let buyInMin;
   let buyInMax;
 
-  $(".join").on('click', function() {
-    seat = $(this).parent().prop('id');
-    socket.emit('buyin request');
-  });
-
   $('#buyin-slider').on('change mousemove mouseup', () => {
       $('#buyin-label').html('Amount: ' + $('#buyin-slider').val());
   });
@@ -27,6 +22,11 @@
     $(`#${ seat }`).children('.ready-btn').removeClass('hidden');
   });
 
+  $('body').on('click', ".join", function() {
+    seat = $(this).parent().prop('id');
+    socket.emit('buyin request');
+  });
+  
   $('body').on('click', ".action-btn", function(event) {
     event.preventDefault();
     playerTookAction = 1;

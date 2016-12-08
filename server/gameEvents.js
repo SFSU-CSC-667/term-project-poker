@@ -17,8 +17,9 @@ const gameEvents = (io, socket, game, players, db) => {
   socket.on('join request', data => {
     if (!players[socket.gameId])
       players[socket.gameId] = [];
-    if (players[socket.gameId].indexOf(socket) > -1)
+    if (players[socket.gameId].indexOf(socket) > -1) {
       return;
+    }
     if (!game[socket.gameId]) {
       game[socket.gameId] = {
         deck: new Deck(), ready: 0,
@@ -32,25 +33,25 @@ const gameEvents = (io, socket, game, players, db) => {
   });
 
   socket.on('buyin request', () => {
-      getGameInfo(socket)
-      .then(gameData => {
-          getPlayerInfo(socket)
-          .then(playerData => {
-              socket.emit('joining game', {
-                  buyInMin: gameData['minchips'],
-                  buyInMax: playerData['chips']
-              });
-          })
-          .catch(() => {
-              socket.emit('joining game', {
-                  buyInMin: gameData['minchips'],
-                  buyInMax: gameData['minchips']
-              });
-          });
-          })
-          .catch(error => {
-              console.log("An error occured while getting game info. ", error.message);
-          });
+    getGameInfo(socket)
+    .then(gameData => {
+      getPlayerInfo(socket)
+      .then(playerData => {
+        socket.emit('joining game', {
+          buyInMin: gameData['minchips'],
+          buyInMax: playerData['chips']
+        });
+      })
+      .catch(() => {
+        socket.emit('joining game', {
+          buyInMin: gameData['minchips'],
+          buyInMax: gameData['minchips']
+        });
+      });
+    })
+    .catch(error => {
+      console.log("An error occured while getting game info. ", error.message);
+    });
   });
 
   socket.on('player ready', data => {
@@ -517,7 +518,10 @@ const gameEvents = (io, socket, game, players, db) => {
       case 3:
         determineWinner(socket);
         showAllCards(socket);
-        setTimeout(() => { startGame(socket); }, 7000);
+        setTimeout(() => {
+          if (players[socket.gameId].length < 2) { wipeTable(socket); return 1; }
+          startGame(socket);
+        }, 7000);
         return 1;
     }
   }
@@ -603,18 +607,23 @@ const gameEvents = (io, socket, game, players, db) => {
   function smallBigBlinds(socket) {
     let Game = game[socket.gameId];
     let Players = players[socket.gameId];
-    // if (validateBlinds(socket, 50) === 2) { return 0; }
     if (!validateBlinds(socket, 50)) { startGame(socket); return 0; }
     updatePlayerBid(Players[Game.turn], 50);
     if (Players[Game.turn + 1]) {
       Game.turn++;
-      // if (validateBlinds(socket, 100) === 2) { return 0; }
-      if (!validateBlinds(socket, 100)) { startGame(socket); return 0; }
+      if (!validateBlinds(socket, 100)) {
+        updatePlayerBid(Players[Game.turn - 1], -50);
+        startGame(socket);
+        return 0;
+      }
       updatePlayerBid(Players[Game.turn], 100);
     } else {
       Game.turn = 0;
-      // if (validateBlinds(socket, 100) === 2) { return 0; }
-      if (!validateBlinds(socket, 100)) { startGame(socket); return 0; }
+      if (!validateBlinds(socket, 100)) {
+        updatePlayerBid(Players[Players.length - 1], -50);
+        startGame(socket);
+        return 0;
+      }
       updatePlayerBid(Players[Game.turn], 100);
     }
     Game.currentCallMinimum = 100;
@@ -627,11 +636,6 @@ const gameEvents = (io, socket, game, players, db) => {
     let seat = Game.seatsOccupied[Game.turn];
     if ((Players[Game.turn].pot - amount) < 0) {
       Players.splice(Players.indexOf(Players[Game.turn]), 1);
-      // if (Players.length < 2) {
-      //   delete game[socket.gameId];
-      //   io.to(socket.gameId).emit('reset timer');
-      //   return 2;
-      // }
       Game.seatsOccupied.splice(Game.seatsOccupied.indexOf(Game.seatsOccupied[Game.turn]), 1);
       io.to(socket.gameId).emit('unoccupy seat', { seat: seat, seatsOccupied: Game.seatsOccupied });
       return 0;
