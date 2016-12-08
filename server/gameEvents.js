@@ -169,11 +169,17 @@ const gameEvents = (io, socket, game, players, db) => {
     let Game = game[socket.gameId];
     let Players = players[socket.gameId];
     let index = getSeatIndex(socket, Game.winner);
-    Players[index].pot += Game.winnerPot;
+    let winner = Players[index];
+    if (winner.bid < Game.currentCallMinimum) {
+      console.log("Determing Side Pots");
+      determineSidePots(socket, winner);
+      return;
+    }
+    winner.pot += Game.winnerPot;
     console.log("We got a winner! ", Game.winner, Game.winnerPot);
     Players.forEach(player => {
-      if (Players[index].userName && player.userName) {
-        if (player.userName === Players[index].userName) {
+      if (winner.userName && player.userName) {
+        if (player.userName === winner.userName) {
           let netGain = player.bid + player.pot - player.startAmount;
           db.none(`UPDATE Users SET chips = chips + ${ netGain } WHERE email = '${ player.userName }'`);
         }
@@ -183,7 +189,150 @@ const gameEvents = (io, socket, game, players, db) => {
     io.to(socket.gameId).emit('update player statistics', {
       seat: Game.winner,
       playerBid: 0,
-      playerPot: Players[index].pot,
+      playerPot: winner.pot,
+    });
+    Game.winner = undefined;
+  }
+
+  function determineSidePots(socket, winner) {
+    let Game = game[socket.gameId];
+    let Players = players[socket.gameId];
+    let playerCards = [];
+    let winners = [];
+    winners.push(winner);
+    Players.forEach(player => {
+      if (player.fold || player === winner) { return; }
+      let seatId = player.seat;
+      let cards = player.cards;
+      let playerDetails = [seatId, cards];
+      playerCards.push(playerDetails);
+    });
+    let mainPot = (winner.bid * (playerCards.length + 1));
+    winner.pot += mainPot;
+    Game.winnerPot -= mainPot;
+    if (playerCards.length > 2) {
+      let winnerSeats = Game.pokerHands.processHands(Game.cards, playerCards);
+      let lowestBid = Game.currentCallMinimum;
+      let lowestBidder;
+      let sidePot1;
+      winnerSeats.forEach(seat => {
+        let player = Players[getSeatIndex(socket, seat)];
+        if (lowestBid > player.bid) {
+          lowestBid = player.bid;
+          lowestBidder = player;
+        }
+        winners.push(player);
+      });
+      if (lowestBidder) {
+        sidePot1 = lowestBidder.bid * winnerSeats.length;
+        winnerSeats.forEach(seat => {
+          Players[getSeatIndex(socket, seat)].pot += sidePot1 / winnerSeats.length;
+        });
+        Game.winningPot -= sidePot1;
+        playerCards.splice([lowestBidder.seat, lowestBidder.cards], 1);
+        lowestBidder = undefined;
+        if (Game.winningPot) {
+          if (playerCards.length > 2) {
+            winnerSeats = Game.pokerHands.processHands(Game.cards, playerCards);
+            let sidePot2;
+            lowestBid = Game.currentCallMinimum;
+            winnerSeats.forEach(seat => {
+              let player = Players[getSeatIndex(socket, seat)];
+              if (lowestBid > player.bid) {
+                lowestBid = player.bid;
+                lowestBidder = player;
+              }
+              if (winners.indexOf(player) > - 1) {
+                winners.push(player);
+              }
+            });
+            if (lowestBidder) {
+              sidePot2 = lowestBidder.bid * winnerSeats.length;
+              winnerSeats.forEach(seat => {
+                Players[getSeatIndex(socket, seat)].pot += sidePot2 / winnerSeats.length;
+              });
+              Game.winningPot -= sidePot2;
+              playerCards.splice([lowestBidder.seat, lowestBidder.cards], 1);
+              lowestBidder = undefined;
+              if (playerCards.length > 2) {
+                winnerSeats = Game.pokerHands.processHands(Game.cards, playerCards);
+                let sidePot3;
+                lowestBid = Game.currentCallMinimum;
+                winnerSeats.forEach(seat => {
+                  let player = Players[getSeatIndex(socket, seat)];
+                  if (lowestBid > player.bid) {
+                    lowestBid = player.bid;
+                    lowestBidder = player;
+                  }
+                  if (winners.indexOf(player) > - 1) {
+                    winners.push(player);
+                  }
+                });
+                if (lowestBidder) {
+                  sidePot3 = lowestBidder.bid * winnerSeats.length;
+                  winnerSeats.forEach(seat => {
+                    Players[getSeatIndex(socket, seat)].pot += sidePot3 / winnerSeats.length;
+                  });
+                  Game.winningPot -= sidePot2;
+                  playerCards.splice([lowestBidder.seat, lowestBidder.cards], 1);
+                  lowestBidder = undefined;
+                } else {
+                  winnerSeats.forEach(seat => {
+                    Players[getSeatIndex(socket, seat)].pot += (Game.winnerPot / winnerSeats.length);
+                  });
+                }
+                if (Game.winnerPot) {
+                  let player = Players[getSeatIndex(socket, playerCards[0][0])];
+                  player.pot += Game.winnerPot;
+                  if (winners.indexOf(player) > - 1) {
+                    winners.push(player);
+                  }
+                }
+              } else {
+                let player = Players[getSeatIndex(socket, playerCards[0][0])];
+                player.pot += Game.winnerPot;
+                if (winners.indexOf(player) > - 1) {
+                  winners.push(player);
+                }
+              }
+            } else {
+              winnerSeats.forEach(seat => {
+                Players[getSeatIndex(socket, seat)].pot += (Game.winnerPot / winnerSeats.length);
+              });
+            }
+          } else {
+            let player = Players[getSeatIndex(socket, playerCards[0][0])];
+            player.pot += Game.winnerPot;
+            if (winners.indexOf(player.seat) > -1) {
+              winners.push(player);
+            }
+          }
+        }
+      } else {
+        winnerSeats.forEach(seat => {
+          Players[getSeatIndex(socket, seat)].pot += (Game.winnerPot / winnerSeats.length);
+        });
+      }
+    } else {
+      let player = Players[getSeatIndex(socket, playerCards[0][0])];
+      player.pot += Game.winnerPot;
+      winners.push(player);
+    }
+    winners.forEach(winner => {
+      Players.forEach(player => {
+        if (winner.userName && player.userName) {
+          if (player.userName === winner.userName) {
+            let netGain = player.bid + player.pot - player.startAmount;
+            db.none(`UPDATE Users SET chips = chips + ${ netGain } WHERE email = '${ player.userName }'`);
+          }
+        }
+        player.startAmount = player.pot; // New Start Amount.
+      });
+      io.to(socket.gameId).emit('update player statistics', {
+        seat: winner.seat,
+        playerBid: 0,
+        playerPot: winner.pot,
+      });
     });
   }
 
@@ -230,6 +379,7 @@ const gameEvents = (io, socket, game, players, db) => {
       }
     });
     if (count === 1) {
+      socket.fold = 0;
       Game.winner = possibleWinner;
       return true;
     }
@@ -350,6 +500,7 @@ const gameEvents = (io, socket, game, players, db) => {
   function dealerCheck(round, socket) {
     let Game = game[socket.gameId];
     let Players = players[socket.gameId];
+    if (Players.length < 2) { wipeTable(socket); return 1; }
     switch (round) {
       case 0:
         drawFlopCards(socket);
@@ -369,6 +520,25 @@ const gameEvents = (io, socket, game, players, db) => {
         setTimeout(() => { startGame(socket); }, 7000);
         return 1;
     }
+  }
+
+  function wipeTable(socket) {
+    let Game = game[socket.gameId];
+    let Players = players[socket.gameId];
+    io.to(socket.gameId).emit('remove all cards');
+    io.to(socket.gameId).emit('reset timer');
+    Game.ready = 1;
+    Players.forEach(player => {
+      player.pot += player.bid;
+      player.fold = 0;
+      player.bid = 0;
+      io.to(socket.gameId).emit('update player statistics', {
+        seat: player.seat,
+        playerBid: player.bid,
+        playerPot: player.pot,
+      });
+    });
+    Game.gameStarted = 0;
   }
 
   function determineWinner(socket) {
@@ -415,6 +585,7 @@ const gameEvents = (io, socket, game, players, db) => {
         playerPot: Players[getSeatIndex(socket, winner)].pot,
       });
     });
+    Game.winners = undefined;
   }
 
   function incrementBlinds(socket) {
@@ -432,18 +603,18 @@ const gameEvents = (io, socket, game, players, db) => {
   function smallBigBlinds(socket) {
     let Game = game[socket.gameId];
     let Players = players[socket.gameId];
-    if (validateBlinds(socket, 50) === 2) { return 0; }
-    else if (!validateBlinds(socket, 50)) { startGame(socket); return 0; }
+    // if (validateBlinds(socket, 50) === 2) { return 0; }
+    if (!validateBlinds(socket, 50)) { startGame(socket); return 0; }
     updatePlayerBid(Players[Game.turn], 50);
     if (Players[Game.turn + 1]) {
       Game.turn++;
-      if (validateBlinds(socket, 100) === 2) { return 0; }
-      else if (!validateBlinds(socket, 100)) { startGame(socket); return 0; }
+      // if (validateBlinds(socket, 100) === 2) { return 0; }
+      if (!validateBlinds(socket, 100)) { startGame(socket); return 0; }
       updatePlayerBid(Players[Game.turn], 100);
     } else {
       Game.turn = 0;
-      if (validateBlinds(socket, 100) === 2) { return 0; }
-      else if (!validateBlinds(socket, 100)) { startGame(socket); return 0; }
+      // if (validateBlinds(socket, 100) === 2) { return 0; }
+      if (!validateBlinds(socket, 100)) { startGame(socket); return 0; }
       updatePlayerBid(Players[Game.turn], 100);
     }
     Game.currentCallMinimum = 100;
@@ -456,13 +627,13 @@ const gameEvents = (io, socket, game, players, db) => {
     let seat = Game.seatsOccupied[Game.turn];
     if ((Players[Game.turn].pot - amount) < 0) {
       Players.splice(Players.indexOf(Players[Game.turn]), 1);
-      if (Players.length < 2) {
-        delete game[socket.gameId];
-        io.to(socket.gameId).emit('reset game');
-        return 2;
-      }
+      // if (Players.length < 2) {
+      //   delete game[socket.gameId];
+      //   io.to(socket.gameId).emit('reset timer');
+      //   return 2;
+      // }
       Game.seatsOccupied.splice(Game.seatsOccupied.indexOf(Game.seatsOccupied[Game.turn]), 1);
-      io.to(socket.gameId).emit('insufficient blind kick', { seat: seat, seatsOccupied: Game.seatsOccupied });
+      io.to(socket.gameId).emit('unoccupy seat', { seat: seat, seatsOccupied: Game.seatsOccupied });
       return 0;
     }
     return 1;
