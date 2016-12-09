@@ -58,6 +58,34 @@
   </div>
 </div>
 
+<div class="modal" id="edit-password-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <span class="left glyphicon glyphicon-log-in"></span>
+        <h4 class="modal-title modal-header" id="myModalLabel">Edit Password</h4>
+      </div>
+      <form id='edit-password-form'>
+        <div class="modal-body">
+          <label for="password">Current Password</label>
+          <input class='form-control' id='current-password' type="password" placeholder='Current Password' required /> <br>
+          <label for="password">New Password</label>
+          <input class='form-control passwords' id='new-password' type="password" placeholder='New Password' required /> <br>
+          <label for="password">Confirm New Password</label>
+          <input class='form-control passwords' id='new-password-confirm' type="password" placeholder='Confirm New Password' required /> <br>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="left btn btn-danger" data-dismiss="modal">Close</button>
+          <button id="edit-password-submit" class="right btn btn-primary">Change Password</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
 <div class="modal" id="account-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -89,6 +117,7 @@
           <hr />
           <li class="account-detail">
             <button id="delete-account-btn" class="left btn btn-danger">Delete Account</button>
+            <button id="edit-password-btn" class="center-modal-button btn btn-warning">Change Password</button>
             <button id="signout-btn" class="right btn btn-primary">Sign Out</button>
           </li>
         </ul>

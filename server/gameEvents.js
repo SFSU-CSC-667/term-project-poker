@@ -571,15 +571,21 @@ const gameEvents = (io, socket, game, players, db) => {
   function multipleWinners(socket, winners) {
     let Game = game[socket.gameId];
     let Players = players[socket.gameId];
-    let splitPot = Game.winnerPot / winners.length;
     Game.winners = winners;
     showAllCards(socket);
-    console.log("We got multiple winners! ", winners, splitPot);
+    console.log("We got multiple winners! ", winners, Game.winnerPot);
     winners.forEach(winner => {
-      Players[getSeatIndex(socket, winner)].pot += splitPot;
+      let winningSocket = Players[getSeatIndex(socket, winner)];
+      winningSocket.pot += winningSocket.bid;
+      Game.winnerPot -= winningSocket.bid;
+    });
+    let splitPot = Game.winnerPot / winners.length;
+    winners.forEach(winner => {
+      let winningSocket = Players[getSeatIndex(socket, winner)];
+      winningSocket.pot += splitPot;
       Players.forEach(player => {
-        if (Players[getSeatIndex(socket, winner)].userName && player.userName) {
-          if (player.userName === Players[getSeatIndex(socket, winner)].userName) {
+        if (winningSocket.userName && player.userName) {
+          if (player.userName === winningSocket.userName) {
             let netGain = player.bid + player.pot - player.startAmount;
             db.none(`UPDATE Users SET chips = chips + ${ netGain } WHERE email = '${ player.userName }'`);
           }
@@ -589,7 +595,7 @@ const gameEvents = (io, socket, game, players, db) => {
       io.to(socket.gameId).emit('update player statistics', {
         seat: winner,
         playerBid: 0,
-        playerPot: Players[getSeatIndex(socket, winner)].pot,
+        playerPot: winningSocket.pot,
       });
     });
     Game.winners = undefined;

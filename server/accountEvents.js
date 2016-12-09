@@ -2,9 +2,7 @@ const accountEvents = (io, socket, users, db) => {
   const bcrypt = require('bcryptjs');
 
   socket.on('account registration', data => {
-    bcrypt.hash(data.password, 10, (error, hash) => {
-      createAccount(data, hash);
-    });
+    createAccount(data);
   });
 
   socket.on('account signin', data => {
@@ -17,6 +15,10 @@ const accountEvents = (io, socket, users, db) => {
 
   socket.on('request account deletion', data => {
     deleteAccount(data);
+  });
+
+  socket.on('request change password', data => {
+    editAccountPassword(data);
   });
 
   socket.on('request firstname change', data => {
@@ -56,19 +58,41 @@ const accountEvents = (io, socket, users, db) => {
     });
   }
 
-  function createAccount(data, hash) {
-    db.query("INSERT INTO Users (FirstName, LastName, Email, Password, Chips) " +
-             `VALUES ('${ data.first }', '${ data.last }', '${ data.email }', ` +
-             `'${ hash }', '5000')`)
+  function createAccount(data) {
+    bcrypt.hash(data.password, 10, (error, hash) => {
+      db.query("INSERT INTO Users (FirstName, LastName, Email, Password, Chips) " +
+               `VALUES ('${ data.first }', '${ data.last }', '${ data.email }', ` +
+               `'${ hash }', '5000')`)
+      .then(response => {
+        console.log("Account created. " + data.email);
+        socket.emit("account creation response", { success: 1 });
+      })
+      .catch(response => {
+        console.log("Account entry failure. " + data.email);
+        socket.emit("account creation response", {
+          success: 0, detail: response.detail
+        });
+      });
+    });
+  }
+
+  function editAccountPassword(data) {
+    db.one(`SELECT * FROM Users WHERE Email='${ data.email }'`)
     .then(response => {
-      console.log("Account created. " + data.email);
-      socket.emit("account creation response", { success: 1 });
+      bcrypt.compare(data.currentPassword, response.password, (error, success) => {
+        if (success) {
+          bcrypt.hash(data.newPassword, 10, (error, hash) => {
+            db.none(`UPDATE Users SET Password = '${ hash }' WHERE Email='${ data.email }'`);
+            socket.emit("change password response", { success: 1 });
+          });
+        } else {
+          socket.emit("change password response", { success: 0 });
+        }
+      });
     })
     .catch(response => {
-      console.log("Account entry failure. " + data.email);
-      socket.emit("account creation response", {
-        success: 0, detail: response.detail
-      });
+      console.log(response);
+      socket.emit("change password response", { success: 0 });
     });
   }
 

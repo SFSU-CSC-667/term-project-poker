@@ -53,6 +53,11 @@ a {
   float: right;
 }
 
+.center-modal-button {
+  text-align: center;
+  margin-left: 3.3em;
+}
+
 .left {
   float: left;
 }

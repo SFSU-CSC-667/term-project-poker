@@ -20,6 +20,17 @@ const socket = io.connect();
     }
   });
 
+  $('#edit-password-form').on('submit', event => {
+    event.preventDefault();
+    if ($("#new-password").val() === $('#new-password-confirm').val()) {
+      requestChangePassword();
+    } else {
+      $(".passwords").data('tooltip', false).tooltip({
+        title: 'Passwords must match!'
+      }).tooltip('show');
+    }
+  });
+
   $('#delete-form').on('submit', event => {
     event.preventDefault();
     socket.emit('request account deletion', {
@@ -49,6 +60,12 @@ const socket = io.connect();
     $("#account-modal").modal('hide');
     sessionStorage.clear();
     location.reload();
+  });
+
+  $('body').on('click', '#edit-password-btn', function(event) {
+    event.preventDefault();
+    $(".modal").modal('hide');
+    $("#edit-password-modal").modal('show');
   });
 
   $('body').on('click', '#delete-account-btn', function(event) {
@@ -88,6 +105,15 @@ const socket = io.connect();
       email: $(".account-email").html(),
       newLastname: `\'${ $("#account-lastname").val() }\'`
     });
+  });
+
+  socket.on('change password response', data => {
+    if (data.success) {
+      alert("Please log-in again with your new password.");
+      $('#signout-btn').trigger('click');
+    } else {
+      alert("There was a problem changing your password, try again later.");
+    }
   });
 
   socket.on('firstname change response', data => {
@@ -162,6 +188,14 @@ const socket = io.connect();
       first: $('#first-name').val(),
       last: $('#last-name').val(),
       password: $('#password').val()
+    });
+  }
+
+  function requestChangePassword() {
+    socket.emit('request change password', {
+      email: $('.user-email').html(),
+      currentPassword: $('#current-password').val(),
+      newPassword: $('#new-password').val(),
     });
   }
 
