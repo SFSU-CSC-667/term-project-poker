@@ -184,6 +184,7 @@ const gameEvents = (io, socket, game, players, db) => {
         if (player.userName === winner.userName) {
           let netGain = player.bid + player.pot - player.startAmount;
           db.none(`UPDATE Users SET chips = chips + ${ netGain } WHERE email = '${ player.userName }'`);
+          db.none(`UPDATE Users SET wins = wins + 1 WHERE email = '${ player.userName }'`);
         }
       }
       player.startAmount = player.pot; // New Start Amount.
@@ -321,6 +322,9 @@ const gameEvents = (io, socket, game, players, db) => {
       let player = Players[getSeatIndex(socket, playerCards[0][0])];
       player.pot += Game.winnerPot;
       winners.push(player);
+    }
+    if (winner.userName) {
+      db.none(`UPDATE Users SET wins = wins + 1 WHERE email = '${ winner.userName }'`);
     }
     winners.forEach(winner => {
       Players.forEach(player => {
@@ -588,6 +592,7 @@ const gameEvents = (io, socket, game, players, db) => {
           if (player.userName === winningSocket.userName) {
             let netGain = player.bid + player.pot - player.startAmount;
             db.none(`UPDATE Users SET chips = chips + ${ netGain } WHERE email = '${ player.userName }'`);
+            db.none(`UPDATE Users SET wins = wins + 1 WHERE email = '${ player.userName }'`);
           }
         }
         player.startAmount = player.pot; // New Start Amount.

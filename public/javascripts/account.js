@@ -143,6 +143,7 @@ const socket = io.connect();
     $('#account-firstname').html(data.first);
     $('#account-lastname').html(data.last);
     $('#account-chips').html(data.chips);
+    $('#account-wins').html(data.wins);
     $('#account-modal').modal('show');
   });
 

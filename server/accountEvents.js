@@ -49,7 +49,8 @@ const accountEvents = (io, socket, users, db) => {
         email: response.email,
         first: response.firstname,
         last: response.lastname,
-        chips: response.chips
+        chips: response.chips,
+        wins: response.wins
       });
     })
     .catch(response => {
@@ -60,9 +61,9 @@ const accountEvents = (io, socket, users, db) => {
 
   function createAccount(data) {
     bcrypt.hash(data.password, 10, (error, hash) => {
-      db.query("INSERT INTO Users (FirstName, LastName, Email, Password, Chips) " +
+      db.query("INSERT INTO Users (FirstName, LastName, Email, Password, Chips, Wins) " +
                `VALUES ('${ data.first }', '${ data.last }', '${ data.email }', ` +
-               `'${ hash }', '5000')`)
+               `'${ hash }', '5000', '0')`)
       .then(response => {
         console.log("Account created. " + data.email);
         socket.emit("account creation response", { success: 1 });

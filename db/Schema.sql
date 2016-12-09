@@ -7,8 +7,10 @@ CREATE TABLE IF NOT EXISTS Users
     Email VARCHAR (255) UNIQUE,
     Password VARCHAR (255),
     Chips INTEGER,
+    Wins INTEGER,
     Avatar VARCHAR (255)
 );
+
 -- INSERT INTO Users (FirstName, LastName, Email, Password, Chips)
 -- VALUES ('Poker', 'Dealer', 'team9@mail.sfsu.edu', '987654', '0');
 
