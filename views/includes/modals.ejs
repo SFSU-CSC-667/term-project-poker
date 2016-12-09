@@ -5,26 +5,34 @@
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
-        <span class="left glyphicon glyphicon-user"></span>
-        <h4 class="modal-title modal-header" id="myModalLabel">Register</h4>
+        <div class="col-lg-12">
+          <h2 class="text-center" id="myModalLabel" style="margin: -20px 0 15px 0!important;">Sign Up</h2>
+        </div>
       </div>
       <form id='register-form'>
         <div class="modal-body">
-          <label for="email">Email / Username</label>
-          <input class='form-control' id='email' type="email" placeholder='ex. example@mail.com' required /> <br>
-          <label for="firstname">First Name</label>
-          <input class='form-control' id='first-name' type="text" placeholder='ex. John' required /> <br>
-          <label for="lastname">Last Name</label>
-          <input class='form-control' id='last-name' type="text" placeholder='ex. Smith' required /> <br>
-          <label for="password">Password</label>
-          <input class='form-control passwords' id='password' type="password" placeholder='Password' required /> <br>
-          <label for="password">Confirm Password</label>
-          <input class='form-control passwords' id='password-confirm' type="password" placeholder='Confirm Password' required /> <br>
+          <div class="col-lg-6">
+            <input class='form-control' id='first-name' type="text" placeholder='First Name' required />
+          </div>
+          <div class="col-lg-6">
+            <input class='form-control' id='last-name' type="text" placeholder='Last Name' required />
+            <br>
+          </div>
+          <div class="col-lg-12">
+            <input class='form-control' id='email' type="email" placeholder='Email Address' required />
+            <br>
+            <input class='form-control passwords' id='password' type="password" placeholder='Password' required />
+            <br>
+            <input class='form-control passwords' id='password-confirm' type="password" placeholder='Confirm Password' required />
+            <br>
+            <button type ="submit" id="register-submit" class="right btn btn-success">Register</button>
+          </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="left btn btn-danger" data-dismiss="modal">Close</button>
-          <button type="button" id="signin-modal-btn" class="left btn btn-primary" data-dismiss="modal">Sign In</button>
-          <button type ="submit" id="register-submit" class="right btn btn-success">Register</button>
+          <div class="col-lg-12" style="margin: 15px 0 0 0;">
+          <h4 class="left" style="margin: 22px 0!important;">Already have an account?</h4>
+          <button type="button" id="signin-modal-btn" class="right btn btn-primary" data-dismiss="modal">Sign In</button>
+          </div>
         </div>
       </form>
     </div>
@@ -38,20 +46,25 @@
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
-        <span class="left glyphicon glyphicon-log-in"></span>
-        <h4 class="modal-title modal-header" id="myModalLabel">Sign In</h4>
+        <div class="col-lg-12">
+          <h2 class="text-center" id="myModalLabel" style="margin: -20px 0 15px 0!important;">Sign In</h2>
+        </div>
       </div>
       <form id='signin-form'>
         <div class="modal-body">
-          <label for="email">Email / Username</label>
-          <input class='form-control' id='account-email' type="email" placeholder='ex. example@mail.com' required /> <br>
-          <label for="password">Password</label>
-          <input class='form-control' id='account-password' type="password" placeholder='Password' required /> <br>
+          <div class="col-lg-12">
+          <input class='form-control' id='account-email' type="email" placeholder='Email/Username' required />
+          <br>
+          <input class='form-control' id='account-password' type="password" placeholder='Password' required />
+            <br>
+          <button type="submit" id="signin-submit" class="right btn btn-primary">Sign In</button>
+          </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="left btn btn-danger" data-dismiss="modal">Close</button>
-          <button type="button" class="left btn btn-success register-btn" data-dismiss="modal">Sign Up</button>
-          <button id="signin-submit" class="right btn btn-primary">Sign In</button>
+          <div class="col-lg-12" style="margin: 15px 0 0 0;">
+            <h4 class="left" style="margin: 10px 0!important;">Don't have an account?</h4>
+            <button type="button" class="btn btn-success register-btn" data-dismiss="modal">Sign Up</button>
+          </div>
         </div>
       </form>
     </div>
@@ -65,21 +78,24 @@
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
-        <span class="left glyphicon glyphicon-log-in"></span>
-        <h4 class="modal-title modal-header" id="myModalLabel">Edit Password</h4>
+        <div class="col-lg-12">
+          <h2 class="text-center" id="myModalLabel" style="margin: -20px 0 15px 0!important;">Edit Password</h2>
+        </div>
       </div>
       <form id='edit-password-form'>
         <div class="modal-body">
-          <label for="password">Current Password</label>
-          <input class='form-control' id='current-password' type="password" placeholder='Current Password' required /> <br>
-          <label for="password">New Password</label>
-          <input class='form-control passwords' id='new-password' type="password" placeholder='New Password' required /> <br>
-          <label for="password">Confirm New Password</label>
-          <input class='form-control passwords' id='new-password-confirm' type="password" placeholder='Confirm New Password' required /> <br>
+          <div class="col-lg-12">
+          <input class='form-control' id='current-password' type="password" placeholder='Current Password' required />
+            <br>
+          <input class='form-control passwords' id='new-password' type="password" placeholder='New Password' required />
+            <br>
+          <input class='form-control passwords' id='new-password-confirm' type="password" placeholder='Confirm New Password' required />
+            <br>
+            <button id="edit-password-submit" class="right btn btn-primary">Change Password</button>
+          </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="left btn btn-danger" data-dismiss="modal">Close</button>
-          <button id="edit-password-submit" class="right btn btn-primary">Change Password</button>
+          <span style="margin: 10px;"></span>
         </div>
       </form>
     </div>
@@ -93,10 +109,12 @@
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
-        <span class="left glyphicon glyphicon-tasks"></span>
-        <h4 class="modal-title modal-header account-email"></h4>
+        <div class="col-lg-12">
+          <h2 class="text-center account-email" id="myModalLabel" style="margin: -20px 0 15px 0!important;"></h2>
+        </div>
       </div>
       <div class="modal-body">
+        <div class="col-lg-12">
         <ul class="Account information">
           <li class="account-detail">
               <b>First Name:</b>
@@ -120,6 +138,8 @@
             <span id="account-wins"></span>
           </li>
           <hr />
+        </ul>
+        </div>
           <li class="account-detail">
             <button id="delete-account-btn" class="left btn btn-danger">Delete Account</button>
             <button id="edit-password-btn" class="center-modal-button btn btn-warning">Change Password</button>
@@ -134,25 +154,27 @@
 <div class="modal" id="delete-account-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
-      <div class="modal-delete-header">
+      <div class="modal-header modal-delete-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
-        <span class="left glyphicon glyphicon-remove-sign"></span>
-        <h4 class="modal-title modal-delete-header" id="myModalLabel">Delete Account</h4>
+        <div class="col-lg-12">
+          <h2 class="text-center" id="myModalLabel" style="margin: -20px 0 15px 0!important;">Delete Account</h2>
+        </div>
       </div>
       <div class="modal-body">
         <ul class="Account information">
           <form id='delete-form'>
-            <div class="modal-body">
-              <label for="email">Email / Username</label>
-              <input class='form-control' id='delete-email' type="email" placeholder='ex. example@mail.com' required /> <br>
-              <label for="password">Confirm Password</label>
-              <input class='form-control' id='delete-password' type="password" placeholder='Password' required /> <br>
+            <div class="modal-body" style="padding: 0 15px!important;">
+              <input class='form-control' id='delete-email' type="email" placeholder='Email Address' required /> <br>
+              <input class='form-control' id='delete-password' type="password" placeholder='Confirm Password' required /> <br>
             </div>
             <div class="modal-footer">
-              <button type="button" class="left btn btn-primary" data-dismiss="modal">Changed My Mind</button>
               <button id="signin-submit" class="right btn btn-danger">Confirm Deletion</button>
+              <div class="col-lg-12" style="margin: 15px 0 0 0;">
+                <h4 class="left" style="margin: 10px 0!important;">Nevermind, I changed my mind.</h4>
+                <button type="button" class="right btn btn-primary" data-dismiss="modal">Cancel</button>
+              </div>
             </div>
           </form>
         </ul>
