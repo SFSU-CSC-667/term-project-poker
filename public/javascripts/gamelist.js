@@ -8,18 +8,14 @@
 
     socket.on('gamelist update', data => {
         $('.gamelist').empty();
-        $('.gamelist').append('<span><span class="col-lg-1">No.</span>' +
-            '<span class="col-lg-4">Name</span>' +
-            '<span class="col-lg-1">Maximum Player</span>' +
-            '<span class="col-lg-2">Stake</span>' +
-            '<span class="col-lg-2">BuyIn</span></span>');
-        for (var key in data) {
-            $('.gamelist').append('<span><span class="col-lg-1">' + data[key]["gameid"] + '</span>' +
-                '<span class="col-lg-4">' + data[key]["gamename"] + '</span>' +
-                '<span class="col-lg-1">' + data[key]["maxplayers"] + '</span>' +
-                '<span class="col-lg-2">' + data[key]["minbid"] + '</span>' +
-                '<span class="col-lg-2">' + data[key]["minchips"] + '</span>' +
-                '<button class="btn btn-primary" onclick="viewGame(' + data[key]["gameid"] + ')">View</button></span>');
+$('.gamelist').append('<tr><th>No.</th><th>Name</th><th>Maximum Player</th><th>Stake</th><th>Buy In</th></tr>');
+for (var key in data) {
+            $('.gamelist').append('<tr><td>' + data[key]["gameid"] + '</td>' +
+                '<td style="width: 60%;">' + data[key]["gamename"] + '</td>' +
+                '<td style="width: 20%;">' + data[key]["maxplayers"] + '</td>' +
+                '<td>' + data[key]["minbid"] + '</td>' +
+                '<td style="width: 20%;">' + data[key]["minchips"] + '</td>' +
+                '<td><button class="btn btn-primary" onclick="viewGame(' + data[key]["gameid"] + ')">View</button></td></tr>');
         }
     });
 })();

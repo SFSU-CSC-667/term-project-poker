@@ -12,35 +12,39 @@
     <link rel='stylesheet' href='/stylesheets/cards.css'/>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
           integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=PT+Sans" rel="stylesheet">
   </head>
   <body>
   <% include includes/header.ejs %>
-  <div class="scoreboard-section">
-    <h2 class="scoreboard-header">Score Board</h2>
-    <ul class="scoreboard">
-      <li>Scoreboard Data</li>
-    </ul>
-  </div>
-  <div class="right-section">
+  <div class="container" id="lobby">
+    <div class="col-lg-4">
+      <div class="scoreboard-container">
+        <h2 class="scoreboard-header">Leaderboard</h2>
+        <div class="scoreboard">
+          <span>Scoreboard Data</span>
+        </div>
+      </div>
+      <div class="chat-section">
+        <ul id="message-list" style="height: 300px!important;"></ul>
+        <form id="form" action="" onsubmit="return submitfunction();">
+          <input type="hidden" id="user" value="" />
+          <input id="message" autocomplete="off" placeholder="Type yor message here.." style="width: 100%!important;">
+          <input type="submit" id="button" value="Send" style="width: 100%!important;">
+        </form>
+      </div>
+    </div>
+  <div class="col-lg-8">
     <form id="create-game">
       <input id="game-name" placeholder="Name Your Game!" required/>
-      <button class='btn btn-primary'>Create Game</button>
+      <button class='btn btn-primary' style="height: 50px!important;">Create Game</button>
       <br/><br/>
     </form>
   </div>
-  <div class="right-section">
-    <h2>Poker Game List</h2>
+  <div class="col-lg-8">
+    <h2 class="scoreboard-header">Poker Game List</h2>
     <div class="gamelist"></div>
     <button id="refresh-gamelist" class="btn btn-default" type="button">Refresh</button>
   </div>
-  <div class="chat-section">
-    <ul id="messages"></ul>
-    <span id="notifyUser"></span>
-    <form id="form" action="" onsubmit="return submitfunction();" >
-      <input type="hidden" id="user" value="" />
-      <input id="m" autocomplete="off" onkeyup="notifyTyping();" placeholder="Type yor message here.." />
-      <input type="submit" id="button" value="Send"/>
-    </form>
   </div>
   <% include includes/footer.ejs %>
   <script src="/javascripts/gamelist.js"></script>

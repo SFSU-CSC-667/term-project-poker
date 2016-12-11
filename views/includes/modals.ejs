@@ -173,7 +173,7 @@
               <button id="signin-submit" class="right btn btn-danger">Confirm Deletion</button>
               <div class="col-lg-12" style="margin: 15px 0 0 0;">
                 <h4 class="left" style="margin: 10px 0!important;">Nevermind, I changed my mind.</h4>
-                <button type="button" class="right btn btn-primary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="right btn btn-primary" data-dismiss="modal" style="border-radius: 30px!important;">Cancel</button>
               </div>
             </div>
           </form>
@@ -190,19 +190,18 @@
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
-        <h1>Buy In</h1>
+        <div class="col-lg-12">
+          <h2 class="text-center" id="myModalLabel" style="margin: -20px 0 15px 0!important;">Buy In</h2>
+        </div>
       </div>
       <div class="modal-body">
-        <ul class="Account information">
-          <li class="account-detail">
-            <label id="buyin-label" for="buyin-slider">Amount:</label>
-            <input type="range" id="buyin-slider">
-          </li>
-          <hr />
-          <li class="account-detail">
-            <button id="buyin-submit" class="right btn btn-primary" data-dismiss="modal">Buy In</button>
-          </li>
-        </ul>
+        <div class="col-lg-12">
+        <label id="buyin-label" for="buyin-slider">Amount:</label>
+        <input type="range" id="buyin-slider">
+        <button id="buyin-submit" class="right btn btn-primary" data-dismiss="modal">Buy In</button>
+      </div>
+      </div>
+      <div class="modal-footer">
       </div>
     </div>
   </div>

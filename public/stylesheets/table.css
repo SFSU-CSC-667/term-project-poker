@@ -1,18 +1,18 @@
 #table {
-  background-image: url('../images/table.png');
+  background-image: url('../images/poker-table.png');
   background-repeat: no-repeat;
-  height: 320px;
-  width: 560px;
-  margin-left: 12em;
-  margin-top: 10em;
+  height: 400px;
+  width: 700px;
+  left: 13em;
+  top: 10em;
   position: relative;
   background-position: center;
 }
 
 #dealer-cards {
-  margin-left: 9.5em;
-  margin-top: 8em;
-  display: inline-block;
+  left: 15em;
+  top: 8em;
+  position: absolute;
 }
 
 #dealer-cards > img {
@@ -36,87 +36,90 @@
 }
 
 #seat1-position {
-  margin-top: -2em;
-  margin-left: 25em;
+  top: 33em;
+  left: 33em;
   position: absolute;
-  display: center;
+  color: #000;
 }
 
 #seat2-position {
-  margin-top: -19em;
-  margin-left: 0.1em;
+  top: 13em;
+  left: 1em;
   position: absolute;
+  color: #000;
 }
 
 #seat3-position {
-  margin-top: -33.9em;
-  margin-left: 25em;
+  top: -2em;
+  left: 33em;
   position: absolute;
+  color: #000;
 }
 
 #seat4-position {
-  margin-top: -19em;
-  margin-left: 52em;
+  top: 12em;
+  left: 62em;
   position: absolute;
+  color: #000;
 }
 
 #seat1-statistics {
-  margin-left: 19em;
-  margin-top: 1.8em;
+  left: 24em;
+  top: 17.5em;
   position: absolute;
   font-weight: bold;
+  color: #000;
 }
 
 #seat2-statistics {
-  margin-top: -5em;
-  margin-left: 5.5em;
+  top: 11em;
+  left: 5.5em;
   position: absolute;
   font-weight: bold;
+  color: #000;
 }
 
 #seat3-statistics {
-  margin-left: 19em;
-  margin-top: -12em;
+  top: 5em;
+  left: 24em;
+  color: #000;
   position: absolute;
   font-weight: bold;
 }
 
 #seat4-statistics {
-  margin-top: -5em;
-  margin-left: 30em;
+  top: 11em;
+  left: 41em;
+  color: #000;
   position: absolute;
   font-weight: bold;
 }
 
-#seat1 > .join,
-#seat1-actions > .ready-btn {
-  margin-left: 4em;
-  margin-top: 2em;
+#seat1 > .join {
+  top: 2em;
+  left: 3em;
   position: absolute;
 }
 
-#seat2 > .join,
-#seat2-actions > .ready-btn {
-  margin-left: 5em;
-  margin-top: 4em;
+#seat2 > .join {
+  left: 7em;
+  top: 7em;
   position: absolute;
 }
 
-#seat3 > .join,
-#seat3-actions > .ready-btn {
-  margin-left: 4em;
-  margin-top: 4em;
+#seat3 > .join {
+  left: 3em;
+  top: 7em;
   position: absolute;
 }
 
-#seat4 > .join,
-#seat4-actions > .ready-btn {
-  margin-top: 4em;
+#seat4 > .join {
+  top: 7em;
+  left: 1em;
   position: absolute;
 }
 
 #raise-text {
-  border: 1px black solid;
   background-color: #428bca;
   color: white;
   padding: 0px;
@@ -135,14 +138,14 @@
   color: white;
   padding: 5px;
   font-size: 2em;
-  margin-top: -12.5em;
-  margin-left: -5.8em;
+  top: -6em;
+  left: -6.5em;
   position: absolute;
 }
 
 #previous-cards {
-  margin-top: -20.5em;
-  margin-left: -10.5em;
+  bottom: -5em;
+  left: -10.5em;
   position: absolute;
 }
 
