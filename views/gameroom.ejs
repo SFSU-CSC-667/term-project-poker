@@ -12,9 +12,12 @@
     <link rel='stylesheet' href='/stylesheets/style.css' />
     <link rel='stylesheet' href='/stylesheets/cards.css' />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=PT+Sans" rel="stylesheet">
   </head>
   <body>
     <% include includes/header.ejs %>
+    <div id="gameroom">
+    <div class="col-lg-9">
     <div id='table'>
       <div id="dealer-cards"><img class='card-image face-down'/></div>
       <div id="timer" class="hidden">30</div>
@@ -62,6 +65,19 @@
       <div id="seat4-cards" class="player-cards"></div>
       <div class="actions" id="seat4-actions"></div>
       <div id="seat4-raise"></div>
+    </div>
+    </div>
+      <div class="col-lg-3">
+        <h3 class="text-center">Chat With Other Players</h3>
+        <div class="chat-section">
+          <ul id="message-list" style="height: 300px!important;"></ul>
+          <form id="form" action="" onsubmit="return submitfunction();">
+            <input type="hidden" id="user" value="" />
+            <input id="message" autocomplete="off" placeholder="Type yor message here.." style="width: 100%!important;">
+            <input type="submit" id="button" value="Send" style="width: 100%!important;">
+          </form>
+        </div>
+      </div>
     </div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>

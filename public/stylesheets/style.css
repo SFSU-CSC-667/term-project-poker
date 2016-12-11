@@ -1,6 +1,6 @@
 body {
-  padding-top: 70px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  font: 14px "PT Sans", Helvetica, Arial, sans-serif!important;
+    color: #666!important;
 }
 
 a {
@@ -27,7 +27,6 @@ a {
   padding: 20px;
   list-style: none;
   font-size: 110%;
-  padding-right: 100px;
 }
 
 .scale-up {
@@ -36,7 +35,12 @@ a {
 
 .nav-item-right {
   float: right;
-  padding: 10px;
+  padding: 10px 5px;
+}
+
+button.register-btn.btn.btn-success, button.signin-btn.btn.btn-primary {
+    border-radius: 20px!important;
+    padding: 8px 20px!important;
 }
 
 .modal-header > .glyphicon,
@@ -68,7 +72,16 @@ a {
 }
 
 .scoreboard-header {
-  text-decoration: underline;
+    text-align: center;
+    padding: 10px;
+    background: #337ab7;
+    margin: 0px!important;
+    color: #fff;
+}
+
+.scoreboard-container {
+    border: 1px solid #ddd;
+    margin: 20px 0;
 }
 
 .right-section {
@@ -77,14 +90,16 @@ a {
 
 .chat-section {
 	text-align: center;
-	border: 1px solid #e7e7e7;
-	padding: 5px;
-	width: 95%;
+    border: 1px solid #e7e7e7;
+    padding: 5px 5px 30px 5px;
+    width: 100%;
 }
 
 #view-games-btn {
-  font-size: 14pt;
-  width: 60%;
+    font-size: 14pt;
+    width: 60%;
+    padding: 10px 0;
+    margin-top: 20px;
 }
 
 .btn {
@@ -100,11 +115,12 @@ a {
 
 #footer {
   position: absolute;
-  bottom: 0;
   width: 100%;
   /* Set the fixed height of the footer here */
-  height:auto;
+  height: 3em;
   background-color: #f5f5f5;
+    text-align: center;
+    line-height: 3em;
 }
 .modal-header {
   color:#fff;
@@ -119,15 +135,7 @@ a {
 }
 
 .modal-delete-header {
-  color:#fff;
-  padding:9px 15px;
-  border-bottom:1px solid #eee;
-  background-color: #d9534f;
-  -webkit-border-top-left-radius: 5px;
-  -webkit-border-top-right-radius: 5px;
-  border-top-left-radius: 5px;
-  border-top-right-radius: 5px;
-  text-align: center;
+  background-color: #d9534f!important;
 }
 
 #loading {
@@ -263,111 +271,205 @@ a {
 }
 
 input[type=range] {
-  -webkit-appearance: none;
-  margin: 18px 0;
-  width: 100%;
+    -webkit-appearance: none;
+    margin: 10px 0;
+    width: 100%;
 }
-
 input[type=range]:focus {
-  outline: none;
+    outline: none;
 }
-
 input[type=range]::-webkit-slider-runnable-track {
-  width: 100%;
-  height: 8.0px;
-  cursor: pointer;
-  animate: 0.2s;
-  box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
-  background: #3071a9;
-  border-radius: 1.3px;
-  border: 0.2px solid #010101;
+    width: 100%;
+    height: 10px;
+    cursor: pointer;
+    animate: 0.2s;
+    box-shadow: 1px 1px 1px #000000;
+    background: #3071A9;
+    border-radius: 5px;
+    border: 1px solid #000000;
 }
-
 input[type=range]::-webkit-slider-thumb {
-  box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
-  border: 1px solid #000000;
-  height: 26px;
-  width: 16px;
-  border-radius: 3px;
-  background: #ffffff;
-  cursor: pointer;
-  -webkit-appearance: none;
-  margin-top: -14px;
+    box-shadow: 1px 1px 1px #000000;
+    border: 1px solid #000000;
+    height: 30px;
+    width: 15px;
+    border-radius: 5px;
+    background: #FFFFFF;
+    cursor: pointer;
+    -webkit-appearance: none;
+    margin-top: -11px;
 }
-
 input[type=range]:focus::-webkit-slider-runnable-track {
-  background: #367ebd;
+    background: #3071A9;
 }
-
 input[type=range]::-moz-range-track {
-  width: 100%;
-  height: 8.0px;
-  cursor: pointer;
-  animate: 0.2s;
-  box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
-  background: #3071a9;
-  border-radius: 1.3px;
-  border: 0.2px solid #010101;
+    width: 100%;
+    height: 10px;
+    cursor: pointer;
+    animate: 0.2s;
+    box-shadow: 1px 1px 1px #000000;
+    background: #3071A9;
+    border-radius: 5px;
+    border: 1px solid #000000;
 }
-
 input[type=range]::-moz-range-thumb {
-  box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
-  border: 1px solid #000000;
-  height: 26px;
-  width: 16px;
-  border-radius: 3px;
-  background: #ffffff;
-  cursor: pointer;
+    box-shadow: 1px 1px 1px #000000;
+    border: 1px solid #000000;
+    height: 30px;
+    width: 15px;
+    border-radius: 5px;
+    background: #FFFFFF;
+    cursor: pointer;
 }
-
 input[type=range]::-ms-track {
-  width: 100%;
-  height: 8.0px;
-  cursor: pointer;
-  animate: 0.2s;
-  background: transparent;
-  border-color: transparent;
-  border-width: 16px 0;
-  color: transparent;
+    width: 100%;
+    height: 10px;
+    cursor: pointer;
+    animate: 0.2s;
+    background: transparent;
+    border-color: transparent;
+    color: transparent;
 }
-
 input[type=range]::-ms-fill-lower {
-  background: #2a6495;
-  border: 0.2px solid #010101;
-  border-radius: 2.6px;
-  box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+    background: #3071A9;
+    border: 1px solid #000000;
+    border-radius: 10px;
+    box-shadow: 1px 1px 1px #000000;
 }
-
 input[type=range]::-ms-fill-upper {
-  background: #3071a9;
-  border: 0.2px solid #010101;
-  border-radius: 2.6px;
-  box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+    background: #3071A9;
+    border: 1px solid #000000;
+    border-radius: 10px;
+    box-shadow: 1px 1px 1px #000000;
 }
-
 input[type=range]::-ms-thumb {
-  box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
-  border: 1px solid #000000;
-  height: 26px;
-  width: 16px;
-  border-radius: 3px;
-  background: #ffffff;
-  cursor: pointer;
+    box-shadow: 1px 1px 1px #000000;
+    border: 1px solid #000000;
+    height: 30px;
+    width: 15px;
+    border-radius: 5px;
+    background: #FFFFFF;
+    cursor: pointer;
 }
-
 input[type=range]:focus::-ms-fill-lower {
-  background: #3071a9;
+    background: #3071A9;
 }
-
 input[type=range]:focus::-ms-fill-upper {
-  background: #367ebd;
+    background: #3071A9;
 }
-
 
 /* chat */
 form {position: relative;bottom: 0;width: 100%;}
-form input {border: 0;padding: 10px;width: 90%;margin-right: .5%;border: 1px solid #e7e7e7;}
-form #button {color: #fff;background: #5cb85c;border: none;padding: 10px;width: 75px; border-radius: 4px;}
-#message-list {list-style-type: none;margin: 0;padding: 0;width: 100%;height: 550px;}
+form input {height: 50px; padding: 10px;width: 80%;border: 1px solid #e7e7e7;}
+form #button {color: #fff;background: #5cb85c;border: none;padding: 10px;width: 75px;}
+#message-list {list-style-type: none;margin: 0;padding: 0;width: 100%;height: 450px;}
 #message-list li { padding: 5px 10px; }
 #message-list li:nth-child(odd) { background: #eee; }
+
+#index, #lobby {
+    margin-top: 8em!important;
+    margin-bottom: 5em!important;
+}
+
+#gameroom {
+    margin-top: 8em!important;
+}
+
+td, th {
+    text-align: left;
+    padding: 8px!important;
+}
+
+tr:nth-child(even) {
+    background-color: #ddd;
+}
+
+.navbar {
+    height: 5em!important;
+}
+
+.navbar-header, .navbar-right {
+    padding: 10px 0!important;
+}
+
+.site-name {
+    display: inline-block;
+    color: #fff;
+    margin: 15px;
+    font-size: 28px;
+}
+
+.modal-footer {
+    border-top: 0!important;
+}
+
+.modal-content {
+    box-shadow: none!important;
+    border-radius: 0!important;
+}
+
+#first-name, #last-name, #password, #password-confirm, #email,
+#account-email, #account-password, #account-lastname, #account-firstname,
+#delete-email, #delete-password, #current-password, #new-password,
+#new-password-confirm {
+    height: 50px!important;
+    padding-left: 10px;
+    border-radius: 0px!important;
+    box-shadow: none!important;
+}
+
+button#register-submit, button#signin-submit, button#edit-password-submit {
+    width: 100%;
+    padding: 15px;
+    border-radius: 0px!important;
+ }
+
+.close {
+    font-size: 45px!important;
+}
+
+.btn {
+    margin-right: 0px!important;
+}
+
+
+.modal-header {
+    border: 0!important;
+    color: #fff!important;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+}
+
+.modal-header .close {
+    margin-top: -10px!important;
+    margin-right: -5px!important;
+}
+
+button#signin-modal-btn, button.btn.btn-success.signup-btn {
+    margin: 12px!important;
+    height: 40px;
+    width: 25%;
+    border-radius: 50px!important;
+}
+
+button.account-btn.btn.btn-primary {
+    border-radius: 20px!important;
+}
+
+.modal-glyphicons {
+    top: -16px!important;
+    left: 15px;
+    font-size: 20px;
+}
+
+.modal-body {
+    padding: 30px 15px 0px 15px!important;
+}
+
+button#edit-password-btn {
+    margin-left: 10px!important;
+}
+
+#create-game {
+    margin-top: 20px!important;
+}
