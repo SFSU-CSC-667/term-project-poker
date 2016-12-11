@@ -4,7 +4,7 @@ const scoreboardEvents = (io, socket, db) => {
     });
 
     function responseScoreUpdate() {
-        db.any('SELECT UserId, FirstName, LastName, Chips FROM Users WHERE UserId > 1 ORDER BY Chips DESC')
+        db.any('SELECT UserId, FirstName, LastName, Chips, Wins FROM Users WHERE UserId > 1 ORDER BY Chips DESC')
             .then(response => {
                 socket.emit('score update', response);
             })

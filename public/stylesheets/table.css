@@ -25,6 +25,10 @@
 
 .actions > .btn {
   padding: 5px;
+  margin: 2px;
+  -webkit-border-radius:2px;
+  -moz-border-radius:2px;
+  border-radius: 2px;
   -webkit-transition: 0.25s ease-in-out;
   -moz-transition: 0.25s ease-in-out;
   -o-transition: 0.25s ease-in-out;
@@ -58,7 +62,7 @@
 
 #seat4-position {
   top: 12em;
-  left: 62em;
+  left: 61.5em;
   position: absolute;
   color: #000;
 }
