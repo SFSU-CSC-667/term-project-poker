@@ -13,6 +13,7 @@ const socket = io.connect();
     event.preventDefault();
     if ($("#password").val() === $('#password-confirm').val()) {
       requestAccount();
+      $("#register-modal").modal('hide');
     } else {
       $(".passwords").data('tooltip', false).tooltip({
         title: 'Passwords must match!'
@@ -33,10 +34,17 @@ const socket = io.connect();
 
   $('#delete-form').on('submit', event => {
     event.preventDefault();
-    socket.emit('request account deletion', {
-      email: $("#delete-email").val(),
-      password: $("#delete-password").val()
-    });
+    if ($("#delete-password").val() === $('#delete-password-confirm').val()) {
+      socket.emit('request account deletion', {
+        email: $("#delete-email").val(),
+        password: $("#delete-password").val()
+      });
+      $('#delete-account-modal').modal('hide');
+    } else {
+      $(".passwords").data('tooltip', false).tooltip({
+        title: 'Passwords must match!'
+      }).tooltip('show');
+    }
   });
 
   $('#signin-form').on('submit', event => {
@@ -77,6 +85,12 @@ const socket = io.connect();
   $('body').on('click', '.account-btn', event => {
     event.preventDefault();
     socket.emit('request account information', { email: $('.user-email').html() });
+  });
+
+  $('body').on('click', '.back-to-info', event => {
+    event.preventDefault();
+    $(".modal").modal('hide');
+    $("#account-modal").modal('show');
   });
 
   $('body').on('click', '#firstname-edit', event => {
@@ -131,11 +145,11 @@ const socket = io.connect();
   socket.on('account deletion response', data => {
     if (data.success) {
       alert(`${ data.email } has been deleted.`);
+      $('#signout-btn').trigger('click');
     } else {
       alert("Account deletion failed, Try again later.");
     }
-    $('delete-form').trigger('reset');
-    $('delete-account-modal').modal('hide');
+    $('#delete-form').trigger('reset');
   });
 
   socket.on('account information response', data => {
@@ -152,7 +166,6 @@ const socket = io.connect();
       storeSession($('#email').val(), $('#password').val());
       signIn();
       $("#register-form").trigger('reset');
-      $("#register-modal").modal('hide');
     } else {
       alert(data.detail);
     }

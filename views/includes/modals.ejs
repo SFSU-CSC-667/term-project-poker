@@ -79,7 +79,8 @@
           <span aria-hidden="true">&times;</span>
         </button>
         <div class="col-lg-12">
-          <h2 class="text-center" id="myModalLabel" style="margin: -20px 0 15px 0!important;">Edit Password</h2>
+            <h2 class="text-center" id="myModalLabel" style="margin: -20px 0 15px 0!important;">
+              <span class="left glyphicon glyphicon-hand-left back-to-info"></span><span>Edit Password</span></h2>
         </div>
       </div>
       <form id='edit-password-form'>
@@ -159,7 +160,8 @@
           <span aria-hidden="true">&times;</span>
         </button>
         <div class="col-lg-12">
-          <h2 class="text-center" id="myModalLabel" style="margin: -20px 0 15px 0!important;">Delete Account</h2>
+          <h2 class="text-center" id="myModalLabel" style="margin: -20px 0 15px 0!important;">
+            <span class="left glyphicon glyphicon-hand-left back-to-info"></span><span>Delete Account</span></h2>
         </div>
       </div>
       <div class="modal-body">
@@ -167,7 +169,8 @@
           <form id='delete-form'>
             <div class="modal-body" style="padding: 0 15px!important;">
               <input class='form-control' id='delete-email' type="email" placeholder='Email Address' required /> <br>
-              <input class='form-control' id='delete-password' type="password" placeholder='Confirm Password' required /> <br>
+              <input class='form-control passwords' id='delete-password' type="password" placeholder='Password' required /> <br>
+              <input class='form-control passwords' id='delete-password-confirm' type="password" placeholder='Confirm Password' required /> <br>
             </div>
             <div class="modal-footer">
               <button id="signin-submit" class="right btn btn-danger">Confirm Deletion</button>
