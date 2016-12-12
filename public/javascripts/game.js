@@ -22,6 +22,11 @@
     $(`#${ seat }`).children('.ready-btn').removeClass('hidden');
   });
 
+  $('body').on('click', '#to-lobby-btn', event => {
+    event.preventDefault();
+    window.location.replace('/lobby');
+  });
+
   $('body').on('click', ".join", function() {
     seat = $(this).parent().prop('id');
     socket.emit('buyin request');
@@ -168,7 +173,7 @@
 
   socket.on('reset timer', data => {
     $(`#timer`).addClass('hidden');
-    $('#timer').html('');
+    $('#timer').replaceWith('<div id="to-lobby-btn">Back To Lobby</div>');
     clearInterval(timeInterval);
   });
 
@@ -186,7 +191,7 @@
         $(`#${ seat }`).html(`<p class='display-name'>${ data.displayNames[seat] } </p>`);
         $(`#${ seat }-cards`).html(cardImages('face-down', 'face-down'));
       });
-    } else {
+    } else if (seatsOccupied) {
       seatsOccupied.forEach(seat => {
         $(`#${ seat }-actions`).children('.ready-btn').remove();
         $(`#${ seat }`).html(`<p class='display-name'>${ data.displayNames[seat] } </p>`);
@@ -313,6 +318,7 @@
   function startTimer(player, seat) {
     timer = 30;
     playerTookAction = 0;
+    $('#to-lobby-btn').replaceWith('<div id="timer" class="hidden">30</div>');
     $('#timer').html('Timer: ' + timer);
     $(`#timer`).removeClass('hidden');
     timeInterval = setInterval(() => {
@@ -329,7 +335,7 @@
           $(`#${ seat }-raise`).children().prop('disabled', true);
         }
         $(`#timer`).addClass('hidden');
-        $('#timer').html('');
+        $('#timer').replaceWith('<div id="to-lobby-btn">Back To Lobby</div>');
         clearInterval(timeInterval);
       }
     }, 1000);
