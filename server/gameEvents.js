@@ -395,20 +395,25 @@ const gameEvents = (io, socket, game, players, db) => {
   }
 
   function getUpdate(socket, data) {
-    if (!game[socket.gameId] || !players[socket.gameId]) {
-      return;
-    }
-    let Game = game[socket.gameId];
-    let Players = players[socket.gameId];
-    let displayNames = {};
-    Game.seatsOccupied.forEach((seat, index) => {
-      displayNames[seat] = Players[index].displayName;
-    });
-    socket.emit('game update', {
-      displayNames: displayNames,
-      cards: Game.cards,
-      seatsOccupied: Game.seatsOccupied,
-      gameStarted: Game.gameStarted
+    db.one('SELECT GameName FROM Games Where GameId = ' + socket.gameId)
+    .then(response => {
+      if (!game[socket.gameId] || !players[socket.gameId]) {
+        socket.emit('game update', { gameName: response.gamename });
+        return;
+      }
+      let Game = game[socket.gameId];
+      let Players = players[socket.gameId];
+      let displayNames = {};
+      Game.seatsOccupied.forEach((seat, index) => {
+        displayNames[seat] = Players[index].displayName;
+      });
+      socket.emit('game update', {
+        gameName: response.gamename,
+        displayNames: displayNames,
+        cards: Game.cards,
+        seatsOccupied: Game.seatsOccupied,
+        gameStarted: Game.gameStarted
+      });
     });
   }
 

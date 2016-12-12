@@ -178,6 +178,7 @@
   });
 
   socket.on('game update', data => {
+    $('.nav-title').html(`Poker : ${ data.gameName }`);
     seatsOccupied = data.seatsOccupied;
     if (data.gameStarted) {
       $("#dealer-cards").html(cardImages(data.cards));

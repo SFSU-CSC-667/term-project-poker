@@ -1,4 +1,7 @@
 (() => {
+
+  $('.nav-title').html('Lobby');
+
   $('#create-game').on('submit', event => {
     event.preventDefault();
     socket.emit('create game request', { gameName: `\'${ $('#game-name').val() }\'` });

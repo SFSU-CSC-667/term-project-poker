@@ -399,10 +399,10 @@ tr:nth-child(even) {
     padding: 10px 0!important;
 }
 
-.site-name {
+.nav-title {
     display: inline-block;
     color: #fff;
-    margin: 15px;
+    margin: 0.5em;
     font-size: 28px;
 }
 
