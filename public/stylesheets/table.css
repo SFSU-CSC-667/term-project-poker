@@ -9,6 +9,20 @@
   background-position: center;
 }
 
+.display-name {
+  position: relative;
+  text-align: center;
+  color: #fff;
+  padding: 0.25em;
+  background-color: #428bca;
+  width: 10.7em;
+  box-shadow: 1px 2px 2px 1px #262626;
+}
+
+.player-pointer {
+  color: #000;
+}
+
 #dealer-cards {
   left: 15em;
   top: 8em;
@@ -19,7 +33,7 @@
   margin-right: -20px;
 }
 
-.highlight-card {
+.highlight {
   border: 2.5px solid #ff9900;
 }
 

@@ -1,8 +1,5 @@
 (() => {
   socket.on('message response', data => {
-    var me = $('#user').val();
-    // var color = (from == me) ? 'green' : '#009afd';
-    // var from = (from == me) ? socket.userName : from;
     $('#message-list').append('<li>' + data.displayName + '</b>: ' + data.message + '</li>');
   });
 
@@ -21,14 +18,10 @@
 })();
 
 function submitfunction() {
-
-  var from = $('#user').val();
-  var message = $('#message').val();
+  let message = $('#message').val();
   if (message !== '') {
     socket.emit('send message', { message });
   }
   $('#message').val('').focus();
-
   return false;
-
 }

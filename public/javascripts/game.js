@@ -143,6 +143,10 @@
     seatsOccupied = data.seatsOccupied;
   });
 
+  socket.on('player joined', data => {
+    $(`#${ data.seat } > .display-name`).prepend('<span class = "player-pointer glyphicon glyphicon-user"></span>&nbsp&nbsp');
+  });
+
   socket.on('player turn', data => {
     let seat = seatsOccupied[data.turn];
     let playerBid = parseInt($(`#${ seat }-bid`).html().match(/\d+/g).join([]));
@@ -176,15 +180,15 @@
   socket.on('game update', data => {
     seatsOccupied = data.seatsOccupied;
     if (data.gameStarted) {
-      $("#dealer-cards").append(cardImages(data.cards));
+      $("#dealer-cards").html(cardImages(data.cards));
       seatsOccupied.forEach(seat => {
-        $(`#${ seat }`).html(`<p class='display-name'>Name: ${ data.displayNames[seat] } </p>`);
+        $(`#${ seat }`).html(`<p class='display-name'>${ data.displayNames[seat] } </p>`);
         $(`#${ seat }-cards`).html(cardImages('face-down', 'face-down'));
       });
     } else {
       seatsOccupied.forEach(seat => {
         $(`#${ seat }-actions`).children('.ready-btn').remove();
-        $(`#${ seat }`).html(`<p class='display-name'>Name: ${ data.displayNames[seat] } </p>`);
+        $(`#${ seat }`).html(`<p class='display-name'>${ data.displayNames[seat] } </p>`);
         $(`#${ seat }-actions`).html('<button data-status="status" class="btn btn-success" disabled="disabled">Playing</button>');
       });
     }
@@ -218,18 +222,22 @@
       $(`#${ seat }-cards`).html(cardImages(player.cards[0], player.cards[1]));
     }
     if (data.winner) {
-      console.log('winner');
+      console.log(data.winner);
       $('#winning-cards').html(cardImages(data.winningHand));
-      $(`.${ data.playerCards[data.winner].cards[0] }`).addClass('highlight-card');
-      $(`.${ data.playerCards[data.winner].cards[1] }`).addClass('highlight-card');
+      $(`#${ data.winner } > .display-name`).addClass('highlight');
+      $(`.${ data.playerCards[data.winner].cards[0] }`).addClass('highlight');
+      $(`.${ data.playerCards[data.winner].cards[1] }`).addClass('highlight');
       $('#previous-cards').removeClass('hidden');
+      setTimeout(() => { $(`#${ data.winner } > .display-name`).removeClass('highlight'); }, 7000);
     }
     if (data.winners) {
       $('#winning-cards').html(cardImages(data.winningHand));
       data.winners.forEach(winner => {
-        $(`.${ data.playerCards[winner].cards[0] }`).addClass('highlight-card');
-        $(`.${ data.playerCards[winner].cards[1] }`).addClass('highlight-card');
+        $(`#${ winner } > .display-name`).addClass('highlight');
+        $(`.${ data.playerCards[winner].cards[0] }`).addClass('highlight');
+        $(`.${ data.playerCards[winner].cards[1] }`).addClass('highlight');
         $('#previous-cards').removeClass('hidden');
+        setTimeout(() => { $(`#${ winner } > .display-name`).removeClass('highlight'); }, 7000);
       });
     }
   });
