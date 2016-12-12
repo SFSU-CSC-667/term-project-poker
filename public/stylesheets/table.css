@@ -26,6 +26,7 @@
 .actions > .btn {
   padding: 5px;
   margin: 2px;
+  box-shadow: 1px 2px 2px 1px #262626;
   -webkit-border-radius:2px;
   -moz-border-radius:2px;
   border-radius: 2px;
@@ -99,6 +100,10 @@
   font-weight: bold;
 }
 
+.join {
+  box-shadow: 1px 2px 2px 1px #262626;
+}
+
 #seat1 > .join {
   top: 2em;
   left: 3em;
@@ -125,6 +130,7 @@
 
 #raise-text {
   background-color: #428bca;
+  box-shadow: 1px 2px 2px 1px #262626;
   color: white;
   padding: 0px;
   margin-bottom: -5px;
@@ -138,6 +144,7 @@
 
 #timer {
   border: 1px black solid;
+  box-shadow: 1px 2px 2px 1px #262626;
   background-color: #d9534f;
   color: white;
   padding: 5px;
@@ -149,7 +156,7 @@
 
 #previous-cards {
   bottom: -5em;
-  left: -10.5em;
+  right: -10.5em;
   position: absolute;
 }
 
