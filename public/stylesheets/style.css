@@ -421,7 +421,7 @@ tr:nth-child(even) {
 
 #first-name, #last-name, #password, #password-confirm, #email,
 #account-email, #account-password, #account-lastname, #account-firstname,
-#delete-email, #delete-password, #delete-password-confirm #current-password, #new-password,
+#delete-email, #delete-password, #delete-password-confirm, #current-password, #new-password,
 #new-password-confirm {
     height: 50px!important;
     padding-left: 10px;
