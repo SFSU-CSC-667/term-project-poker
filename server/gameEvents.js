@@ -65,6 +65,25 @@ const gameEvents = (io, socket, game, players, db) => {
     }
   });
 
+  socket.on('validate player win', data => {
+    let Game = game[socket.gameId];
+    let Players = players[socket.gameId];
+    let count = 0;
+    let winner;
+    Players.forEach(player => {
+      if (!player.fold || player.isPlaying) {
+        count++;
+        winner = player;
+      }
+    });
+    if (count === 1) {
+      Game.winner = winner.seat;
+      playerWins(socket, 1);
+      wipeTable(socket);
+      winner.emit('unready player', { seat: winner.seat });
+    }
+  });
+
   socket.on('game list request', () => {
     db.query('SELECT * FROM games')
     .then(response => {
@@ -85,7 +104,7 @@ const gameEvents = (io, socket, game, players, db) => {
     console.log(Game.seatsOccupied.length);
     if (Game.seatsOccupied.length < 2) {
       Game.winner = Game.seatsOccupied[0];
-      playerWins(socket);
+      playerWins(socket, 1);
       wipeTable(socket);
     }
   });
@@ -122,6 +141,11 @@ const gameEvents = (io, socket, game, players, db) => {
   function nextTurn(socket) {
     let Game = game[socket.gameId];
     let Players = players[socket.gameId];
+    if (checkIfAllFold(socket)) {
+      playerWins(socket);
+      wipeTable(socket);
+      return;
+    }
     if (Players[Game.turn + 1] && Players[Game.turn + 1].fold) {
       Game.turn++;
       nextTurn(socket);
@@ -177,12 +201,13 @@ const gameEvents = (io, socket, game, players, db) => {
     nextTurn(socket);
   }
 
-  function playerWins(socket) {
+  function playerWins(socket, isLastPlayer) {
     let Game = game[socket.gameId];
     let Players = players[socket.gameId];
     let index = getSeatIndex(socket, Game.winner);
     let winner = Players[index];
-    if (winner.bid < Game.currentCallMinimum) {
+    setAllPlayersStatus(socket, 'isPlaying', 0);
+    if (winner.bid < Game.currentCallMinimum && !isLastPlayer) {
       console.log("Determing Side Pots");
       determineSidePots(socket, winner);
       return;
@@ -392,7 +417,7 @@ const gameEvents = (io, socket, game, players, db) => {
     let possibleWinner;
     let count = 0;
     Players.forEach(player => {
-      if (!player.fold) {
+      if (!player.fold && !player.isPlaying) {
         possibleWinner = player.seat;
         count++;
       }
@@ -505,6 +530,7 @@ const gameEvents = (io, socket, game, players, db) => {
     let Players = players[socket.gameId];
     io.to(socket.gameId).emit('remove all cards');
     Players.forEach(player => {
+      player.isPlaying = 1;
       player.fold = 0;
       player.bid = 0;
       io.to(socket.gameId).emit('update player statistics', {
@@ -595,6 +621,7 @@ const gameEvents = (io, socket, game, players, db) => {
     let Game = game[socket.gameId];
     let Players = players[socket.gameId];
     Game.winners = winners;
+    setAllPlayersStatus(socket, 'isPlaying', 0);
     showAllCards(socket);
     console.log("We got multiple winners! ", winners, Game.winnerPot);
     winners.forEach(winner => {
@@ -727,6 +754,14 @@ const gameEvents = (io, socket, game, players, db) => {
     Game.cards.push(Game.deck.draw());
     io.to(socket.gameId).emit('draw river card', {
       riverCard: Game.cards[4]
+    });
+  }
+
+  function setAllPlayersStatus(socket, type, status) {
+    let Game = game[socket.gameId];
+    let Players = players[socket.gameId];
+    Players.forEach(player => {
+      player[type] = status;
     });
   }
 

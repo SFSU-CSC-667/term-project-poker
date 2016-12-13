@@ -53,6 +53,7 @@ const disconnectEvents = (io, socket, connections, users, game, players, db) => 
       players[socket.gameId].splice(Players.indexOf(socket), 1);
       io.to(socket.gameId).emit('unoccupy seat', { seat: socket.seat, seatsOccupied: Game.seatsOccupied });
     }
+    countPlayersPlaying(socket);
     socket.leave(socket.gameId);
     socket.status = 'Offline';
     if (!Players.length) {
@@ -77,6 +78,23 @@ const disconnectEvents = (io, socket, connections, users, game, players, db) => 
       io.to(socket.gameId).emit('turn flag', { seat: Game.seatsOccupied[Game.turn] });
       Players[Game.turn].emit('player turn', { turn: Game.turn, callMinimum: Game.currentCallMinimum });
     }
+  }
+
+  function countPlayersPlaying(socket) {
+    let Game = game[socket.gameId];
+    let Players = players[socket.gameId];
+    let potentialWinner = [];
+    let count = 0;
+    Players.forEach(player => {
+      if (player.isPlaying) {
+        potentialWinner.push(player);
+        count++;
+      }
+    });
+    if (potentialWinner.length === 1) {
+      potentialWinner[0].emit('last player win');
+    }
+    return count;
   }
 };
 module.exports = disconnectEvents;

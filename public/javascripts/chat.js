@@ -1,4 +1,14 @@
 (() => {
+
+  $('body').on('submit', '#chat-form', event => {
+    event.preventDefault();
+    let message = $('#message').val();
+    if (message !== '') {
+      socket.emit('send message', { message });
+    }
+    $('#message').val('').focus();
+  })
+
   socket.on('message response', data => {
     $('#message-list').append('<li>' + data.displayName + '</b>: ' + data.message + '</li>');
   });
@@ -16,12 +26,3 @@
   });
 
 })();
-
-function submitfunction() {
-  let message = $('#message').val();
-  if (message !== '') {
-    socket.emit('send message', { message });
-  }
-  $('#message').val('').focus();
-  return false;
-}

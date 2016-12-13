@@ -187,6 +187,10 @@
       $(`#${ seatsOccupied[0] }-raise`).html('');
       $(`#${ seatsOccupied[0] }-actions`).html(createActionButtons());
       $(`#${ seatsOccupied[0] }-actions > .ready-btn`).removeClass('hidden');
+    } else if (data.seat) {
+      $(`#${ data.seat }-raise`).html('');
+      $(`#${ data.seat }-actions`).html(createActionButtons());
+      $(`#${ seatsOccupied[0] }-actions > .ready-btn`).removeClass('hidden');
     }
   });
 
@@ -285,6 +289,10 @@
     seatsOccupied = data.seatsOccupied;
     freeUpSeat(data.seat);
     if (seatsOccupied.length < 2) { socket.emit('last player', { seatsOccupied }); }
+  });
+
+  socket.on('last player win', () => {
+    socket.emit('validate player win', { seatsOccupied });
   });
 
   function cardImages(...cardNames) {
