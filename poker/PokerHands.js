@@ -1,4 +1,4 @@
-const deckFile = require('./deck.js');
+const deckFile = require('./Deck');
 const Deck = new deckFile();
 
 class PokerHands{
@@ -120,11 +120,11 @@ class PokerHands{
 
       let largestCard = hand[0];
       let indexToRemove = 0;
-      
+
 
 
       for( let j = 1 ; j < hand.length ; j++ ){
-          
+
         if(hand[j]%13 == 0){
           largestCard = hand[j];
           indexToRemove = j;
@@ -134,7 +134,7 @@ class PokerHands{
           largestCard = hand[j];
           indexToRemove = j;
         }
-        
+
       }
 
       kickers.push(largestCard);
@@ -1125,10 +1125,10 @@ class PokerHands{
 
   }
 
-  
+
   /*
   testProcessHands(){
-    
+
     let players = [];
 
     let playerOne = [];
@@ -1137,18 +1137,18 @@ class PokerHands{
     let playerTwoID = "Player2";
     //let playerThree = [];
     //let playerThreeID = "Player3";
-    
-    
+
+
     playerOne.push(playerOneID);
     playerTwo.push(playerTwoID);
     //playerThree.push(playerThreeID);
-    
 
-    let playerOneHand = ['four-hearts', 'nine-hearts']; 
+
+    let playerOneHand = ['four-hearts', 'nine-hearts'];
     let playerTwoHand = ['jack-spades', 'king-spades'];
     //let playerThreeHand = ['five-hearts', 'jack-hearts'];
     let sharedCards = ['jack-hearts', 'eight-diamonds', 'ace-spades', 'two-clubs' , 'queen-hearts'];
-    
+
 
     playerOne.push(playerOneHand);
     playerTwo.push(playerTwoHand);
@@ -1157,15 +1157,15 @@ class PokerHands{
     players.push(playerOne);
     players.push(playerTwo);
     //players.push(playerThree);
-    
+
     console.log(this.processHands(sharedCards, players));
     this.getCards(this.winningHand);
   }
 
   getCards(playerHand){
-    
+
       let deck = Deck.getDeck();
-      
+
       for(var i in playerHand)
           console.log(deck[playerHand[i]]);
 

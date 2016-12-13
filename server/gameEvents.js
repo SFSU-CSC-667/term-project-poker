@@ -1,6 +1,6 @@
 const gameEvents = (io, socket, game, players, db) => {
-  const Deck = require('../poker/deck.js');
-  const PokerHands = require('../poker/pokerHands.js');
+  const Deck = require('../poker/Deck');
+  const PokerHands = require('../poker/PokerHands');
 
   socket.on('game viewer', data => {
     socket.leave('lobby');

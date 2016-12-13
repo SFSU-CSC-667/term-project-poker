@@ -6,7 +6,7 @@ class GameListDB {
   createGame(data) {
     let query = 'INSERT INTO Games (GameName, Creator, MaxPlayers, MinBid, MinChips) VALUES' +
                 `(${ data.gameName }, '${ data.userName }', 4, 50, 500) RETURNING GameId`;
-    return this.db.query(query);
+    return this.db.one(query);
   }
 
   gameList() {
