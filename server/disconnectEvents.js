@@ -53,6 +53,7 @@ const disconnectEvents = (io, socket, connections, users, game, players, db) => 
       players[socket.gameId].splice(Players.indexOf(socket), 1);
       io.to(socket.gameId).emit('unoccupy seat', { seat: socket.seat, seatsOccupied: Game.seatsOccupied });
     }
+    console.log("Players: " + Players.length);
     countPlayersPlaying(socket);
     socket.leave(socket.gameId);
     socket.status = 'Offline';

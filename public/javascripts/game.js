@@ -145,7 +145,9 @@
     $(`#${ data.seat }-pot`).html('Pot: ' + data.pot);
     $(`#${ data.seat }`).html(data.html);
     $(`#${ data.seat }-actions`).html(createActionButtons());
-    seatsOccupied = data.seatsOccupied;
+    if (data.gameStarted) {
+      $(`#${ seat }-actions`).children('.ready-btn').remove();
+    }
   });
 
   socket.on('player joined', data => {
@@ -187,10 +189,10 @@
       $(`#${ seatsOccupied[0] }-raise`).html('');
       $(`#${ seatsOccupied[0] }-actions`).html(createActionButtons());
       $(`#${ seatsOccupied[0] }-actions > .ready-btn`).removeClass('hidden');
-    } else if (data.seat) {
+    } else if (data) {
       $(`#${ data.seat }-raise`).html('');
       $(`#${ data.seat }-actions`).html(createActionButtons());
-      $(`#${ seatsOccupied[0] }-actions > .ready-btn`).removeClass('hidden');
+      $(`#${ seatsOccupied[seatsOccupied.indexOf(data.seat)] }-actions > .ready-btn`).removeClass('hidden');
     }
   });
 
@@ -237,7 +239,9 @@
       let player = data.playerCards[seat];
       if (!seat.includes('seat'))
         continue;
-      $(`#${ seat }-cards`).html(cardImages(player.cards[0], player.cards[1]));
+      if (player.cards) {
+        $(`#${ seat }-cards`).html(cardImages(player.cards[0], player.cards[1]));
+      }
     }
     if (data.winner) {
       $('#winning-cards').html(cardImages(data.winningHand));
@@ -262,6 +266,7 @@
   socket.on('player cards', data => {
     $(`#${ data.seat }-cards`).html(cardImages(data.first));
     setTimeout(() => { $(`#${ data.seat }-cards`).append(cardImages(data.second)); }, 200);
+
     seatsOccupied.forEach(seat => {
       if (seat !== data.seat) {
         $(`#${ seat }-cards`).html(cardImages('face-down', 'face-down'));
@@ -288,7 +293,6 @@
   socket.on('unoccupy seat', data => {
     seatsOccupied = data.seatsOccupied;
     freeUpSeat(data.seat);
-    if (seatsOccupied.length < 2) { socket.emit('last player', { seatsOccupied }); }
   });
 
   socket.on('last player win', () => {
@@ -328,6 +332,9 @@
       $(`#${ seat }-actions`).children('[data-action="raise"]').prop('disabled', true);
       $(`#${ seat }-actions`).children('[data-action="all in"]').prop('disabled', true);
       $(`#${ seat }-actions`).children('[data-action="check"]').prop('disabled', false);
+    }
+    if (playerBid === 0) {
+      $(`#${ seat }-actions`).children('[data-action="check"]').prop('disabled', true);
     }
   }
 

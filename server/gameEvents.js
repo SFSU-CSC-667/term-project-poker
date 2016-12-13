@@ -80,7 +80,9 @@ const gameEvents = (io, socket, game, players, db) => {
       Game.winner = winner.seat;
       playerWins(socket, 1);
       wipeTable(socket);
-      winner.emit('unready player', { seat: winner.seat });
+      Players.forEach(player => {
+        player.emit('unready player', { seat: player.seat });
+      });
     }
   });
 
@@ -95,17 +97,6 @@ const gameEvents = (io, socket, game, players, db) => {
     if (game[socket.gameId]) {
       let Game = game[socket.gameId];
       Game.seatsOccupied = data.seatsOccupied;
-    }
-  });
-
-
-  socket.on('last player', data => {
-    let Game = game[socket.gameId];
-    console.log(Game.seatsOccupied.length);
-    if (Game.seatsOccupied.length < 2) {
-      Game.winner = Game.seatsOccupied[0];
-      playerWins(socket, 1);
-      wipeTable(socket);
     }
   });
 
@@ -179,7 +170,9 @@ const gameEvents = (io, socket, game, players, db) => {
       return;
     }
     playerWins(socket);
-    startGame(socket);
+    setTimeout(() => {
+      startGame(socket);
+    }, 7000);
   }
 
   function playerRaise(socket, raise) {
@@ -212,9 +205,10 @@ const gameEvents = (io, socket, game, players, db) => {
       determineSidePots(socket, winner);
       return;
     }
+    console.log("We got a winner! ", Game.winner, Game.winnerPot);
     winner.pot += Game.winnerPot;
     showAllCards(socket);
-    console.log("We got a winner! ", Game.winner, Game.winnerPot);
+    Game.winnerPot = 0;
     Players.forEach(player => {
       if (winner.userName && player.userName) {
         if (player.userName === winner.userName) {
@@ -362,6 +356,7 @@ const gameEvents = (io, socket, game, players, db) => {
     if (winner.userName) {
       db.none(`UPDATE Users SET wins = wins + 1 WHERE email = '${ winner.userName }'`);
     }
+    Game.winnerPot = 0;
     winners.forEach(winner => {
       Players.forEach(player => {
         if (winner.userName && player.userName) {
@@ -417,7 +412,7 @@ const gameEvents = (io, socket, game, players, db) => {
     let possibleWinner;
     let count = 0;
     Players.forEach(player => {
-      if (!player.fold && !player.isPlaying) {
+      if (!player.fold && player.isPlaying) {
         possibleWinner = player.seat;
         count++;
       }
@@ -477,7 +472,8 @@ const gameEvents = (io, socket, game, players, db) => {
       bid: socket.bid,
       pot: socket.pot,
       seatsOccupied: Game.seatsOccupied,
-      html: "<p class='display-name'>" + socket.displayName + "</p>"
+      html: "<p class='display-name'>" + socket.displayName + "</p>",
+      gameStarted: Game.gameStarted
     });
     socket.emit('player joined', {
       seat: data.seat
@@ -496,7 +492,7 @@ const gameEvents = (io, socket, game, players, db) => {
     socket.emit('enable ready button', {
       seat: socket.seat
     });
-    console.log("Players " + Players.length);
+    console.log("Players: " + Players.length);
   }
 
   function makeSeatOccupied(socket, seat) {
@@ -584,7 +580,6 @@ const gameEvents = (io, socket, game, players, db) => {
     socket.emit('unready player');
     Game.ready = 0;
     Players.forEach(player => {
-      player.pot += player.bid;
       player.fold = 0;
       player.bid = 0;
       io.to(socket.gameId).emit('update player statistics', {
@@ -622,7 +617,6 @@ const gameEvents = (io, socket, game, players, db) => {
     let Players = players[socket.gameId];
     Game.winners = winners;
     setAllPlayersStatus(socket, 'isPlaying', 0);
-    showAllCards(socket);
     console.log("We got multiple winners! ", winners, Game.winnerPot);
     winners.forEach(winner => {
       let winningSocket = Players[getSeatIndex(socket, winner)];
@@ -630,6 +624,8 @@ const gameEvents = (io, socket, game, players, db) => {
       Game.winnerPot -= winningSocket.bid;
     });
     let splitPot = Game.winnerPot / winners.length;
+    showAllCards(socket);
+    Game.winnerPot = 0;
     winners.forEach(winner => {
       let winningSocket = Players[getSeatIndex(socket, winner)];
       winningSocket.pot += splitPot;
