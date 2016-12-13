@@ -182,6 +182,14 @@
     window.location.reload();
   });
 
+  socket.on('unready player', data => {
+    if (seatsOccupied.length < 2) {
+      $(`#${ seatsOccupied[0] }-raise`).html('');
+      $(`#${ seatsOccupied[0] }-actions`).html(createActionButtons());
+      $(`#${ seatsOccupied[0] }-actions > .ready-btn`).removeClass('hidden');
+    }
+  });
+
   socket.on('game update', data => {
     $('.nav-title').html(`Poker : ${ data.gameName }`);
     seatsOccupied = data.seatsOccupied;
@@ -228,7 +236,6 @@
       $(`#${ seat }-cards`).html(cardImages(player.cards[0], player.cards[1]));
     }
     if (data.winner) {
-      console.log(data.winner);
       $('#winning-cards').html(cardImages(data.winningHand));
       $(`#${ data.winner } > .display-name`).addClass('highlight');
       $(`.${ data.playerCards[data.winner].cards[0] }`).addClass('highlight');
@@ -277,6 +284,7 @@
   socket.on('unoccupy seat', data => {
     seatsOccupied = data.seatsOccupied;
     freeUpSeat(data.seat);
+    if (seatsOccupied.length < 2) { socket.emit('last player', { seatsOccupied }); }
   });
 
   function cardImages(...cardNames) {

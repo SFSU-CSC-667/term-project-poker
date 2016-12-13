@@ -79,6 +79,17 @@ const gameEvents = (io, socket, game, players, db) => {
     }
   });
 
+
+  socket.on('last player', data => {
+    let Game = game[socket.gameId];
+    console.log(Game.seatsOccupied.length);
+    if (Game.seatsOccupied.length < 2) {
+      Game.winner = Game.seatsOccupied[0];
+      playerWins(socket);
+      wipeTable(socket);
+    }
+  });
+
   socket.on('skip turn', data => {
     let Game = game[socket.gameId];
     if (Game) {
@@ -516,7 +527,6 @@ const gameEvents = (io, socket, game, players, db) => {
   function dealerCheck(round, socket) {
     let Game = game[socket.gameId];
     let Players = players[socket.gameId];
-    if (Players.length < 2) { wipeTable(socket); return 1; }
     switch (round) {
       case 0:
         drawFlopCards(socket);
@@ -545,7 +555,8 @@ const gameEvents = (io, socket, game, players, db) => {
     let Players = players[socket.gameId];
     io.to(socket.gameId).emit('remove all cards');
     io.to(socket.gameId).emit('reset timer');
-    Game.ready = 1;
+    socket.emit('unready player');
+    Game.ready = 0;
     Players.forEach(player => {
       player.pot += player.bid;
       player.fold = 0;

@@ -48,7 +48,7 @@ const disconnectEvents = (io, socket, connections, users, game, players, db) => 
       seat: socket.seat
     });
     if (game[socket.gameId]) {
-      if (Game.seatsOccupied[Game.turn] === socket.seat) { skipTurn(socket); }
+      if (Game.seatsOccupied[Game.turn] === socket.seat) { skipTurn(socket);  }
       Game.seatsOccupied.splice(Game.seatsOccupied.indexOf(socket.seat), 1);
       players[socket.gameId].splice(Players.indexOf(socket), 1);
       io.to(socket.gameId).emit('unoccupy seat', { seat: socket.seat, seatsOccupied: Game.seatsOccupied });
