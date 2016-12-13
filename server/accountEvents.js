@@ -1,5 +1,8 @@
 const accountEvents = (io, socket, users, db) => {
   const bcrypt = require('bcryptjs');
+  const AccountDB = require('../db/models/AccountDB');
+
+  accountDB = new AccountDB(db);
 
   socket.on('account registration', data => {
     createAccount(data);
@@ -10,7 +13,7 @@ const accountEvents = (io, socket, users, db) => {
   });
 
   socket.on('request account information', data => {
-    accountInfo(data.email);
+    accountInfo(data);
   });
 
   socket.on('request account deletion', data => {
@@ -22,7 +25,7 @@ const accountEvents = (io, socket, users, db) => {
   });
 
   socket.on('request firstname change', data => {
-    db.none(`UPDATE Users SET firstname = ${ data.newFirstname } WHERE email = '${ data.email }'`)
+    accountDB.editFirstName(data)
     .then(response => {
       socket.emit('firstname change response', { success: 1, newFirstname: data.newFirstname });
     })
@@ -32,7 +35,7 @@ const accountEvents = (io, socket, users, db) => {
   });
 
   socket.on('request lastname change', data => {
-    db.none(`UPDATE Users SET lastname = ${ data.newLastname } WHERE email = '${ data.email }'`)
+    accountDB.editLastName(data)
     .then(response => {
       socket.emit('lastname change response', { success: 1, newLastname: data.newLastname });
     })
@@ -41,8 +44,8 @@ const accountEvents = (io, socket, users, db) => {
     });
   });
 
-  function accountInfo(email) {
-    db.one(`SELECT * FROM Users WHERE Email='${ email }'`)
+  function accountInfo(data) {
+    accountDB.accountInformation(data)
     .then(response => {
       socket.emit('account information response', {
         success: 1,
@@ -61,9 +64,7 @@ const accountEvents = (io, socket, users, db) => {
 
   function createAccount(data) {
     bcrypt.hash(data.password, 10, (error, hash) => {
-      db.query("INSERT INTO Users (FirstName, LastName, Email, Password, Chips, Wins) " +
-               `VALUES ('${ data.first }', '${ data.last }', '${ data.email }', ` +
-               `'${ hash }', '5000', '0')`)
+      accountDB.createAccount(data, hash)
       .then(response => {
         console.log("Account created. " + data.email);
         socket.emit("account creation response", { success: 1 });
@@ -78,12 +79,12 @@ const accountEvents = (io, socket, users, db) => {
   }
 
   function editAccountPassword(data) {
-    db.one(`SELECT * FROM Users WHERE Email='${ data.email }'`)
+    accountDB.accountInformation(data)
     .then(response => {
       bcrypt.compare(data.currentPassword, response.password, (error, success) => {
         if (success) {
           bcrypt.hash(data.newPassword, 10, (error, hash) => {
-            db.none(`UPDATE Users SET Password = '${ hash }' WHERE Email='${ data.email }'`);
+            accountDB.editAccountPassword(data, hash);
             socket.emit("change password response", { success: 1 });
           });
         } else {
@@ -98,11 +99,11 @@ const accountEvents = (io, socket, users, db) => {
   }
 
   function deleteAccount(data) {
-    db.one(`SELECT * FROM Users WHERE Email='${ data.email }'`)
+    accountDB.accountInformation(data)
     .then(response => {
       bcrypt.compare(data.password, response.password, (error, success) => {
         if (success) {
-          db.none(`DELETE FROM Users WHERE Email='${ data.email }'`);
+          accountDB.deleteAccount(data);
           socket.emit("account deletion response", {
             success: 1, email: data.email
           });
@@ -118,7 +119,7 @@ const accountEvents = (io, socket, users, db) => {
   }
 
   function loginAccount(data) {
-    db.one(`SELECT * FROM Users WHERE Email='${ data.email }'`)
+    accountDB.accountInformation(data, 'firstname, lastname, password')
     .then(response => {
       bcrypt.compare(data.password, response.password, (error, success) => {
         if (success) {
