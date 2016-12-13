@@ -22,11 +22,12 @@
   });
 
   socket.on('create game response', data => {
-    if (!data.success) {
-      alert('Try again later');
+    if (data.guest) {
+      $('#signin-modal').modal('show');
+    } else if (data.success) {
+      sessionStorage.setItem('gameId', data.gameId);
+      window.location.replace('/gameroom');
     }
-    sessionStorage.setItem('gameId', data.gameId);
-    window.location.replace('/gameroom');
   });
 
   function createGameList(games) {
