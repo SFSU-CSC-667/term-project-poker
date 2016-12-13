@@ -122,14 +122,28 @@ button.register-btn.btn.btn-success, button.signin-btn.btn.btn-primary {
 }
 
 #footer {
-  position: absolute;
+  position: relative;
   width: 100%;
-  /* Set the fixed height of the footer here */
   height: 3em;
-  background-color: #f5f5f5;
-    text-align: center;
-    line-height: 3em;
+  left: 0;
+  bottom: -17em;
+  text-align: center;
+  overflow: hidden;
 }
+
+.about-body {
+  font-weight: bold;
+  margin-top: -2em;
+}
+
+.about-body > div > h2 {
+  border: 1px black solid;
+  box-shadow: 1px 2px 2px 1px #262626;
+  background-color: #337ab7; 
+  color: white;
+  padding: 5px;
+}
+
 .modal-header {
   color:#fff;
   padding:9px 15px;

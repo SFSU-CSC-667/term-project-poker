@@ -1,7 +1,7 @@
 (() => {
 
   $('body').on('click', '.view-game-btn', function(event) {
-    sessionStorage.setItem('gameId', $(this).data('gameId'));
+    sessionStorage.setItem('gameId', $(this).data('game-id'));
     window.location.replace('/gameroom');
   });
 

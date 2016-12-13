@@ -47,6 +47,11 @@ const socket = io.connect();
     }
   });
 
+  $('#about').on('click', event => {
+    event.preventDefault();
+    $('#about-modal').modal('show');
+  });
+
   $('#signin-form').on('submit', event => {
     event.preventDefault();
     $('.signin-btn').replaceWith(loading());
