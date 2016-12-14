@@ -231,6 +231,7 @@
   });
 
   socket.on('a player folds', data => {
+    $(`#${ data.seat }-cards`).html('');
     $(`#${ data.seat }-actions`).children('button[data-status="status"]').html('Fold');
   });
 
