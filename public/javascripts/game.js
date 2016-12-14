@@ -156,14 +156,14 @@
     $(`#${ data.seat }-bid`).html('Bid: ' + data.bid);
     $(`#${ data.seat }-pot`).html('Pot: ' + data.pot);
     $(`#${ data.seat }`).html(data.html);
-    if (data.gameStarted) {
-      $(`#${ seat }-actions`).children('.ready-btn').remove();
-    }
   });
 
   socket.on('player joined', data => {
     $(`#${ data.seat } > .display-name`).prepend('<span class = "player-pointer glyphicon glyphicon-user"></span>&nbsp&nbsp');
     $(`#${ data.seat }-actions`).html(createActionButtons());
+    if (data.gameStarted) {
+      $(`#${ data.seat }-actions`).children('.ready-btn').remove();
+    }
   });
 
   socket.on('player turn', data => {

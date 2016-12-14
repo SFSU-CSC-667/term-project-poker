@@ -473,10 +473,10 @@ const gameEvents = (io, socket, game, players, db) => {
       pot: socket.pot,
       seatsOccupied: Game.seatsOccupied,
       html: "<p class='display-name'>" + socket.displayName + "</p>",
-      gameStarted: Game.gameStarted
     });
     socket.emit('player joined', {
-      seat: data.seat
+      seat: data.seat,
+      gameStarted: Game.gameStarted
     });
     if (!socket.userName) {
       getPlayerInfo(socket)
