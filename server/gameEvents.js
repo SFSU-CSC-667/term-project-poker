@@ -1,6 +1,8 @@
 const gameEvents = (io, socket, game, players, db) => {
   const Deck = require('../poker/Deck');
   const PokerHands = require('../poker/PokerHands');
+  const GameDBM = require('../db/GameDBM');
+  const gdbm = new GameDBM(db);
 
   socket.on('game viewer', data => {
     socket.leave('lobby');
@@ -33,11 +35,11 @@ const gameEvents = (io, socket, game, players, db) => {
   });
 
   socket.on('buyin request', () => {
-    getGameInfo(socket)
+    gdbm.getGameInfo({ gameId: socket.gameId })
     .then(gameData => {
-      getPlayerInfo(socket)
+        gdbm.getPlayerInfo({ userName: socket.userName })
       .then(playerData => {
-        socket.emit('joining game', {
+        socket.to(socket.userName).emit('joining game', {
           buyInMin: gameData['minchips'],
           buyInMax: playerData['chips']
         });
@@ -87,7 +89,7 @@ const gameEvents = (io, socket, game, players, db) => {
   });
 
   socket.on('game list request', () => {
-    db.query('SELECT * FROM games')
+    gdbm.getGamesInfo()
     .then(response => {
       socket.emit('game list response', { games: response });
     });
@@ -213,8 +215,9 @@ const gameEvents = (io, socket, game, players, db) => {
       if (winner.userName && player.userName) {
         if (player.userName === winner.userName) {
           let netGain = player.bid + player.pot - player.startAmount;
-          db.none(`UPDATE Users SET chips = chips + ${ netGain } WHERE email = '${ player.userName }'`);
-          db.none(`UPDATE Users SET wins = wins + 1 WHERE email = '${ player.userName }'`);
+          gdbm.updateUserScore(
+              {netGain: netGain,
+                  userName: player.userName });
         }
       }
       player.startAmount = player.pot; // New Start Amount.
@@ -354,7 +357,10 @@ const gameEvents = (io, socket, game, players, db) => {
       winners.push(player);
     }
     if (winner.userName) {
-      db.none(`UPDATE Users SET wins = wins + 1 WHERE email = '${ winner.userName }'`);
+      gdbm.updateUserWinCounts({
+        userName: winner.userName
+      });
+      /* db.none(`UPDATE Users SET wins = wins + 1 WHERE email = '${ winner.userName }'`); */
     }
     Game.winnerPot = 0;
     winners.forEach(winner => {
@@ -362,7 +368,11 @@ const gameEvents = (io, socket, game, players, db) => {
         if (winner.userName && player.userName) {
           if (player.userName === winner.userName) {
             let netGain = player.bid + player.pot - player.startAmount;
-            db.none(`UPDATE Users SET chips = chips + ${ netGain } WHERE email = '${ player.userName }'`);
+            gdbm.updateUserChips({
+              netGain: netGain,
+                userName: player.userName
+            });
+            /* db.none(`UPDATE Users SET chips = chips + ${ netGain } WHERE email = '${ player.userName }'`); */
           }
         }
         player.startAmount = player.pot; // New Start Amount.
@@ -426,7 +436,7 @@ const gameEvents = (io, socket, game, players, db) => {
   }
 
   function getUpdate(socket, data) {
-    db.one('SELECT GameName FROM Games Where GameId = ' + socket.gameId)
+    gdbm.getGameInfo({ gameId: socket.gameId })
     .then(response => {
       if (!game[socket.gameId] || !players[socket.gameId]) {
         socket.emit('game update', { gameName: response.gamename });
@@ -479,9 +489,9 @@ const gameEvents = (io, socket, game, players, db) => {
       gameStarted: Game.gameStarted
     });
     if (!socket.userName) {
-      getPlayerInfo(socket)
+        gdbm.getPlayerInfo({ userName: socket.userName })
       .then(playerInfo => {
-          addPlayer({
+          gdbm.addPlayer({
               gameId: socket.gameId,
               playerId: playerInfo["userid"],
               startAmount: data.startAmount,
@@ -633,8 +643,10 @@ const gameEvents = (io, socket, game, players, db) => {
         if (winningSocket.userName && player.userName) {
           if (player.userName === winningSocket.userName) {
             let netGain = player.bid + player.pot - player.startAmount;
-            db.none(`UPDATE Users SET chips = chips + ${ netGain } WHERE email = '${ player.userName }'`);
-            db.none(`UPDATE Users SET wins = wins + 1 WHERE email = '${ player.userName }'`);
+            gdbm.updateUserScore({
+              netGain: netGain,
+                userName: player.userName
+            })
           }
         }
         player.startAmount = player.pot; // New Start Amount.
@@ -710,7 +722,11 @@ const gameEvents = (io, socket, game, players, db) => {
       playerBid: socket.bid
     });
     if (socket.userName) {
-      db.none(`UPDATE Users SET chips = chips - ${ additionalAmount } WHERE email = '${ socket.userName }'`);
+      gdbm.updateUserChips({
+        additionalAmount: (additionalAmount * (-1)),
+          userName: socket.userName
+      });
+      /* db.none(`UPDATE Users SET chips = chips - ${ additionalAmount } WHERE email = '${ socket.userName }'`); */
     }
   }
 
@@ -774,28 +790,6 @@ const gameEvents = (io, socket, game, players, db) => {
       playerCards: playerCards,
       winningHand: Game.pokerHands.getWinningHand()
     });
-  }
-
-  function getPlayerInfo(socket) {
-    let GameQuery = "SELECT * FROM Users WHERE Email=${ UserName };";
-    return db.one(GameQuery, {
-      UserName: socket.userName
-    });
-  }
-
-  function getGameInfo(socket) {
-      let GameQuery = "SELECT * FROM Games WHERE GameId=${ gameId };";
-      return db.one(GameQuery, {
-          gameId: socket.gameId
-      });
-  }
-
-  function addPlayer(data) {
-    let GameQuery = "INSERT INTO Players VALUES " +
-        "(${ gameId }, ${ playerId }, 0, ${ startAmount }, 0, TRUE , ${ seat }) " +
-        "WHERE NOT EXISTS " +
-        "(SELECT GameId, UserId FROM Players P WHERE P.GameId=${ gameId } AND P.UserId=${ playerId });";
-    return db.none(GameQuery, data);
   }
 
 };
