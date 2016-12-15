@@ -5,13 +5,11 @@ class gameDBM {
     }
 
     getPlayerInfo(data) {
-        let GameQuery = `SELECT * FROM Users WHERE Email=${ UserName };`;
-        return this.db.one(GameQuery, data);
+        return this.db.one(`SELECT * FROM Users WHERE Email=${ data.UserName };`);
     };
 
     getGameInfo(data) {
-        let GameQuery = `SELECT * FROM Games WHERE GameId=${ gameId };`;
-        return this.db.one(GameQuery, data);
+        return this.db.one(`SELECT * FROM Games WHERE GameId=${ data.gameId };`);
     };
 
     getGamesInfo() {
@@ -19,23 +17,21 @@ class gameDBM {
     }
 
     addPlayer(data) {
-        let GameQuery = `INSERT INTO Players VALUES (${ gameId }, ${ playerId }, 0, ${ startAmount }, 0, TRUE , ${ seat }) ` +
-            `WHERE NOT EXISTS (SELECT GameId, UserId FROM Players P WHERE P.GameId=${ gameId } AND P.UserId=${ playerId });`;
-        return this.db.none(GameQuery, data);
+        return this.db.none(`INSERT INTO Players VALUES (${ data.gameId }, ${ data.playerId }, 0, ${ data.startAmount }, 0, TRUE , ${ data.seat }) ` +
+            `WHERE NOT EXISTS (SELECT GameId, UserId FROM Players P WHERE P.GameId=${ data.gameId } AND P.UserId=${ data.playerId });`);
     };
 
     updateUserChips(data) {
-        this.db.none(`UPDATE Users SET chips = chips - ${ amount } WHERE email='${ userName }';`, data);
+        this.db.none(`UPDATE Users SET chips = chips - ${ data.amount } WHERE email='${ data.userName }';`);
     };
 
     updateUserWinCounts(data) {
-        this.db.none(`UPDATE Users SET win = win + 1 WHERE email = '${ userName }';`, data);
+        this.db.none(`UPDATE Users SET win = win + 1 WHERE email = '${ data.userName }';`);
     }
 
     updateUserScore(data) {
-        this.db.none(`UPDATE Users SET chips = chips + ${ amount }, wins = wins + 1 WHERE email = '${ userName }'`, data);
+        this.db.none(`UPDATE Users SET chips = chips + ${ data.amount }, wins = wins + 1 WHERE email = '${ data.userName }'`);
     };
-}
-;
+};
 
 module.exports = gameDBM;
