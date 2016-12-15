@@ -38,6 +38,7 @@
     let seatAction = $(this).parent().attr('id');
     let seat = seatAction.split('-')[0];
     let raise = parseInt($('#raise-amount').html());
+    if ($(this).data('action') === 'ready') { return; }
     if ($(this).data('action') === 'raise') {
       if (!validateRaise(raise)) { return; }
     }
@@ -100,6 +101,17 @@
           $('.action-btn[data-action="fold"]').removeClass('scale-up');
         }, 250);
         break;
+      case 74:
+        $('.join').first().trigger('click');
+        break;
+      case 82:
+        if (!verifyButtonEnabled('ready')) { return; }
+        $('.action-btn[data-action="ready"]').addClass('scale-up');
+        $('.action-btn[data-action="ready"]').trigger('click');
+        setTimeout(() => {
+          $('.action-btn[data-action="ready"]').removeClass('scale-up');
+        }, 250);
+        break;
     }
 
   });
@@ -144,14 +156,14 @@
     $(`#${ data.seat }-bid`).html('Bid: ' + data.bid);
     $(`#${ data.seat }-pot`).html('Pot: ' + data.pot);
     $(`#${ data.seat }`).html(data.html);
-    $(`#${ data.seat }-actions`).html(createActionButtons());
-    if (data.gameStarted) {
-      $(`#${ seat }-actions`).children('.ready-btn').remove();
-    }
   });
 
   socket.on('player joined', data => {
     $(`#${ data.seat } > .display-name`).prepend('<span class = "player-pointer glyphicon glyphicon-user"></span>&nbsp&nbsp');
+    $(`#${ data.seat }-actions`).html(createActionButtons());
+    if (data.gameStarted) {
+      $(`#${ data.seat }-actions`).children('.ready-btn').remove();
+    }
   });
 
   socket.on('player turn', data => {
@@ -219,6 +231,7 @@
   });
 
   socket.on('a player folds', data => {
+    $(`#${ data.seat }-cards`).html('');
     $(`#${ data.seat }-actions`).children('button[data-status="status"]').html('Fold');
   });
 
@@ -375,7 +388,7 @@
 
   function createActionButtons() {
     return (
-      "<button class='hidden ready-btn btn btn-success'>Ready</button>" +
+      "<button class='hidden action-btn ready-btn btn btn-success' data-action='ready'>Ready</button>" +
       "<button class='hidden action-btn btn btn-success' data-action='check' disabled='disabled'>Check</button>" +
       "<button class='hidden action-btn btn btn-success' data-action='call' disabled='disabled'>Call</button>"   +
       "<button class='hidden action-btn btn btn-primary' data-action='raise' disabled='disabled'>Raise</button>" +

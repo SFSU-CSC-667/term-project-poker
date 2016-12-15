@@ -1,6 +1,6 @@
 const gameEvents = (io, socket, game, players, db) => {
-  const Deck = require('../poker/deck.js');
-  const PokerHands = require('../poker/pokerHands.js');
+  const Deck = require('../poker/Deck');
+  const PokerHands = require('../poker/PokerHands');
   const GameDBM = require('../db/GameDBM');
   const gdbm = new GameDBM(db);
 
@@ -435,7 +435,6 @@ const gameEvents = (io, socket, game, players, db) => {
   }
 
   function getUpdate(socket, data) {
-
     /* db.one('SELECT GameName FROM Games Where GameId = ' + socket.gameId) */
     gdbm.getGameInfo({ gameId: socket.gameId })
     .then(response => {
@@ -484,15 +483,15 @@ const gameEvents = (io, socket, game, players, db) => {
       pot: socket.pot,
       seatsOccupied: Game.seatsOccupied,
       html: "<p class='display-name'>" + socket.displayName + "</p>",
-      gameStarted: Game.gameStarted
     });
     socket.emit('player joined', {
-      seat: data.seat
+      seat: data.seat,
+      gameStarted: Game.gameStarted
     });
     if (!socket.userName) {
       gdbm.getPlayerInfo({ userName: socket.userName })
       .then(playerInfo => {
-          addPlayer({
+          gdbm.addPlayer({
               gameId: socket.gameId,
               playerId: playerInfo["userid"],
               startAmount: data.startAmount,
@@ -792,6 +791,7 @@ const gameEvents = (io, socket, game, players, db) => {
       winningHand: Game.pokerHands.getWinningHand()
     });
   }
+
 };
 
 

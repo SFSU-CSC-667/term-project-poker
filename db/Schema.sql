@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS Games
 (
     GameId SERIAL PRIMARY KEY,
     GameName VARCHAR (255),
+    Creator VARCHAR (255),
     MaxPlayers INTEGER,
     MinBid INTEGER,
     MinChips INTEGER
