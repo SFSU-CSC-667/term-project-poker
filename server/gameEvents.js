@@ -1,8 +1,8 @@
 const gameEvents = (io, socket, game, players, db) => {
   const Deck = require('../poker/Deck');
   const PokerHands = require('../poker/PokerHands');
-  const GameDBM = require('../db/GameDBM');
-  const gdbm = new GameDBM(db);
+  const GameDB = require('../db/models/GameDB');
+  const gdb = new GameDB(db);
 
   socket.on('game viewer', data => {
     socket.leave('lobby');
@@ -35,16 +35,16 @@ const gameEvents = (io, socket, game, players, db) => {
   });
 
   socket.on('buyin request', () => {
-    gdbm.getGameInfo({ gameId: socket.gameId })
+    gdb.getGameInfo({ gameId: socket.gameId })
     .then(gameData => {
-      gdbm.getPlayerInfo({ userName: socket.userName })
+      gdb.getPlayerInfo({ userName: socket.userName })
       .then(playerData => {
         socket.emit('joining game', {
           buyInMin: gameData['minchips'],
           buyInMax: playerData['chips']
         });
       })
-      .catch(() => {
+      .catch( result => {
         socket.emit('joining game', {
           buyInMin: gameData['minchips'],
           buyInMax: gameData['minchips']
@@ -89,7 +89,7 @@ const gameEvents = (io, socket, game, players, db) => {
   });
 
   socket.on('game list request', () => {
-    gdbm.getGamesInfo()
+    gdb.getGamesInfo()
     .then(response => {
       socket.emit('game list response', { games: response });
     });
@@ -215,7 +215,7 @@ const gameEvents = (io, socket, game, players, db) => {
       if (winner.userName && player.userName) {
         if (player.userName === winner.userName) {
           let netGain = player.bid + player.pot - player.startAmount;
-          gdbm.updateUserScore({
+          gdb.updateUserScore({
               amount: netGain,
               userName: player.userName
           });
@@ -358,7 +358,7 @@ const gameEvents = (io, socket, game, players, db) => {
       winners.push(player);
     }
     if (winner.userName) {
-      gdbm.updateUserWinCounts({ userName: winner.userName });
+      gdb.updateUserWinCounts({ userName: winner.userName });
       /* db.none(`UPDATE Users SET wins = wins + 1 WHERE email = '${ winner.userName }'`); */
     }
     Game.winnerPot = 0;
@@ -367,7 +367,7 @@ const gameEvents = (io, socket, game, players, db) => {
         if (winner.userName && player.userName) {
           if (player.userName === winner.userName) {
             let netGain = player.bid + player.pot - player.startAmount;
-            gdbm.updateUserChips({
+            gdb.updateUserChips({
                 amount: netGain,
                 userName: player.userName
             });
@@ -436,7 +436,7 @@ const gameEvents = (io, socket, game, players, db) => {
 
   function getUpdate(socket, data) {
     /* db.one('SELECT GameName FROM Games Where GameId = ' + socket.gameId) */
-    gdbm.getGameInfo({ gameId: socket.gameId })
+    gdb.getGameInfo({ gameId: socket.gameId })
     .then(response => {
       if (!game[socket.gameId] || !players[socket.gameId]) {
         socket.emit('game update', { gameName: response.gamename });
@@ -489,9 +489,9 @@ const gameEvents = (io, socket, game, players, db) => {
       gameStarted: Game.gameStarted
     });
     if (!socket.userName) {
-      gdbm.getPlayerInfo({ userName: socket.userName })
+      gdb.getPlayerInfo({ userName: socket.userName })
       .then(playerInfo => {
-          gdbm.addPlayer({
+          gdb.addPlayer({
               gameId: socket.gameId,
               playerId: playerInfo["userid"],
               startAmount: data.startAmount,
@@ -643,7 +643,7 @@ const gameEvents = (io, socket, game, players, db) => {
         if (winningSocket.userName && player.userName) {
           if (player.userName === winningSocket.userName) {
             let netGain = player.bid + player.pot - player.startAmount;
-            gdbm.updateUserScore({
+            gdb.updateUserScore({
                 amount: netGain,
                 userName: player.userName
             });
@@ -722,7 +722,7 @@ const gameEvents = (io, socket, game, players, db) => {
       playerBid: socket.bid
     });
     if (socket.userName) {
-      gdbm.updateUserChips({
+      gdb.updateUserChips({
           amount: additionalAmount,
           userName: socket.userName
       });
