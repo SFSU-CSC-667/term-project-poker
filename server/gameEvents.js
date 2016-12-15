@@ -1,6 +1,8 @@
 const gameEvents = (io, socket, game, players, db) => {
   const Deck = require('../poker/deck.js');
   const PokerHands = require('../poker/pokerHands.js');
+  const GameDBM = require('../db/GameDBM');
+  const gdbm = new GameDBM(db);
 
   socket.on('game viewer', data => {
     socket.leave('lobby');
@@ -33,9 +35,9 @@ const gameEvents = (io, socket, game, players, db) => {
   });
 
   socket.on('buyin request', () => {
-    getGameInfo(socket)
+    gdbm.getGameInfo({ gameId: socket.gameId })
     .then(gameData => {
-      getPlayerInfo(socket)
+      gdbm.getPlayerInfo({ userName: socket.userName })
       .then(playerData => {
         socket.emit('joining game', {
           buyInMin: gameData['minchips'],
@@ -87,7 +89,7 @@ const gameEvents = (io, socket, game, players, db) => {
   });
 
   socket.on('game list request', () => {
-    db.query('SELECT * FROM games')
+    gdbm.getGamesInfo()
     .then(response => {
       socket.emit('game list response', { games: response });
     });
@@ -356,7 +358,8 @@ const gameEvents = (io, socket, game, players, db) => {
       winners.push(player);
     }
     if (winner.userName) {
-      db.none(`UPDATE Users SET wins = wins + 1 WHERE email = '${ winner.userName }'`);
+      gdbm.updateUserWinCounts({ userName: winner.userName });
+      /* db.none(`UPDATE Users SET wins = wins + 1 WHERE email = '${ winner.userName }'`); */
     }
     Game.winnerPot = 0;
     winners.forEach(winner => {
@@ -432,7 +435,9 @@ const gameEvents = (io, socket, game, players, db) => {
   }
 
   function getUpdate(socket, data) {
-    db.one('SELECT GameName FROM Games Where GameId = ' + socket.gameId)
+
+    /* db.one('SELECT GameName FROM Games Where GameId = ' + socket.gameId) */
+    gdbm.getGameInfo({ gameId: socket.gameId })
     .then(response => {
       if (!game[socket.gameId] || !players[socket.gameId]) {
         socket.emit('game update', { gameName: response.gamename });
@@ -485,7 +490,7 @@ const gameEvents = (io, socket, game, players, db) => {
       seat: data.seat
     });
     if (!socket.userName) {
-      getPlayerInfo(socket)
+      gdbm.getPlayerInfo({ userName: socket.userName })
       .then(playerInfo => {
           addPlayer({
               gameId: socket.gameId,
