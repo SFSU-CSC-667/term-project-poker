@@ -1,8 +1,7 @@
 const accountEvents = (io, socket, users, db) => {
   const bcrypt = require('bcryptjs');
   const AccountDB = require('../db/models/AccountDB');
-
-  accountDB = new AccountDB(db);
+  const accountDB = new AccountDB(db);
 
   socket.on('account registration', data => {
     createAccount(data);

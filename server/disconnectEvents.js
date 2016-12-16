@@ -1,4 +1,7 @@
 const disconnectEvents = (io, socket, connections, users, game, players, db) => {
+  const GameDB = require('../db/models/GameDB');
+  const gameDB = new GameDB(db);
+
   socket.on('disconnect', function() {
     if (socket.isPlayer) { removeFromGames(socket); }
     socket.leave('lobby');
@@ -8,40 +11,27 @@ const disconnectEvents = (io, socket, connections, users, game, players, db) => 
     if (!Object.keys(connections).length) { io.guestCount = 0; }
   });
 
-  function setPlayerStatus(data) {
-    GameQuery = "UPDATE Players SET IsPlaying=FALSE WHERE GameId=${ gameId } AND UserId=${ playerId };";
-    db.none(GameQuery, {
-      gameId: data.gameId,
-        playerId: data.playerId
+  function setPlayerStatusOff(data) {
+    gameDB.setPlayerStatus(data, 'FALSE')
+    .then(() => {
+      console.log("Player status has been updated successfully.");
     })
-        .then(() => {
-            console.log("Player status has been updated successfully.");
-        })
-        .catch(error => {
-            console.log("An error occured while updating player status.");
-        });
-  }
-
-  function getPlayerInfo(socket) {
-    let GameQuery = "SELECT * FROM Users WHERE Email=${ UserName };";
-    return db.one(GameQuery, {
-      UserName: socket.userName
+    .catch(error => {
+      console.log("An error occured while updating player status.", error);
     });
-  }
+}
 
   function removeFromGames(socket) {
     if (socket.userName) {
-      getPlayerInfo(socket)
+      gameDB.playerInfo(socket)
       .then(playerData => {
-        setPlayerStatus({
-          gameId: socket.gameId,
-            playerId: playerData['userid']
-        });
+        setPlayerStatusOff({ gameId: socket.gameId, playerId: playerData['userid'] });
       })
       .catch(error => {
-        console.log("An error occured while getting player info.");
+        console.log("An error occured while getting player info.", error);
       });
     }
+
     let Game = game[socket.gameId];
     let Players = players[socket.gameId];
     io.to(socket.gameId).emit('player offline', {

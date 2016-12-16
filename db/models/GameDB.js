@@ -1,18 +1,21 @@
-class gameDBM {
-
+class GameDB {
     constructor(db) {
         this.db = db;
     }
 
-    getPlayerInfo(data) {
+    setPlayerStatus(data, status) {
+      return this.db.none(`UPDATE Players SET IsPlaying=${ status } WHERE GameId=${ data.gameId } AND UserId=${ data.playerId };`);
+    }
+
+    playerInfo(data) {
         return this.db.one(`SELECT * FROM Users WHERE Email='${ data.userName }';`);
     };
 
-    getGameInfo(data) {
+    gameInfo(data) {
         return this.db.one(`SELECT * FROM Games WHERE GameId=${ data.gameId };`);
     };
 
-    getGamesInfo() {
+    allGamesInfo() {
         return this.db.any('SELECT * FROM Games');
     }
 
@@ -94,4 +97,4 @@ class gameDBM {
 }
 ;
 
-module.exports = gameDBM;
+module.exports = GameDB;

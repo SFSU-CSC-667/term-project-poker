@@ -2,7 +2,7 @@ const gameEvents = (io, socket, game, players, db) => {
   const Deck = require('../poker/Deck');
   const PokerHands = require('../poker/PokerHands');
   const GameDB = require('../db/models/GameDB');
-  const gdb = new GameDB(db);
+  const gameDB = new GameDB(db);
 
   socket.on('game viewer', data => {
     socket.leave('lobby');
@@ -35,9 +35,9 @@ const gameEvents = (io, socket, game, players, db) => {
   });
 
   socket.on('buyin request', () => {
-    gdb.getGameInfo({ gameId: socket.gameId })
+    gameDB.gameInfo({ gameId: socket.gameId })
     .then(gameData => {
-      gdb.getPlayerInfo({ userName: socket.userName })
+      gameDB.playerInfo({ userName: socket.userName })
       .then(playerData => {
         socket.emit('joining game', {
           buyInMin: gameData['minchips'],
@@ -89,7 +89,7 @@ const gameEvents = (io, socket, game, players, db) => {
   });
 
   socket.on('game list request', () => {
-    gdb.getGamesInfo()
+    gameDB.allGamesInfo()
     .then(response => {
       socket.emit('game list response', { games: response });
     });
@@ -203,11 +203,9 @@ const gameEvents = (io, socket, game, players, db) => {
     let winner = Players[index];
     setAllPlayersStatus(socket, 'isPlaying', 0);
     if (winner.bid < Game.currentCallMinimum && !isLastPlayer) {
-      console.log("Determing Side Pots");
       determineSidePots(socket, winner);
       return;
     }
-    console.log("We got a winner! ", Game.winner, Game.winnerPot);
     winner.pot += Game.winnerPot;
     showAllCards(socket);
     Game.winnerPot = 0;
@@ -215,7 +213,7 @@ const gameEvents = (io, socket, game, players, db) => {
       if (winner.userName && player.userName) {
         if (player.userName === winner.userName) {
           let netGain = player.bid + player.pot - player.startAmount;
-          gdb.updateUserScore({
+          gameDB.updateUserScore({
               amount: netGain,
               userName: player.userName
           });
@@ -358,8 +356,7 @@ const gameEvents = (io, socket, game, players, db) => {
       winners.push(player);
     }
     if (winner.userName) {
-      gdb.updateUserWinCounts({ userName: winner.userName });
-      /* db.none(`UPDATE Users SET wins = wins + 1 WHERE email = '${ winner.userName }'`); */
+      gameDB.updateUserWinCounts({ userName: winner.userName });
     }
     Game.winnerPot = 0;
     winners.forEach(winner => {
@@ -367,11 +364,10 @@ const gameEvents = (io, socket, game, players, db) => {
         if (winner.userName && player.userName) {
           if (player.userName === winner.userName) {
             let netGain = player.bid + player.pot - player.startAmount;
-            gdb.updateUserChips({
+            gameDB.updateUserChips({
                 amount: netGain,
                 userName: player.userName
             });
-            /* db.none(`UPDATE Users SET chips = chips + ${ netGain } WHERE email = '${ player.userName }'`); */
           }
         }
         player.startAmount = player.pot; // New Start Amount.
@@ -435,8 +431,7 @@ const gameEvents = (io, socket, game, players, db) => {
   }
 
   function getUpdate(socket, data) {
-    /* db.one('SELECT GameName FROM Games Where GameId = ' + socket.gameId) */
-    gdb.getGameInfo({ gameId: socket.gameId })
+    gameDB.gameInfo({ gameId: socket.gameId })
     .then(response => {
       if (!game[socket.gameId] || !players[socket.gameId]) {
         socket.emit('game update', { gameName: response.gamename });
@@ -489,9 +484,9 @@ const gameEvents = (io, socket, game, players, db) => {
       gameStarted: Game.gameStarted
     });
     if (!socket.userName) {
-      gdb.getPlayerInfo({ userName: socket.userName })
+      gameDB.playerInfo({ userName: socket.userName })
       .then(playerInfo => {
-          gdb.addPlayer({
+          gameDB.addPlayer({
               gameId: socket.gameId,
               playerId: playerInfo["userid"],
               startAmount: data.startAmount,
@@ -585,6 +580,7 @@ const gameEvents = (io, socket, game, players, db) => {
   function wipeTable(socket) {
     let Game = game[socket.gameId];
     let Players = players[socket.gameId];
+    if (!Game || !Players) { return; }
     io.to(socket.gameId).emit('remove all cards');
     io.to(socket.gameId).emit('reset timer');
     socket.emit('unready player');
@@ -627,7 +623,6 @@ const gameEvents = (io, socket, game, players, db) => {
     let Players = players[socket.gameId];
     Game.winners = winners;
     setAllPlayersStatus(socket, 'isPlaying', 0);
-    console.log("We got multiple winners! ", winners, Game.winnerPot);
     winners.forEach(winner => {
       let winningSocket = Players[getSeatIndex(socket, winner)];
       winningSocket.pot += winningSocket.bid;
@@ -643,7 +638,7 @@ const gameEvents = (io, socket, game, players, db) => {
         if (winningSocket.userName && player.userName) {
           if (player.userName === winningSocket.userName) {
             let netGain = player.bid + player.pot - player.startAmount;
-            gdb.updateUserScore({
+            gameDB.updateUserScore({
                 amount: netGain,
                 userName: player.userName
             });
@@ -722,11 +717,10 @@ const gameEvents = (io, socket, game, players, db) => {
       playerBid: socket.bid
     });
     if (socket.userName) {
-      gdb.updateUserChips({
+      gameDB.updateUserChips({
           amount: additionalAmount,
           userName: socket.userName
       });
-      /* db.none(`UPDATE Users SET chips = chips - ${ additionalAmount } WHERE email = '${ socket.userName }'`); */
     }
   }
 

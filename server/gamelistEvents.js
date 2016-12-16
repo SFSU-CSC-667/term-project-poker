@@ -1,7 +1,6 @@
 const gamelistEvents = (io, socket, db) => {
   const GameListDB = require('../db/models/GameListDB');
-
-  gameListDB = new GameListDB(db);
+  const gameListDB = new GameListDB(db);
 
   socket.on('create game request', data => {
     if (socket.userName) {
