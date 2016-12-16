@@ -81,10 +81,7 @@ const gameEvents = (io, socket, game, players, db) => {
     if (count === 1) {
       Game.winner = winner.seat;
       playerWins(socket, 1);
-      wipeTable(socket);
-      Players.forEach(player => {
-        player.emit('unready player', { seat: player.seat });
-      });
+      wipeTable(socket, 'complete');
     }
   });
 
@@ -525,6 +522,7 @@ const gameEvents = (io, socket, game, players, db) => {
 
   function startGame(socket) {
     if (!game[socket.gameId] || !players[socket.gameId]) { return; }
+    if (players[socket.gameId].length < 2) { wipeTable(socket, 'complete'); return; }
     sortSeats(socket);
     incrementBlinds(socket);
     let Game = game[socket.gameId];
@@ -577,13 +575,17 @@ const gameEvents = (io, socket, game, players, db) => {
     }
   }
 
-  function wipeTable(socket) {
+  function wipeTable(socket, type) {
     let Game = game[socket.gameId];
     let Players = players[socket.gameId];
     if (!Game || !Players) { return; }
     io.to(socket.gameId).emit('remove all cards');
     io.to(socket.gameId).emit('reset timer');
-    socket.emit('unready player');
+    if (type === 'complete') {
+      Players.forEach(player => {
+        if (player.isPlayer) { player.emit('unready player', { seat: player.seat }); }
+      });
+    }
     Game.ready = 0;
     Players.forEach(player => {
       player.fold = 0;
@@ -698,6 +700,7 @@ const gameEvents = (io, socket, game, players, db) => {
     let Players = players[socket.gameId];
     let seat = Game.seatsOccupied[Game.turn];
     if ((Players[Game.turn].pot - amount) < 0) {
+      Players[Game.turn].isPlayer = 0;
       Players.splice(Players.indexOf(Players[Game.turn]), 1);
       Game.seatsOccupied.splice(Game.seatsOccupied.indexOf(Game.seatsOccupied[Game.turn]), 1);
       io.to(socket.gameId).emit('unoccupy seat', { seat: seat, seatsOccupied: Game.seatsOccupied });
