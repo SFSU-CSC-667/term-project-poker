@@ -567,10 +567,7 @@ const gameEvents = (io, socket, game, players, db) => {
         break;
       case 3:
         determineWinner(socket);
-        setTimeout(() => {
-          if (players[socket.gameId].length < 2) { wipeTable(socket); return 1; }
-          startGame(socket);
-        }, 7000);
+        setTimeout(() => { startGame(socket); }, 7000);
         return 1;
     }
   }
