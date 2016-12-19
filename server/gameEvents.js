@@ -544,9 +544,9 @@ const gameEvents = (io, socket, game, players, db) => {
     Game.winnerPot = 0;
     Game.deck.shuffle();
     if (!smallBigBlinds(socket)) { return; }
-    reorderTurns(socket, Game.turn);
     drawPlayerCards(socket);
     nextTurn(socket);
+    reorderTurns(socket, Game.turn);
   }
 
   function dealerCheck(round, socket) {
