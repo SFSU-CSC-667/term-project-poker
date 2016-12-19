@@ -128,7 +128,7 @@ const gameEvents = (io, socket, game, players, db) => {
     }
   });
 
-  function nextTurn(socket) {
+  function nextTurn(socket, start) {
     let Game = game[socket.gameId];
     let Players = players[socket.gameId];
     if (checkIfAllFold(socket)) {
@@ -144,7 +144,9 @@ const gameEvents = (io, socket, game, players, db) => {
       io.to(socket.gameId).emit('turn flag', { seat: Game.seatsOccupied[Game.turn] });
       Players[Game.turn].emit('player turn', { turn: Game.turn, callMinimum: Game.currentCallMinimum });
     } else {
-      if (dealerCheck(Game.round, socket)) { return; }
+      if (!start) {
+        if (dealerCheck(Game.round, socket)) { return; }
+      }
       Game.turn = 0;
       if (Players[Game.turn].fold) { nextTurn(socket); return; }
       io.to(socket.gameId).emit('turn flag', { seat: Game.seatsOccupied[Game.turn] });
@@ -544,9 +546,9 @@ const gameEvents = (io, socket, game, players, db) => {
     Game.winnerPot = 0;
     Game.deck.shuffle();
     if (!smallBigBlinds(socket)) { return; }
-    drawPlayerCards(socket);
-    nextTurn(socket);
+    nextTurn(socket, 1);
     reorderTurns(socket, Game.turn);
+    drawPlayerCards(socket);
   }
 
   function dealerCheck(round, socket) {
